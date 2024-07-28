@@ -9,4 +9,4 @@ export const defaultRoutes = createBrowserRouter([
 	}
 ])
 
-export const loggedUserRoutes = createBrowserRouter([])
+// export const loggedUserRoutes = createBrowserRouter([])
