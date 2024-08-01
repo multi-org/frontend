@@ -1,5 +1,5 @@
 export function Home() {
-	return (
-		<>welcome multi home</>
+  return (
+    <h1 className="text-blue-500">welcome multi home</h1>
 	)
 }
