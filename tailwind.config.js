@@ -57,6 +57,9 @@ module.exports = {
         yellowLight: '#FAC578',
         yellowNormal: '#F7B350',
         yellowDark: '#E79927',
+        orangeLight: '#E97938',
+        orangeNormal: '#E86C23',
+        orangeDark: '#DA590E',
         grayLight: '#FBF9FE'
       },
       borderRadius: {
