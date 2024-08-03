@@ -1,6 +1,13 @@
 import { Link } from 'react-router-dom';
 
 export function Header() {
+  const handlePageJump = (elementId: string) => {
+    const element = document.getElementById(elementId)
+    element?.scrollIntoView({
+      behavior: 'smooth'
+    })     
+  }
+
 	return (
     <div className="flex px-64 justify-between items-center h-20">
       {/* <img src="" alt="" /> */}
@@ -9,18 +16,18 @@ export function Header() {
         <Link to={'/'} className="bg-yellowNormal transition duration-500 px-6 py-2 rounded-md text-gray-100 font-inter font-semibold hover:bg-yellowDark">
           Comece agora
         </Link>
-        <Link to={'/'}>
+        <button onClick={() => handlePageJump('home')}>
           Início
-        </Link>
-        <Link to={'/'}>
+        </button>
+        <button onClick={() => handlePageJump('about-us')}>
           Quem somos?
-        </Link>
-        <Link to={'/'}>
+        </button>
+        <button onClick={() => handlePageJump('features')}>
           Funcionalidades 
-        </Link>
-        <Link to={'/'}>
+        </button>
+        <button onClick={() => handlePageJump('faq')}>
           Perguntas
-        </Link>
+        </button>
       </div>
     </div>
 	)
