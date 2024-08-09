@@ -2,15 +2,14 @@ import { Header } from "@/components/custom/Header";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-import { BankIcon } from "@/components/custom-icons";
-
+import { BankIcon, HammerIcon, CheckedClipboard } from "@/components/custom-icons";
 
 export function Home() {
   return (
     <>
       <Header />
       <div className="flex flex-col w-full items-center">
-				<div id="home" className={`flex bg-center w-full justify-center items-center bg-[url('/src/assets/home-bg-image.jpg')] h-[600px] bg-no-repeat from-transparent to-white`}>
+        <div id="home" className={`flex bg-center w-full justify-center items-center bg-[url('/src/assets/home-bg-image.jpg')] h-[600px] bg-no-repeat from-transparent to-white`}>
           <div className="flex flex-col items-center text-grayLight justify-center">
             <h1 className="text-6xl font-bold">MULTI</h1>
             <h1 className="text-3xl font-bold text-center">UEPB</h1>
@@ -32,15 +31,31 @@ export function Home() {
             </p>
           </div>
         </div>
-        <div id="features" className="">
+        <div id="features" className="w-full flex flex-col items-center pt-20 text-center">
           <h1 className="font-bold text-2xl flex flex-col items-center">
-            Quem somos?
+            Funcionalidades
             <hr className="w-24 border-[1.5px] border-orangeNormal mt-[-4px]" />
           </h1>
           <div className="pt-20">
             <Card>
               <CardHeader>
                 <BankIcon size={50} />
+              </CardHeader>
+              <CardContent>
+
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <HammerIcon size={50} />
+              </CardHeader>
+              <CardContent></CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CheckedClipboard size={50} />
               </CardHeader>
               <CardContent>
 
