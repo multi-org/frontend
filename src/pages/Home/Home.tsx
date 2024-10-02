@@ -9,7 +9,7 @@ export function Home() {
     <>
       <Header />
       <div className="flex flex-col w-full items-center">
-        <div id="home" className={`flex bg-center w-full justify-center items-center bg-[url('/src/assets/home-bg-image.jpg')] h-[600px] bg-no-repeat from-transparent to-white`}>
+        <div id="home" className={`flex bg-center w-full justify-center items-center bg-[url('/src/assets/home-bg-image.jpg')] h-[600px] bg-no-repeat from-transparent to-white bg-cover`}>
           <div className="flex flex-col items-center text-grayLight justify-center">
             <h1 className="text-6xl font-bold">MULTI</h1>
             <h1 className="text-3xl font-bold text-center">UEPB</h1>
@@ -36,10 +36,11 @@ export function Home() {
             Funcionalidades
             <hr className="w-24 border-[1.5px] border-orangeNormal mt-[-4px]" />
           </h1>
-          <div className="pt-20">
+          <div className="pt-20 flex w-[750px] justify-between">
             <Card>
               <CardHeader>
                 <BankIcon size={50} />
+                <h1>Instituições parceiras</h1>
               </CardHeader>
               <CardContent>
 
@@ -64,7 +65,7 @@ export function Home() {
           </div>
         </div>
         <div id="faq" className="">
-          AAAAAAAAAAAAAAAAAAAAAAA
+
         </div>
       </div>
     </>
