@@ -9,7 +9,7 @@ export function Header() {
   }
 
 	return (
-    <div className="flex px-64 justify-between items-center h-20">
+    <div className="flex px-64 justify-between items-center h-20 shadow-md">
       <img src="src/assets/logo multi.png" alt="logo multi" className='w-9 h-9'/>
       {/* <p>LOGO</p> */}
       <div className="flex gap-5 items-center">
