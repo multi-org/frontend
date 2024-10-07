@@ -1,12 +1,12 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from "react-router-dom";
 
-import { Home } from './pages/Home'
+import { Home } from "./pages/Home";
 
 export const defaultRoutes = createBrowserRouter([
-	{
-		path: "/",
-		element: <Home />
-	}
-])
+  {
+    path: "/",
+    element: <Home />,
+  },
+]);
 
 // export const loggedUserRoutes = createBrowserRouter([])

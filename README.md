@@ -9,7 +9,6 @@ Breve descrição...
   npm run dev
 ```
 
-
 ### techs
 - React
 - Vite
