@@ -1,12 +1,20 @@
-import { Header } from "@/components/custom/Header";
-
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Header } from '@/components/custom/Header'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 import {
   BankIcon,
   HammerIcon,
   CheckedClipboard,
-} from "@/components/custom-icons";
+} from '@/components/custom-icons'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
+import { faqCarouselItems } from './Home.helpers'
 
 export function Home() {
   return (
@@ -50,38 +58,91 @@ export function Home() {
         </div>
         <div
           id="features"
-          className="flex w-full flex-col items-center pt-20 text-center"
+          className="flex w-full flex-col items-center py-20 text-center"
         >
           <h1 className="flex flex-col items-center text-2xl font-bold">
             Funcionalidades
             <hr className="mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
           </h1>
           <div className="flex w-[750px] justify-between pt-20">
-            <Card className="w-">
+            <Card className="size-60">
               <CardHeader className="flex items-center">
                 <BankIcon size={50} />
-                <h1>Instituições parceiras</h1>
+                <h1 className="text-sm font-medium">Instituições parceiras</h1>
               </CardHeader>
-              <CardContent></CardContent>
+              <CardContent className="text-xs">
+                As instituições parceiras disponibilizam suas centrais de forma
+                visível e acessível, além de apoiar os pesquisadores na gestão
+                dos equipamentos.
+              </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
+            <Card className="size-60">
+              <CardHeader className="flex items-center">
                 <HammerIcon size={50} />
+                <h1 className="text-sm font-medium">
+                  Equipamentos disponivéis
+                </h1>
               </CardHeader>
-              <CardContent></CardContent>
+              <CardContent className="text-xs">
+                As centrais oferecem seus equipamentos de uso coletivo como um
+                serviço para os usuários que necessitam.
+              </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
+            <Card className="size-60">
+              <CardHeader className="flex items-center">
                 <CheckedClipboard size={50} />
+                <h1 className="text-sm font-medium">Requisição de serviços</h1>
               </CardHeader>
-              <CardContent></CardContent>
+              <CardContent className="text-xs">
+                Ao encontrar o equipamento necessário, o usuário faz uma
+                requisição de serviço, preenchendo os detalhes e dados para
+                cobrança.
+              </CardContent>
             </Card>
           </div>
         </div>
-        <div id="faq" className=""></div>
+        <div
+          id="find-equipment"
+          className="flex w-full flex-col items-center justify-center bg-blueNormal py-8 text-center text-white"
+        >
+          <div className="flex flex-col">
+            <h1 className="w-[450px] text-center text-[32px] font-bold">
+              ENCONTRE O EQUIPAMENTO QUE PRECISA
+            </h1>
+            <p className="w-60 self-center text-sm">
+              Faça seu cadastro e descubra os equipamentos disponíveis
+            </p>
+          </div>
+          <Button className="mt-6 h-10 w-44 bg-yellowDark">Comece agora</Button>
+        </div>
+        <div id="faq" className="mb-28 mt-20 pb-20">
+          <h1 className="flex flex-col items-center text-2xl font-bold">
+            Perguntas frequentes
+            <hr className="mb-20 mt-[-4px] w-20 border-[1.5px] border-orangeNormal" />
+          </h1>
+          <Carousel className="flex justify-center">
+            <CarouselContent className="w-[950px] gap-8 px-10">
+              {faqCarouselItems.map((item) => (
+                <CarouselItem
+                  key={item.id}
+                  className="h-72 basis-1/3 rounded-[6px] border px-4 pt-8"
+                >
+                  <div className="flex h-32 items-center justify-center rounded-[6px] bg-[#D9D9D9]">
+                    {item.image}
+                  </div>
+                  <div className="mt-6 flex items-center justify-center">
+                    {item.question}
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
       </div>
     </>
-  );
+  )
 }
