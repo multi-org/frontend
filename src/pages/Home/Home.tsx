@@ -41,7 +41,6 @@ export function Home() {
             <hr className="mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
           </h1>
           <div className="mt-24 flex w-[670px] items-center justify-between">
-            {/* <img src="" alt="" /> */}
             <img
               src="src/assets/multi-logo.jpg"
               alt="Logo do Multi"
@@ -115,7 +114,12 @@ export function Home() {
               Faça seu cadastro e descubra os equipamentos disponíveis
             </p>
           </div>
-          <Button className="mt-6 h-10 w-44 bg-yellowDark">Comece agora</Button>
+          <Button
+            className="mt-6 h-10 w-44 bg-yellowDark"
+            onClick={() => (window.location.href = '/produtos')}
+          >
+            Comece agora
+          </Button>
         </div>
         <div id="faq" className="mb-28 mt-20 pb-20">
           <h1 className="flex flex-col items-center text-2xl font-bold">

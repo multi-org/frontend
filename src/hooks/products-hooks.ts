@@ -1,0 +1,84 @@
+import { useState } from 'react'
+import { ProductType } from '@/types/Product'
+import { useProductStore } from '@/store/products-store'
+import api from '@/utils/api'
+
+export const useProducts = () => {
+  const {
+    products,
+    setProducts,
+    create,
+    update,
+    getProductById,
+    delete: deleteProduct,
+  } = useProductStore()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const getProducts = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get<ProductType[]>('/produtos')
+      setProducts(response.data)
+    } catch (err) {
+      setError('Erro ao buscar produtos')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const createProduct = async (product: ProductType) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.post<ProductType>('/produtos', product)
+      create(response.data)
+    } catch (err) {
+      setError('Erro ao criar produto')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Função para atualizar um produto
+  const updateProduct = async (product: ProductType) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.put<ProductType>(
+        `/produtos/${product.id}`,
+        product,
+      )
+      update(response.data)
+    } catch (err) {
+      setError('Erro ao atualizar produto')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteProductById = async (id: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await api.delete(`/produtos/${id}`)
+      deleteProduct(id)
+    } catch (err) {
+      setError('Erro ao deletar produto')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    products,
+    loading,
+    error,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProductById,
+    getProducts,
+  }
+}

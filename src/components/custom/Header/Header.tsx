@@ -10,16 +10,16 @@ export function Header() {
 
   return (
     <div className="flex h-20 items-center justify-between px-64">
-      <div>
+      <Link to={'/'}>
         <img
           src="src/assets/header-logo.jpg"
           alt="Logo do Multi"
           className="h-[55px] w-[55px]"
         />
-      </div>
+      </Link>
       <div className="flex items-center gap-5">
         <Link
-          to={'/'}
+          to={'/produtos'}
           className="rounded-md bg-yellowNormal px-6 py-2 font-inter font-semibold text-gray-100 transition duration-500 hover:bg-yellowDark"
         >
           Comece agora

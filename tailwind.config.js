@@ -60,8 +60,12 @@ module.exports = {
         orangeLight: '#E97938',
         orangeNormal: '#E86C23',
         orangeDark: '#DA590E',
-        grayLight: '#FBF9FE',
-        blueNormal: '#36858E'
+        blueLight: '#54A3AC',
+        blueNormal: '#36858E',
+        blueDark: '#196F79',
+        successLight: '#4E995E',
+        success: '#2F723D',
+        grayLight: '#FBF9FE'
       },
       borderRadius: {
         lg: "var(--radius)",
