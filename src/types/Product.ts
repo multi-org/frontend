@@ -1,9 +1,9 @@
-export interface ProductType{
-  id:string,
-  name:string
-  description:string,
-  price:string
-  category:string
+export interface ProductType {
+  _id: string
+  nome: string
+  descricao: string
+  preco: string
+  categoria: string
 
-  disponibility: [{id:string, date:Date, hourly:string}]
+  disponibilidade: [{ id: string; date: Date; hourly: string }]
 }

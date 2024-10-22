@@ -1,30 +1,31 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { ProductType } from "@/types/Product";
+} from '@/components/ui/card'
+import { ProductType } from '@/types/Product'
+
 interface ProductCardProps {
-  product:ProductType
+  product: ProductType
 }
 
 export default function ProductCard({
-  product: { id, name, description, image, price },
+  product: { _id, nome, descricao, preco },
 }: ProductCardProps) {
   return (
-    <Link to={`/products/${id}`} className="shadow-md">
-      <Card className="flex gap-5 items-center p-4 w-[100%] h-[100%] shadow-md">
-        <img src={image} alt="imagem de laboratório" className="w-[188px] h-[212px]" />
+    <Link to={`/produtos/${_id}`} className="shadow-md">
+      <Card className="flex h-[100%] w-[100%] items-center gap-5 p-4 shadow-md">
+        {/* <img src={image} alt="imagem de laboratório" className="w-[188px] h-[212px]" /> */}
         <CardHeader className="flex flex-col items-start">
-          <CardTitle>{name}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-          <p>{price}</p>
+          <CardTitle>{nome}</CardTitle>
+          <CardDescription>{descricao}</CardDescription>
+          <p>R$ {preco}</p>
         </CardHeader>
       </Card>
     </Link>
   )
 }
 
-export { ProductCard };
+export { ProductCard }
