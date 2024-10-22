@@ -5,16 +5,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ProductType } from "@/types/Product";
+interface ProductCardProps {
+  product:ProductType
+}
 
-
-export default function ProductCard() {
+export default function ProductCard({
+  product: { id, name, description, image, price },
+}: ProductCardProps) {
   return (
-    <Link to={'#'}>
+    <Link to={`/products/${id}`} className="shadow-md">
       <Card className="flex gap-5 items-center p-4 w-[100%] h-[100%] shadow-md">
-        <img src="src/assets/unsplash__9xRHrMOjeg.jpg" alt="imagem de laboratório" className="w-[188px] h-[212px]" />
+        <img src={image} alt="imagem de laboratório" className="w-[188px] h-[212px]" />
         <CardHeader className="flex flex-col items-start">
-          <CardTitle>Produto</CardTitle>
-          <CardDescription>Descrição do produto</CardDescription>
+          <CardTitle>{name}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+          <p>{price}</p>
         </CardHeader>
       </Card>
     </Link>

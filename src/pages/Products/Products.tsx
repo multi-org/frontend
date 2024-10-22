@@ -7,7 +7,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -24,25 +23,49 @@ import {
 import { ProductCard } from "@/components/custom/ProductCard";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Footer } from "@/components/custom/Footer";
+import { useProductStore } from "@/store/products-store";
+import { ProductType } from "@/types/Product"; 
 
 export function Products() {
-  const [date, setDate] = useState<Date>()
+  const { products } = useProductStore();
+  const [searchTerm, setSearchTerm] = useState<string>(""); 
+  const [category, setCategory] = useState<string>(""); 
+  const [date, setDate] = useState<Date | undefined>(); 
+
+  console.log(products)
+  const filteredProducts = products.filter((product: ProductType) => {
+    const matchesSearchTerm = searchTerm
+      ? product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
+    const matchesCategory = category ? product.category === category : true;
+    // const matchesDate = date
+    //   ? new Date(product.date).toDateString() === date.toDateString() // Assumindo que `product.date` é uma string válida
+    //   : true;
+
+    return matchesSearchTerm && matchesCategory;
+  });
 
   return (
     <div>
       <Header />
       <div className="p-36 border-black">
         <div className="border-black flex gap-2">
-          <Input className="w-[671px]" />
-          <Select>
+          <Input
+            className="w-[671px]"
+            placeholder="Procurar produto..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Select onValueChange={(value) => setCategory(value)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="-" />
+              <SelectValue placeholder="Categoria" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="apple">Espaços</SelectItem>
-                <SelectItem value="banana">Serviçoes</SelectItem>
-                <SelectItem value="blueberry">Equipamentos</SelectItem>
+                <SelectItem value="spaces">Espaços</SelectItem>
+                <SelectItem value="services">Serviços</SelectItem>
+                <SelectItem value="equipment">Equipamentos</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -70,12 +93,13 @@ export function Products() {
           </Popover>
         </div>
         <div className="grid grid-cols-2 mt-8 gap-6">
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))
+          ) : (
+            <p>Nenhum produto encontrado.</p>
+          )}
         </div>
         <Pagination className="mt-8">
           <PaginationContent>
@@ -102,5 +126,5 @@ export function Products() {
       </div>
       <Footer />
     </div>
-  )
+  );
 }
