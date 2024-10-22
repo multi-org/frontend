@@ -1,3 +1,11 @@
+import { RouterProvider } from 'react-router-dom'
+
+import { defaultRoutes } from './browserRouters'
+
 export function App() {
-  return <h1>Hello Multi</h1>
+	return (
+		<>
+			<RouterProvider router={defaultRoutes} />
+		</>
+	)
 }

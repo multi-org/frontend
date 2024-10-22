@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ["Inter", "sans-serif"]
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -51,6 +54,14 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        yellowLight: '#FAC578',
+        yellowNormal: '#F7B350',
+        yellowDark: '#E79927',
+        orangeLight: '#E97938',
+        orangeNormal: '#E86C23',
+        orangeDark: '#DA590E',
+        grayLight: '#FBF9FE',
+        blueNormal: '#36858E'
       },
       borderRadius: {
         lg: "var(--radius)",
