@@ -5,8 +5,10 @@ export const ErrorPage = () => {
   return (
     <div>
       <Header />
-      <h1>404 - Página Não Encontrada</h1>
-      <p>Desculpe, a página que você está procurando não existe.</p>
+      <div className='flex flex-col items-center justify-center min-h-screen'>
+        <h1>404 - Página Não Encontrada!</h1>
+        <p>Desculpe, a página que você está procurando não existe.</p>
+      </div>
       <Footer />
     </div>
   )

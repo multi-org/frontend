@@ -9,7 +9,7 @@ export function Header() {
   }
 
   return (
-    <div className="flex h-20 items-center justify-between px-64">
+    <div className="flex h-20 items-center justify-between px-64 shadow-md">
       <Link to={'/'}>
         <img
           src="src/assets/header-logo.jpg"
