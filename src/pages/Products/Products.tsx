@@ -33,6 +33,7 @@ import {
 import { Footer } from '@/components/custom/Footer'
 import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
+import { CreateProductDialog } from '@/components/custom/CreateProductDialog'
 
 export function Products() {
   const { products, getProducts } = useProducts()
@@ -102,6 +103,7 @@ export function Products() {
               />
             </PopoverContent>
           </Popover>
+          <CreateProductDialog />
         </div>
         <div className="mt-8 grid grid-cols-2 gap-6">
           {filteredProducts.length > 0 ? (

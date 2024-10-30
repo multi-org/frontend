@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from '@/components/ui/popover'
 import {
   Select,
@@ -15,7 +15,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
 import { useProducts } from '@/hooks/products-hooks'
 import { cn } from '@/lib/utils'
@@ -28,7 +28,7 @@ export function Product() {
   const [date, setDate] = useState<Date | undefined>()
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const { id } = useParams()
   const { getProductById } = useProducts()
   if (!id) {
@@ -47,7 +47,9 @@ export function Product() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Select onValueChange={(value) => navigate(`/produtos?categoria=${value}`)}>
+          <Select
+            onValueChange={(value) => navigate(`/produtos?categoria=${value}`)}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Categoria" />
             </SelectTrigger>
@@ -85,7 +87,7 @@ export function Product() {
         {product ? (
           <SingleProduct product={product} />
         ) : (
-          <p className="text-lg mt-4">Produto não encontrado :(</p>
+          <p className="mt-4 text-lg">Produto não encontrado</p>
         )}
       </div>
       <Footer />
