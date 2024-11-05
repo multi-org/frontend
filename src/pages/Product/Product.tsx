@@ -85,7 +85,9 @@ export function Product() {
           </Popover>
         </div>
         {product ? (
-          <SingleProduct product={product} />
+          <div className='mt-8'>
+            <SingleProduct product={product} />
+          </div>
         ) : (
           <p className="mt-4 text-lg">Produto não encontrado</p>
         )}

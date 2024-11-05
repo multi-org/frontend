@@ -50,9 +50,9 @@ export function CreateProductDialog() {
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
     try {
       const result = await createProduct(data)
-      console.log(result)
       if (result) {
         toast({ title: 'sucesso' })
+        window.location.reload()
       }
     } catch (error: any) {
       toast({ title: 'error', variant: 'destructive' })

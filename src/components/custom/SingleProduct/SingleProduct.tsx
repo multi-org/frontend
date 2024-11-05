@@ -25,15 +25,44 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from '@/components/ui/use-toast'
+import { useProducts } from '@/hooks/products-hooks'
+import { Loading } from '../Loading'
 
 interface SingleProductProps {
-  product: ProductType
+  product: ProductType,
 }
 
 export default function SingleProduct({
-  product: { nome, descricao, preco, disponibilidade },
+  product: { _id, nome, descricao, preco, disponibilidade },
 }: SingleProductProps) {
   const [date, setDate] = useState<Date | undefined>()
+
+  const { deleteProductById, getProductById, loading } = useProducts()
+
+  const deleteProduct = async () => {
+    try {
+      await deleteProductById(_id)
+      const result = getProductById(_id)
+      if (!result) {
+        toast({ title: 'sucesso' })
+      }
+    } catch (error: any) {
+      toast({ title: 'error: could not delete product' })
+    }
+    window.location.reload()
+  }
 
   return (
     <>
@@ -109,9 +138,27 @@ export default function SingleProduct({
             </div>
           </CardHeader>
         </div>
-        <Button variant="destructive">
-          <Trash2 />
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <Button variant="destructive">
+              <Trash2 />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Tem certeza que deseja deletar o produto?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Essa ação não pode ser desfeita. Isso excuirá este produto permanentemente e removerá seus dados de nossos servidores.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => deleteProduct()}>
+                {loading ? <Loading /> : 'Deletar Produto'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Card>
       <Pagination className="mt-8">
         <PaginationContent>
