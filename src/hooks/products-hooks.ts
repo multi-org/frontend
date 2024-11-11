@@ -62,6 +62,7 @@ export const useProducts = () => {
         product,
       )
       update(response.data)
+      return response.data
     } catch (err) {
       setError('Erro ao atualizar produto')
     } finally {

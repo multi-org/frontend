@@ -39,6 +39,7 @@ import {
 import { toast } from '@/components/ui/use-toast'
 import { useProducts } from '@/hooks/products-hooks'
 import { Loading } from '../Loading'
+import { UpdateProductDialog } from '../UpdateProductDialog'
 
 interface SingleProductProps {
   product: ProductType,
@@ -133,11 +134,13 @@ export default function SingleProduct({
                 </PopoverContent>
               </Popover>
               <p>
-                <span className="font-semibold">Preço: </span>R$ {preco}
+                <span className="font-semibold">Preço: </span>R$ {Number(preco)}
               </p>
             </div>
           </CardHeader>
         </div>
+        <div className='flex gap-2'>
+        <UpdateProductDialog />
         <AlertDialog>
           <AlertDialogTrigger>
             <Button variant="destructive">
@@ -159,6 +162,7 @@ export default function SingleProduct({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        </div>
       </Card>
       <Pagination className="mt-8">
         <PaginationContent>
