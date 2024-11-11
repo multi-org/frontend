@@ -19,22 +19,36 @@ import {
 } from '@/components/ui/select'
 import { useProducts } from '@/hooks/products-hooks'
 import { cn } from '@/lib/utils'
+import { ProductType } from '@/types/Product'
 import { format } from 'date-fns'
 import { Calendar as CalendarIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 export function Product() {
   const [date, setDate] = useState<Date | undefined>()
   const [searchTerm, setSearchTerm] = useState<string>('')
-
+  const [product, setProduct] = useState<ProductType | null>(null)
   const navigate = useNavigate()
   const { id } = useParams()
   const { getProductById } = useProducts()
-  if (!id) {
-    throw new Error('Id is not defined')
-  }
-  const product = getProductById(id)
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) {
+        console.error('ID não definido')
+        return
+      }
+      try {
+        const data = await getProductById(id)
+        setProduct(data)
+      } catch (error) {
+        console.error('Erro ao buscar o produto:', error)
+      }
+    }
+
+    fetchProduct() // Chama a função assíncrona
+  }, [id, getProductById])
 
   return (
     <div>
@@ -85,7 +99,7 @@ export function Product() {
           </Popover>
         </div>
         {product ? (
-          <div className='mt-8'>
+          <div className="mt-8">
             <SingleProduct product={product} />
           </div>
         ) : (

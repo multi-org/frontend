@@ -35,18 +35,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from '@/components/ui/alert-dialog'
 import { toast } from '@/components/ui/use-toast'
 import { useProducts } from '@/hooks/products-hooks'
 import { Loading } from '../Loading'
 import { UpdateProductDialog } from '../UpdateProductDialog'
 
 interface SingleProductProps {
-  product: ProductType,
+  product: ProductType
 }
 
 export default function SingleProduct({
-  product: { _id, nome, descricao, preco, disponibilidade },
+  product: { _id, nome, descricao, preco, disponibilidade, categoria },
 }: SingleProductProps) {
   const [date, setDate] = useState<Date | undefined>()
 
@@ -139,29 +139,39 @@ export default function SingleProduct({
             </div>
           </CardHeader>
         </div>
-        <div className='flex gap-2'>
-        <UpdateProductDialog />
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <Button variant="destructive">
-              <Trash2 />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Tem certeza que deseja deletar o produto?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Essa ação não pode ser desfeita. Isso excuirá este produto permanentemente e removerá seus dados de nossos servidores.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteProduct()}>
-                {loading ? <Loading /> : 'Deletar Produto'}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <div className="flex gap-2">
+          <UpdateProductDialog
+            _id={_id}
+            categoria={categoria}
+            nome={nome}
+            descricao={descricao}
+            preco={preco}
+            disponibilidade={disponibilidade}
+          />
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Button variant="destructive">
+                <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Tem certeza que deseja deletar o produto?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Essa ação não pode ser desfeita. Isso excuirá este produto
+                  permanentemente e removerá seus dados de nossos servidores.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => deleteProduct()}>
+                  {loading ? <Loading /> : 'Deletar Produto'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </Card>
       <Pagination className="mt-8">

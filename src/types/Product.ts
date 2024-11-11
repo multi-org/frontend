@@ -2,7 +2,7 @@ export interface ProductType {
   _id: string
   nome: string
   descricao: string
-  preco: Number
+  preco: number
   // preco: string
   categoria: string
 

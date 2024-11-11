@@ -33,49 +33,50 @@ import {
 import { useProducts } from '@/hooks/products-hooks'
 import { toast } from '@/components/ui/use-toast'
 import { Loading } from '../Loading'
+import { ProductType } from '@/types/Product'
+import { CategoriaType } from '@/types/Categoria'
 
 const updateProductSchema = z.object({
   _id: z.string().min(1, 'ID é obrigatótio.'),
   nome: z.string().min(1, 'Nome é obrigatório.'),
   descricao: z.string().min(1, 'Descrição é obrigatória.'),
   categoria: z.enum(['Espaços', 'Serviços', 'Equipamento']),
-  preco: z.number().min(0, 'Preço deve ser maior ou igual a 0.'),
-  // preco: z.string().refine((value) => !isNaN(Number(value)), {
-  //   message: 'Preço deve ser um número válido.',
-  // }),
-  disponibilidade: z.array(
-    z.object({
-      _id: z.string(),
-      data: z.date(),
-      horario: z.string(),
-    })
-  ).nonempty("Disponibilidade não pode estar vazia."),
+  preco: z.number().min(1, 'Preço deve ser maior ou igual a 0.'),
+  disponibilidade: z.any(),
 })
 
-export function UpdateProductDialog() {
+export function UpdateProductDialog({
+  categoria,
+  descricao,
+  nome,
+  preco,
+  disponibilidade,
+  _id,
+}: ProductType) {
   const { updateProduct, loading } = useProducts()
   const form = useForm<z.infer<typeof updateProductSchema>>({
     resolver: zodResolver(updateProductSchema),
-    defaultValues: { 
-      nome: "", 
-      descricao: "", 
-      preco: 0,
-      categoria: 'Espaços',
-      disponibilidade: [
+    defaultValues: {
+      _id,
+      nome,
+      descricao,
+      preco,
+      categoria: categoria as CategoriaType,
+      disponibilidade: disponibilidade || [
         {
           _id: '',
           data: new Date(),
           horario: '',
-        }
-      ]
-    }
+        },
+      ],
+    },
   })
-
+  console.log(form.getValues())
   const onSubmit = async (data: z.infer<typeof updateProductSchema>) => {
     try {
-      console.log("Dados enviados:", data);
+      console.log('Dados enviados:', data)
 
-      const result = await updateProduct(data)
+      const result = await updateProduct(data as ProductType)
       if (result) {
         toast({ title: 'sucesso' })
         window.location.reload()
@@ -194,4 +195,4 @@ export function UpdateProductDialog() {
       </AlertDialogContent>
     </AlertDialog>
   )
-}  
+}
