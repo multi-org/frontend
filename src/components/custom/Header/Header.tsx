@@ -13,7 +13,7 @@ export function Header() {
       <Link to={'/'}>
         <img
           src="src/assets/header-logo.jpg"
-          alt="Logo do Multi"
+          alt="Logo Multi"
           className="h-[55px] w-[55px]"
         />
       </Link>

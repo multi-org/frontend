@@ -40,6 +40,7 @@ import { toast } from '@/components/ui/use-toast'
 import { useProducts } from '@/hooks/products-hooks'
 import { Loading } from '../Loading'
 import { UpdateProductDialog } from '../UpdateProductDialog'
+import { ToastAction } from '@/components/ui/toast'
 
 interface SingleProductProps {
   product: ProductType
@@ -57,12 +58,20 @@ export default function SingleProduct({
       await deleteProductById(_id)
       const result = getProductById(_id)
       if (!result) {
-        toast({ title: 'sucesso' })
+        toast({
+          title: 'Produto excluído com sucesso!',
+          variant: 'destructive',
+          action:
+            <ToastAction
+              onClick={() => window.location.reload()}
+              altText="Ok">
+              Continuar
+            </ToastAction>
+        })
       }
     } catch (error: any) {
-      toast({ title: 'error: could not delete product' })
+      toast({ title: 'error: could not delete product', variant: 'destructive' })
     }
-    window.location.reload()
   }
 
   return (

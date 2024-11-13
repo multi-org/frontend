@@ -35,6 +35,7 @@ import { toast } from '@/components/ui/use-toast'
 import { Loading } from '../Loading'
 import { ProductType } from '@/types/Product'
 import { CategoriaType } from '@/types/Categoria'
+import { ToastAction } from '@/components/ui/toast'
 
 const updateProductSchema = z.object({
   _id: z.string().min(1, 'ID é obrigatótio.'),
@@ -78,8 +79,16 @@ export function UpdateProductDialog({
 
       const result = await updateProduct(data as ProductType)
       if (result) {
-        toast({ title: 'sucesso' })
-        window.location.reload()
+        toast({
+          title: 'Produto atualizado com sucesso!',
+          variant: 'default',
+          action:
+            <ToastAction
+              onClick={() => window.location.reload()}
+              altText="Ok">
+              Continuar
+            </ToastAction>
+        })
       }
     } catch (error: any) {
       toast({ title: 'error', variant: 'destructive' })

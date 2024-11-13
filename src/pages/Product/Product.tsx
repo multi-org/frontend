@@ -31,7 +31,7 @@ export function Product() {
   const [product, setProduct] = useState<ProductType | null>(null)
   const navigate = useNavigate()
   const { id } = useParams()
-  const { getProductById } = useProducts()
+  const { getProductById, getProducts, products } = useProducts()
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -39,16 +39,20 @@ export function Product() {
         console.error('ID não definido')
         return
       }
-      try {
-        const data = await getProductById(id)
+  
+      if (products.length === 0) {
+        await getProducts()
+      }
+  
+      const data = getProductById(id)
+      if (data) {
         setProduct(data)
-      } catch (error) {
-        console.error('Erro ao buscar o produto:', error)
+      } else {
+        console.error('Produto não encontrado no estado local')
       }
     }
-
-    fetchProduct() // Chama a função assíncrona
-  }, [id, getProductById])
+    fetchProduct()
+  }, [id, products, getProducts, getProductById])
 
   return (
     <div>

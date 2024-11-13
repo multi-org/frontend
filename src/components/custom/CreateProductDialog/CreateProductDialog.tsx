@@ -33,6 +33,7 @@ import {
 import { useProducts } from '@/hooks/products-hooks'
 import { toast } from '@/components/ui/use-toast'
 import { Loading } from '../Loading'
+import { ToastAction } from '@/components/ui/toast'
 
 const createProductSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório.'),
@@ -51,8 +52,16 @@ export function CreateProductDialog() {
     try {
       const result = await createProduct(data)
       if (result) {
-        toast({ title: 'sucesso' })
-        window.location.reload()
+        toast({
+          title: 'Produto criado com sucesso!',
+          variant: 'default',
+          action:
+            <ToastAction
+              onClick={() => window.location.reload()}
+              altText="Ok">
+              Continuar
+            </ToastAction>
+        })
       }
     } catch (error: any) {
       toast({ title: 'error', variant: 'destructive' })
