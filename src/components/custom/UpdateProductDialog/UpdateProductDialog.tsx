@@ -85,7 +85,7 @@ export function UpdateProductDialog({
           action:
             <ToastAction
               onClick={() => window.location.reload()}
-              altText="Ok">
+              altText="Continuar">
               Continuar
             </ToastAction>
         })

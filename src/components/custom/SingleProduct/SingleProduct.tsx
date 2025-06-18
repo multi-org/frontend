@@ -64,7 +64,7 @@ export default function SingleProduct({
           action:
             <ToastAction
               onClick={() => window.location.reload()}
-              altText="Ok">
+              altText="Continuar">
               Continuar
             </ToastAction>
         })
@@ -83,7 +83,7 @@ export default function SingleProduct({
             alt="imagem de produto"
             className="h-[500px] w-[360px]"
           />
-          <CardHeader className="flex flex-col items-start py-0">
+          <CardHeader className="flex flex-col items-start py-0 break-all">
             <CardTitle>{nome}</CardTitle>
             <CardDescription>{descricao}</CardDescription>
             <br />
