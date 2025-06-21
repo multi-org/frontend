@@ -4,6 +4,7 @@ import { Home } from './pages/Home'
 import { Products } from './pages/Products'
 import { Product } from './pages/Product'
 import { ErrorPage } from './pages/Error'
+import  Login  from './pages/Login/Login'
 
 export const defaultRoutes = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ export const defaultRoutes = createBrowserRouter([
   {
     path: '/produtos/:id',
     element: <Product />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
   },
   {
     path: '*',
