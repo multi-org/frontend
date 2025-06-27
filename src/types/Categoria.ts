@@ -1,3 +1,1 @@
-export enum CategoriaType{
-  "Espaços", "Serviços", "Equipamento"
-}
+export type CategoriaType = 'Espaços' | 'Serviços' | 'Equipamento'

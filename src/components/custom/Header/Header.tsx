@@ -9,11 +9,11 @@ export function Header() {
   }
 
   return (
-    <div className="flex h-20 items-center justify-between px-64">
+    <div className="flex h-20 items-center justify-between px-64 shadow-md">
       <Link to={'/'}>
         <img
           src="src/assets/header-logo.jpg"
-          alt="Logo do Multi"
+          alt="Logo Multi"
           className="h-[55px] w-[55px]"
         />
       </Link>

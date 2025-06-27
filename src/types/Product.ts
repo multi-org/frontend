@@ -2,8 +2,9 @@ export interface ProductType {
   _id: string
   nome: string
   descricao: string
-  preco: string
+  preco: number
+  // preco: string
   categoria: string
 
-  disponibilidade: [{ id: string; date: Date; hourly: string }]
+  disponibilidade: { _id: string; data: Date; horario: string }[]
 }

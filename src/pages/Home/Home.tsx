@@ -15,6 +15,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import { faqCarouselItems } from './Home.helpers'
+import { Footer } from '@/components/custom/Footer'
 
 export function Home() {
   return (
@@ -147,6 +148,7 @@ export function Home() {
           </Carousel>
         </div>
       </div>
+      <Footer />
     </>
   )
 }
