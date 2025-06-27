@@ -135,6 +135,34 @@ const validarStepAtual = (): boolean => {
       });
     }
   };
+  const handleVerifyEmail = async () => {
+  if (!formData.email) {
+    toast({
+      variant: "destructive",
+      description: "Por favor, insira um e-mail antes de verificar.",
+    });
+    return;
+  }
+
+  try {
+    console.log("[LOG] Verificando e-mail:", formData.email);
+    const response = await api.post("/users/sendCode-email", { email: formData.email });
+    toast({ description: "E-mail verificado com sucesso!" });
+    console.log("[LOG] Sucesso:", response.data);
+    setFormData(prev => ({ ...prev, isEmailVerified: true }));
+    next();
+  } catch (error: any) {
+    console.error("[ERRO]", error.response || error.message || error);
+    toast({
+      variant: "destructive",
+      description:
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao verificar e-mail.",
+    });
+  }
+};
 
   const renderStep = () => {
     switch (step) {
@@ -220,12 +248,12 @@ const validarStepAtual = (): boolean => {
             <div className="flex-1 w-full">{renderStep()}</div>
 
             <div className="flex gap-2 mt-4 w-full justify-end">
-              {step === 0 && (
+              {step === 0 && ( // Adicionar chamada para função que envia a verificação de e-mail
                 <Button className="bg-[#36858E] text-white" onClick={next}>
                   Verificar E-mail
                 </Button>
               )}
-              {step === 1 && (
+              {step === 1 && (// Adicionar chamada para função que valida o codigo e fazer a função de validação
                 <Button className="bg-[#36858E] text-white" onClick={next}>
                   Verificar Código
                 </Button>
