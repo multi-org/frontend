@@ -74,7 +74,7 @@ const CardLogin: React.FC = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-full py-6 bg-[white] select-none">
+    <div className="flex justify-center items-center h-full py-6 bg-[#CBD5E1] select-none">
       <Toaster />
       <Card className="flex flex-row h-full bg-[#CBD5E1] shadow-md rounded-l-md">
         <div className="w-[400px] h-[645px] relative hidden sm:flex">
