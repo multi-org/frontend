@@ -1,4 +1,3 @@
-// "use client"
 import * as React from "react"
 import {
     Contact,
@@ -80,7 +79,7 @@ export default function UserSidebar({
             <SidebarFooter>
                 <SidebarMenuButton
                     size="lg"
-                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:cursor-default hover:bg-transparent hover:text-current"
                 >
                     <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <img

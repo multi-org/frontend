@@ -1,3 +1,4 @@
+import { AssociateHandler } from "@/components/custom/AssociateToCompany";
 import { NewProduct } from "@/components/custom/NewProduct";
 import { UserSidebar } from "@/components/custom/UserSidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -5,21 +6,22 @@ import { useState } from "react";
 
 export default function User() {
 
-    const [sideBarOption, setSideBarOption] = useState(0);
+    const [sidebarOption, setSidebarOption] = useState(0);
 
     function handleMenuClick(option: number) {
-        setSideBarOption(option);
+        setSidebarOption(option);
     }
 
     return (
         <SidebarProvider>
             <UserSidebar
                 onMenuClick={handleMenuClick}
-                activeOption={sideBarOption}
+                activeOption={sidebarOption}
             />
             <SidebarTrigger className="hover:cursor-pointer" />
             <SidebarInset>
-                <NewProduct />
+                {sidebarOption === 0 && (<NewProduct />)}
+                {sidebarOption === 1 && (<AssociateHandler />)}
             </SidebarInset>
         </SidebarProvider>
     )
