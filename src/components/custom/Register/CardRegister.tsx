@@ -179,9 +179,9 @@ const validarStepAtual = (): boolean => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#CBD5E1] px-4">
+    <div className="flex justify-center items-center min-h-screen bg-[#ffff] px-4">
       <Toaster />
-      <Card className="flex flex-row w-full max-w-[800px] shadow-md rounded-md overflow-hidden bg-[#CBD5E1]">
+      <Card className="flex flex-row w-full max-w-[800px] shadow-md rounded-md overflow-hidden bg-[#F2F2F2]">
         {/* Lado da imagem */}
         <div className="w-1/2 hidden sm:flex">
           <img
