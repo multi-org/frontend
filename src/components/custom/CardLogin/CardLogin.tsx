@@ -14,14 +14,14 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import { Eye, EyeOff } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { useToast } from "@/components/ui/use-toast"
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  password: z.string().min(6, 'A senha deve ter pelo menos 8 caracteres'),
 })
 
 type FormData = z.infer<typeof loginSchema>
@@ -75,9 +75,9 @@ const CardLogin: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center h-full py-6 bg-[white] select-none">
-      <Toaster /> {/* ✅ Mantenha o Toaster */}
+      <Toaster />
       <Card className="flex flex-row h-full bg-[#CBD5E1] shadow-md rounded-l-md">
-        <div className="w-[400px] h-[620px] relative hidden sm:flex">
+        <div className="w-[400px] h-[645px] relative hidden sm:flex">
           <img
             src="src\assets\imageLogin.png"
             alt="Imagem de fundo"
@@ -114,24 +114,27 @@ const CardLogin: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex flex-col space-y-1.5 relative justify-center ">
+              <div className="flex flex-col space-y-1.5 relative justify-center">
                 <Label htmlFor="password">Senha</Label>
                 <Input
                   id="password"
                   placeholder="********"
                   type={isVisible ? 'text' : 'password'}
+                  autoComplete="current-password"
                   {...register('password')}
                   className={`${errors.password ? 'border-red-500 focus:ring-red-500' : ''}`}
                 />
                 <button
                   onClick={handlePasswordVisibility}
                   type="button"
-                  className="absolute right-3 cursor-pointer top-1/2 -translate-y-1/3"
+                  aria-label={isVisible ? "Ocultar senha" : "Mostrar senha"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  tabIndex={0}
                 >
-                  {isVisible ? <MdVisibilityOff /> : <MdVisibility />}
+                  {isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
                 {errors.password && (
-                  <p className="text-red-500 text-xs">
+                  <p className="text-red-500 text-xs mt-1">
                     {errors.password.message}
                   </p>
                 )}
