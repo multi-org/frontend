@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { toast } from '@/components/ui/use-toast'
 import { toast } from '@/hooks/use-toast'
 import { useProducts } from '@/hooks/products-hooks'
 import { Loading } from '../Loading'
@@ -64,6 +65,7 @@ export default function SingleProduct({
           action:
             <ToastAction
               onClick={() => window.location.reload()}
+
               altText="Continuar">
               Continuar
             </ToastAction>
@@ -83,6 +85,7 @@ export default function SingleProduct({
             alt="imagem de produto"
             className="h-[500px] w-[360px]"
           />
+
           <CardHeader className="flex flex-col items-start py-0 break-all">
             <CardTitle>{nome}</CardTitle>
             <CardDescription>{descricao}</CardDescription>

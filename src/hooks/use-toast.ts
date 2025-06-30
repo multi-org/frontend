@@ -1,3 +1,4 @@
+
 // Inspired by react-hot-toast library
 import * as React from 'react'
 
@@ -17,6 +18,7 @@ type ToasterToast = ToastProps & {
 }
 
 const actionTypes = {
+
   ADD_TOAST: 'ADD_TOAST',
   UPDATE_TOAST: 'UPDATE_TOAST',
   DISMISS_TOAST: 'DISMISS_TOAST',
@@ -34,6 +36,7 @@ type ActionType = typeof actionTypes
 
 type Action =
   | {
+
       type: ActionType['ADD_TOAST']
       toast: ToasterToast
     }
@@ -64,6 +67,7 @@ const addToRemoveQueue = (toastId: string) => {
   const timeout = setTimeout(() => {
     toastTimeouts.delete(toastId)
     dispatch({
+
       type: 'REMOVE_TOAST',
       toastId,
     })
@@ -74,11 +78,13 @@ const addToRemoveQueue = (toastId: string) => {
 
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'ADD_TOAST':
+    case "ADD_TOAST":
+
       return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       }
+
 
     case 'UPDATE_TOAST':
       return {
@@ -109,6 +115,7 @@ export const reducer = (state: State, action: Action): State => {
                 ...t,
                 open: false,
               }
+
             : t,
         ),
       }
@@ -138,6 +145,7 @@ function dispatch(action: Action) {
   })
 }
 
+
 type Toast = Omit<ToasterToast, 'id'>
 
 function toast({ ...props }: Toast) {
@@ -145,6 +153,7 @@ function toast({ ...props }: Toast) {
 
   const update = (props: ToasterToast) =>
     dispatch({
+
       type: 'UPDATE_TOAST',
       toast: { ...props, id },
     })
@@ -163,6 +172,7 @@ function toast({ ...props }: Toast) {
   })
 
   return {
+
     id,
     dismiss,
     update,
@@ -185,6 +195,7 @@ function useToast() {
   return {
     ...state,
     toast,
+
     dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId }),
   }
 }
