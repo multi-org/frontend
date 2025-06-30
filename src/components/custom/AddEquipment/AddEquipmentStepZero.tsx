@@ -1,12 +1,14 @@
 import { useState } from "react";
 import AddEquipmentStepOne from "./AddEquipmentStepOne";
 import AddEquipmentStepTwo from "./AddEquipmentStepTwo";
+import { toast } from "@/hooks/use-toast";
+import { CircleCheck } from "lucide-react";
 
 type AddEquipmentStepZeroProps = {
     onChosenProduct: (chosenProduct: number) => void;
 }
 
-export default function AddEquipmentStepZero( {onChosenProduct}: AddEquipmentStepZeroProps) {
+export default function AddEquipmentStepZero({ onChosenProduct }: AddEquipmentStepZeroProps) {
 
     const [step, setStep] = useState(1);
     const [data, setData] = useState<any>(null);
@@ -20,6 +22,19 @@ export default function AddEquipmentStepZero( {onChosenProduct}: AddEquipmentSte
         if (!data) return
         // Enviar os dados para o backend aqui
         console.log("Dados enviados:", data)
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Cadastro de equipamento realizado com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
         setData(null)
         setStep(1)
     }
@@ -27,9 +42,9 @@ export default function AddEquipmentStepZero( {onChosenProduct}: AddEquipmentSte
     return (
         <div>
             {step === 1 ? (
-                <AddEquipmentStepOne 
-                onNext={handleNextStep}
-                onBack={() => onChosenProduct(0)}
+                <AddEquipmentStepOne
+                    onNext={handleNextStep}
+                    onBack={() => onChosenProduct(0)}
                 />
             ) : (
                 <AddEquipmentStepTwo

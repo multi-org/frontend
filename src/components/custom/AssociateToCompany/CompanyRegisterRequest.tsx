@@ -12,10 +12,11 @@ import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, CircleCheck } from "lucide-react"
 import { maskCEP } from "@/utils/masks"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { useEffect } from "react"
+import { toast } from "@/hooks/use-toast.ts"
 
 type companyRegisterRequestProps = {
     onBack: () => void;
@@ -73,16 +74,29 @@ export default function CompanyRegisterRequest({
     function onSubmit(data: z.infer<typeof companyRegisterRequestSchema>) {
         console.log("Dados enviados:", data)
         form.reset()
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Solicitação de cadasto de instituição enviada com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
     }
 
     return (
         <>
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="text-3xl text-center font-bold">
                         Solicite o cadastro da sua instituição
                     </h1>
-                    <span className="font-medium">
+                    <span className="text-center font-medium">
                         Depois de estar devidamente cadastrada, você poderá associar-se à sua instituição
                     </span>
                 </div>

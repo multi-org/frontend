@@ -2,6 +2,7 @@ import * as React from "react"
 import {
     Contact,
     PackagePlus,
+    MessageCircleQuestion,
 } from "lucide-react"
 import { NavUser } from "../NavUser"
 import {
@@ -47,6 +48,12 @@ export default function UserSidebar({
                 title: "Associar-se",
                 // url: "#",
                 icon: Contact,
+            },
+            {
+                id: 2,
+                title: "Dúvidas",
+                // url: "#",
+                icon: MessageCircleQuestion,
             },
         ],
     }

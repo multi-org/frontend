@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { AddServiceStepOne } from "./AddServiceStepOne";
 import { AddServiceStepTwo } from "./AddServiceStepTwo";
+import { toast } from "@/hooks/use-toast";
+import { CircleCheck } from "lucide-react";
 
 type AddServiceStepZeroProps = {
     onChosenProduct: (chosenProduct: number) => void;
@@ -20,6 +22,19 @@ export default function AddServiceStepZero({ onChosenProduct }: AddServiceStepZe
         if (!data) return
         // Enviar os dados para o backend aqui
         console.log("Dados enviados:", data)
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Cadastro de serviço realizado com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
         setData(null)
         setStep(1)
     }
@@ -27,9 +42,9 @@ export default function AddServiceStepZero({ onChosenProduct }: AddServiceStepZe
     return (
         <div>
             {step === 1 ? (
-                <AddServiceStepOne 
-                onNext={handleNextStep} 
-                onBack={() => onChosenProduct(0)}
+                <AddServiceStepOne
+                    onNext={handleNextStep}
+                    onBack={() => onChosenProduct(0)}
                 />
             ) : (
                 <AddServiceStepTwo
