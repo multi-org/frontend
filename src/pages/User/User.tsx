@@ -1,3 +1,4 @@
+import { AskedQuestionsHandler } from "@/components/custom/AskedQuestions";
 import { AssociateHandler } from "@/components/custom/AssociateToCompany";
 import { NewProduct } from "@/components/custom/NewProduct";
 import { UserSidebar } from "@/components/custom/UserSidebar";
@@ -22,6 +23,7 @@ export default function User() {
             <SidebarInset>
                 {sidebarOption === 0 && (<NewProduct />)}
                 {sidebarOption === 1 && (<AssociateHandler />)}
+                {sidebarOption === 2 && (<AskedQuestionsHandler />)}
             </SidebarInset>
         </SidebarProvider>
     )

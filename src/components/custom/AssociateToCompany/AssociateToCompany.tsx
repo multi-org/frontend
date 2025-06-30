@@ -13,7 +13,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { PDFUploader } from "../PDFUploader"
-import { Search } from "lucide-react"
+import { CircleCheck, Search } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 
 type associateToCompanyProps = {
     onNext: () => void;
@@ -58,16 +59,30 @@ export default function AssociateToCompany({
 
     function onSubmit(data: z.infer<typeof associateToCompanySchema>) {
         console.log("Dados enviados:", data)
+        form.reset();
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Solicitação de associação enviada com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
     }
 
     return (
         <>
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="text-3xl text-center font-bold">
                         Associe-se a uma instituição
                     </h1>
-                    <span className="font-medium">
+                    <span className="text-center font-medium">
                         Ao associar-se, você pode obter benefícios como descontos no aluguel de espaços, equipamentos e serviços
                     </span>
                 </div>

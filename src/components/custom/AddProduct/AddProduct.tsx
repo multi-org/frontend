@@ -7,10 +7,10 @@ export default function AddProduct({ onChosenProduct }: AddProductProps) {
         <>
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
-                    <h1 className="text-3xl font-bold">
+                    <h1 className="text-3xl text-center font-bold">
                         Cadastro de Produtos
                     </h1>
-                    <span className="font-medium">
+                    <span className="text-center font-medium">
                         Qual tipo de produto você deseja cadastrar?
                     </span>
                 </div>
