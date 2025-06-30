@@ -107,37 +107,81 @@ const validarStepAtual = (): boolean => {
 
 
   const handleSubmit = async () => {
-    try {
-      const response = await api.post('/usuarios/register', formData);
-      toast({ description: 'Cadastro realizado com sucesso!' });
+  const errors: { [key: string]: string } = {};
 
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        phoneNumber: '',
-        cpf: '',
-        birthDate: '',
-        zipcode: '',
-        street: '',
-        city: '',
-        state: '',
-        association: '',
-        code: '',
-        preference: [],
-        isEmailVerified: false,
-      });
-      setStep(0);
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        description: error.response?.data?.error || 'Erro ao cadastrar usuário.'
-      });
-    }
-  };
+  if (!formData.name.trim()) {
+    errors.name = "Name is required";
+  }
+
+  if (formData.password.length < 8) {
+    errors.password = "Password must be at least 8 characters long";
+  }
+
+  if (formData.confirmPassword.length < 8) {
+    errors.confirmPassword = "Confirm password must be at least 8 characters long";
+  }
+
+  if (formData.password !== formData.confirmPassword) {
+    errors.confirmPassword = "Passwords do not match";
+  }
+
+  const phone = formData.phoneNumber.replace(/\D/g, '');
+  if (phone.length < 10) {
+    errors.phoneNumber = "Phone number must be at least 10 characters long";
+  }
+
+  const cpf = formData.cpf.replace(/\D/g, '');
+  if (cpf.length !== 11) {
+    errors.cpf = "CPF must be exactly 11 characters long";
+  }
+
+  if (!formData.birthDate || isNaN(new Date(formData.birthDate).getTime())) {
+    errors.birthDate = "Invalid date format";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    toast({
+      variant: "destructive",
+      description: Object.values(errors)[0],
+    });
+    return;
+  }
+
+  try {
+    const response = await api.post('/users/create', {
+      name: formData.name,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      phoneNumber: formData.phoneNumber,
+      cpf: formData.cpf,
+      birthDate: formData.birthDate,
+    });
+    next();
+
+    toast({ description: 'Cadastro realizado com sucesso!' });
+
+    // Resetar campos
+    setFormData(prev => ({
+      ...prev,
+      name: '',
+      password: '',
+      confirmPassword: '',
+      phoneNumber: '',
+      cpf: '',
+      birthDate: '',
+    }));
+
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      description: error.response?.data?.error || 'Erro ao cadastrar usuário.',
+    });
+  }
+};
+
   
- const handleVerifyEmail = async () => {
+  const handleVerifyEmail = async () => {
   if (!formData.email) {
     toast({
       variant: "destructive",
@@ -216,6 +260,35 @@ const validarStepAtual = (): boolean => {
         return null;
     }
   };
+  const handleValidateCode = async () => {
+  if (!formData.email || !formData.code) {
+    toast({
+      variant: "destructive",
+      description: "Digite o código e o e-mail para validação.",
+    });
+    return;
+  }
+
+  try {
+    const response = await api.post("/users/validate-email", {
+      code: formData.code,
+    });
+
+    toast({ description: "Código validado com sucesso!" });
+    setFormData((prev) => ({ ...prev, isEmailVerified: true }));
+    next();
+  } catch (error: any) {
+    toast({
+      variant: "destructive",
+      description:
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao validar código.",
+    });
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#ffff] px-4">
@@ -265,12 +338,17 @@ const validarStepAtual = (): boolean => {
                 </Button>
               )}
               {step === 1 && (// Adicionar chamada para função que valida o codigo e fazer a função de validação
-                <Button className="bg-[#36858E] text-white" onClick={next}>
+                <Button className="bg-[#36858E] text-white" onClick={handleValidateCode}>
                   Verificar Código
                 </Button>
               )}
-              {step > 1 && step < 4 && (
+              {step === 2  &&  (
                 <Button className="bg-[#36858E] text-white" onClick={next}>
+                  Próximo
+                </Button>
+              )}
+              {step === 3 && (
+                <Button className="bg-[#36858E] text-white" onClick={handleSubmit}>
                   Próximo
                 </Button>
               )}

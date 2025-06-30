@@ -21,7 +21,7 @@ const CodeValidation: React.FC<CodeValidationProps> = ({ onValidate }) => {
   }, [code, onValidate]);
 
   return (
-    <div className="space-y-4 w-full ml-10 mt-16">
+    <div className="space-y-4 w-full ml-16 mt-16 items-center " >
       <InputOTP
         id="validation-code"
         maxLength={6}
@@ -32,13 +32,11 @@ const CodeValidation: React.FC<CodeValidationProps> = ({ onValidate }) => {
           <InputOTPSlot className="border-black" index={0} />
           <InputOTPSlot className="border-black" index={1} />
           <InputOTPSlot className="border-black" index={2} />
-        </InputOTPGroup>
-        <InputOTPSeparator />
-        <InputOTPGroup>
           <InputOTPSlot className="border-black" index={3} />
           <InputOTPSlot className="border-black" index={4} />
           <InputOTPSlot className="border-black" index={5} />
         </InputOTPGroup>
+        
       </InputOTP>
     </div>
   );

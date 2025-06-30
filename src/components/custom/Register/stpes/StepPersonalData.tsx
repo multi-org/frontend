@@ -119,24 +119,27 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
               )}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => {
-                setOpen(false)
-                if (date) {
-                  const iso = date.toISOString().split('T')[0]
-                  onChange('birthDate', iso)
-                }
-              }}
-              disabled={(date) =>
-                date > new Date() || date < new Date('1900-01-01')
-              }
-              captionLayout="dropdown"
-            />
-          </PopoverContent>
+         </PopoverTrigger>
+<PopoverContent className="w-auto p-0" align="start">
+  <Calendar
+    mode="single"
+    selected={selectedDate}
+    onSelect={(date) => {
+      setOpen(false)
+      if (date) {
+        const iso = date.toISOString().split('T')[0]
+        onChange('birthDate', iso)
+      }
+    }}
+    disabled={(date) =>
+      date > new Date() || date < new Date('1900-01-01')
+    }
+    captionLayout="dropdown"
+    fromYear={1900}
+    toYear={new Date().getFullYear()}
+  />
+</PopoverContent>
+
         </Popover>
         {fieldErrors.birthDate && (
           <p className="text-red-500 text-xs">{fieldErrors.birthDate}</p>
