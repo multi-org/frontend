@@ -14,6 +14,7 @@ import StepEmail from './stpes/StepEmail';
 import CodeValidation from './stpes/EmailValidation/CodeValidation';
 import StepPersonalData from './stpes/StepPersonalData';
 import ConfirmationOfValidation from './stpes/EmailValidation/ConfirmationOfValidation';
+import AddressAutoFillForm from './stpes/SetpAddressAutoFillForm';
 import api from '@/apis/api';
 
 export enum AssociationType {
@@ -35,13 +36,14 @@ type Registerschema = {
   city?: string;
   state?: string;
   code: string;
-  preference?: AssociationType;
+  preference?: AssociationType[];
   association?: string;
   isEmailVerified: boolean;
 };
 
 const CardRegister: React.FC = () => {
   const [step, setStep] = useState(0);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const { toast } = useToast();
   const [formData, setFormData] = useState<Registerschema>({
     name: '',
@@ -56,7 +58,7 @@ const CardRegister: React.FC = () => {
     city: '',
     state: '',
     code: '',
-    preference: undefined,
+    preference: [],
     association: '',
     isEmailVerified: false,
   });
@@ -78,29 +80,28 @@ const CardRegister: React.FC = () => {
   };
 
 const validarStepAtual = (): boolean => {
+  const errors: { [key: string]: string } = {};
+
   if (step === 0 && !formData.email) {
     toast({ variant: "destructive", description: 'Por favor, digite um e-mail.' });
     return false;
   }
 
   if (step === 3) {
-    const validations = [
-      { valid: !!formData.name, msg: 'Por favor, digite seu nome.' },
-      { valid: !!formData.phoneNumber, msg: 'Por favor, digite seu telefone.' },
-      { valid: !!formData.cpf, msg: 'Por favor, digite seu CPF.' },
-      { valid: !!formData.birthDate, msg: 'Por favor, digite sua data de nascimento.' },
-      { valid: !!formData.password, msg: 'Por favor, digite sua senha.' },
-      { valid: formData.password === formData.confirmPassword, msg: 'As senhas não coincidem.' },
-    ];
-
-    for (const { valid, msg } of validations) {
-      if (!valid) {
-        toast({ variant: "destructive", description: msg });
-        return false;
-      }
-    }
+    if (!formData.name) errors.name = 'Por favor, digite seu nome.';
+    if (!formData.phoneNumber) errors.phoneNumber = 'Por favor, digite seu telefone.';
+    if (!formData.cpf) errors.cpf = 'Por favor, digite seu CPF.';
+    if (!formData.birthDate) errors.birthDate = 'Por favor, digite sua data de nascimento.';
+    if (!formData.password) errors.password = 'Por favor, digite sua senha.';
+    if (formData.password !== formData.confirmPassword) errors.confirmPassword = 'As senhas não coincidem.';
   }
 
+  setFieldErrors(errors);
+
+  if (Object.keys(errors).length > 0) {
+    toast({ variant: "destructive", description: Object.values(errors)[0] });
+    return false;
+  }
   return true;
 };
 
@@ -124,7 +125,7 @@ const validarStepAtual = (): boolean => {
         state: '',
         association: '',
         code: '',
-        preference: undefined,
+        preference: [],
         isEmailVerified: false,
       });
       setStep(0);
@@ -135,7 +136,8 @@ const validarStepAtual = (): boolean => {
       });
     }
   };
-  const handleVerifyEmail = async () => {
+  
+ const handleVerifyEmail = async () => {
   if (!formData.email) {
     toast({
       variant: "destructive",
@@ -163,7 +165,6 @@ const validarStepAtual = (): boolean => {
     });
   }
 };
-
   const renderStep = () => {
     switch (step) {
       case 0:
@@ -192,14 +193,24 @@ const validarStepAtual = (): boolean => {
             password={formData.password}
             confirmPassword={formData.confirmPassword}
             onChange={(field, value) => updateForm(field, value)}
+            fieldErrors={fieldErrors}
           />
         );
       case 4:
         return (
-          <div className="text-center">
-            <p>Confirmação de Dados pra ambiente de desenvolvimento LEMBRAR DE RETIRAR:</p>
-            <pre className="bg-gray-100 p-2 rounded text-left">{JSON.stringify(formData, null, 2)}</pre>
-          </div>
+          <AddressAutoFillForm
+              formData={{
+                zipcode: formData.zipcode ?? "",
+                street: formData.street ?? "",
+                city: formData.city ?? "",
+                state: formData.state ?? "",
+              }}
+              onChange={(updatedFields) =>
+                setFormData((prev) => ({ ...prev, ...updatedFields }))
+              }
+              fieldErrors={fieldErrors}
+          />
+
         );
       default:
         return null;
@@ -249,7 +260,7 @@ const validarStepAtual = (): boolean => {
 
             <div className="flex gap-2 mt-4 w-full justify-end">
               {step === 0 && ( // Adicionar chamada para função que envia a verificação de e-mail
-                <Button className="bg-[#36858E] text-white" onClick={next}>
+                <Button className="bg-[#36858E] text-white" onClick={handleVerifyEmail}>
                   Verificar E-mail
                 </Button>
               )}

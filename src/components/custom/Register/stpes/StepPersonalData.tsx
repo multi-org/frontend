@@ -28,7 +28,9 @@ type StepPersonalDataProps = {
       | 'confirmPassword',
     value: string,
   ) => void
+  fieldErrors?: { [key: string]: string }
 }
+
 function formatPhone(value: string) {
   return value
     .replace(/\D/g, '')
@@ -45,6 +47,7 @@ function formatCPF(value: string) {
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
 }
+
 const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   name,
   phoneNumber,
@@ -53,76 +56,94 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   password,
   confirmPassword,
   onChange,
+  fieldErrors = {},
 }) => {
-  // birthDate é string (yyyy-mm-dd), mas o Calendar usa Date
-    const [open, setOpen] = useState(false)
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
-    const selectedDate = birthDate ? new Date(birthDate) : undefined
+  const [open, setOpen] = useState(false)
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const selectedDate = birthDate ? new Date(birthDate) : undefined
 
   return (
     <div className="flex w-full flex-col gap-1">
-        <label className="block text-sm font-medium">Nome</label>
-        <Input
-            placeholder="Nome"
-            value={name}
-            onChange={(e) => onChange('name', e.target.value)}
-            maxLength={100}
-            autoComplete="name"
-        />
-        <label className="block text-sm font-medium">Telefone</label>
-        <Input
-            placeholder="Telefone"
-            value={phoneNumber}
-            onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
-            autoComplete="tel"
-            maxLength={15}
-        />
-        <label className="block text-sm font-medium">CPF</label>
-        <Input
-            placeholder="CPF"
-            value={cpf}
-            onChange={(e) => onChange('cpf', formatCPF(e.target.value))}
-            autoComplete="off"
-            maxLength={14}
-        />
-        <div>
-            <label className="block text-sm font-medium">Data de Nascimento</label>
-            <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                variant="outline"
-                className="w-full justify-start text-left font-normal"
-                >
-                {birthDate ? (
-                    format(new Date(birthDate), 'dd/MM/yyyy')
-                ) : (
-                    <span>Selecione a data</span>
-                )}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => {
-                    setOpen(false)
-                    if (date) {
-                    // Formata para yyyy-mm-dd para manter compatibilidade
-                    const iso = date.toISOString().split('T')[0]
-                    onChange('birthDate', iso)
-                    }
-                }}
-                disabled={(date) =>
-                    date > new Date() || date < new Date('1900-01-01')
+      <label className="block text-sm font-medium">Nome</label>
+      <Input
+        placeholder="Nome"
+        value={name}
+        onChange={(e) => onChange('name', e.target.value)}
+        maxLength={100}
+        autoComplete="name"
+        className={fieldErrors.name ? 'border-red-500 focus:ring-red-500' : ''}
+      />
+      {fieldErrors.name && (
+        <p className="text-red-500 text-xs">{fieldErrors.name}</p>
+      )}
+
+      <label className="block text-sm font-medium">Telefone</label>
+      <Input
+        placeholder="Telefone"
+        value={phoneNumber}
+        onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
+        autoComplete="tel"
+        maxLength={15}
+        className={fieldErrors.phoneNumber ? 'border-red-500 focus:ring-red-500' : ''}
+      />
+      {fieldErrors.phoneNumber && (
+        <p className="text-red-500 text-xs">{fieldErrors.phoneNumber}</p>
+      )}
+
+      <label className="block text-sm font-medium">CPF</label>
+      <Input
+        placeholder="CPF"
+        value={cpf}
+        onChange={(e) => onChange('cpf', formatCPF(e.target.value))}
+        autoComplete="off"
+        maxLength={14}
+        className={fieldErrors.cpf ? 'border-red-500 focus:ring-red-500' : ''}
+      />
+      {fieldErrors.cpf && (
+        <p className="text-red-500 text-xs">{fieldErrors.cpf}</p>
+      )}
+
+      <div>
+        <label className="block text-sm font-medium">Data de Nascimento</label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={`w-full justify-start text-left font-normal ${fieldErrors.birthDate ? 'border-red-500 focus:ring-red-500' : ''}`}
+            >
+              {birthDate ? (
+                format(new Date(birthDate), 'dd/MM/yyyy')
+              ) : (
+                <span>Selecione a data</span>
+              )}
+              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => {
+                setOpen(false)
+                if (date) {
+                  const iso = date.toISOString().split('T')[0]
+                  onChange('birthDate', iso)
                 }
-                captionLayout="dropdown"
-                />
-            </PopoverContent>
-            </Popover>
-        </div>
-        <label className="block text-sm font-medium">Senha</label>
+              }}
+              disabled={(date) =>
+                date > new Date() || date < new Date('1900-01-01')
+              }
+              captionLayout="dropdown"
+            />
+          </PopoverContent>
+        </Popover>
+        {fieldErrors.birthDate && (
+          <p className="text-red-500 text-xs">{fieldErrors.birthDate}</p>
+        )}
+      </div>
+
+      <label className="block text-sm font-medium">Senha</label>
       <div className="relative">
         <Input
           type={isPasswordVisible ? "text" : "password"}
@@ -130,6 +151,7 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           value={password}
           onChange={(e) => onChange('password', e.target.value)}
           autoComplete="new-password"
+          className={fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}
         />
         <button
           type="button"
@@ -140,6 +162,10 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
+      {fieldErrors.password && (
+        <p className="text-red-500 text-xs">{fieldErrors.password}</p>
+      )}
+
       <label className="block text-sm font-medium">Confirmar Senha</label>
       <div className="relative">
         <Input
@@ -148,6 +174,7 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           value={confirmPassword}
           onChange={(e) => onChange('confirmPassword', e.target.value)}
           autoComplete="new-password"
+          className={fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}
         />
         <button
           type="button"
@@ -158,8 +185,11 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           {isConfirmPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>
       </div>
-    </div>
-  )
-}
-
-export default StepPersonalData
+      {fieldErrors.confirmPassword && (
+        <p className="text-red-500 text-xs">{fieldErrors.confirmPassword}</p>
+      )}
+      </div>
+    );
+  };
+  
+  export default StepPersonalData;
