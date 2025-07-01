@@ -22,6 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useNavigate } from 'react-router-dom'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function NavUser({
   user,
@@ -31,7 +33,24 @@ export default function NavUser({
     avatar: string
   }
 }) {
-  
+  const navigate = useNavigate()
+  const { toast } = useToast()
+
+  const handleLogout = () => {
+    // Limpar dados do localStorage
+    localStorage.removeItem('userName')
+    localStorage.removeItem('user')
+    
+    // Mostrar toast de confirmação
+    toast({
+      title: "Logout realizado",
+      description: "Até logo!",
+    })
+    
+    // Redirecionar para login
+    navigate('/login')
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -68,7 +87,10 @@ export default function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem 
+              className="cursor-pointer text-red-600 focus:text-red-600"
+              onClick={handleLogout}
+            >
               <LogOut />
               Logout
             </DropdownMenuItem>
