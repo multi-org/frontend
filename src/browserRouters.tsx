@@ -6,6 +6,7 @@ import { Product } from './pages/Product'
 import { ErrorPage } from './pages/Error'
 import  Login  from './pages/Login/Login'
 import  Register  from './pages/Register/index'
+import { User } from './pages/User'
 
 export const defaultRoutes = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const defaultRoutes = createBrowserRouter([
     path: '*',
     element: <ErrorPage />,
   },
+  {
+    path: '/user',
+    element: <User />,
+  }
 ])
 
 // export const loggedUserRoutes = createBrowserRouter([])
