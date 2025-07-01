@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-// Importe o enum do local correto
 export enum AssociationType {
   local = 1,
   equipment = 2,
@@ -35,14 +34,29 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   onChange,
   fieldErrors = {},
 }) => {
-  const { zipcode, street, city, state, preference = [] } = formData
+  const { zipcode, street, city, state, preference } = formData
 
-  // Função para alternar seleção dos botões
+  // Garante que preference é array válido
+  const safePreference: AssociationType[] = Array.isArray(preference) ? preference : []
+
   const togglePreference = (type: AssociationType) => {
-    const alreadySelected = preference.includes(type)
+
+    
+    const alreadySelected = safePreference.includes(type)
+
     const newPreference = alreadySelected
-      ? preference.filter((t) => t !== type)
-      : [...preference, type]
+      ? safePreference.filter(t => t !== type)
+      : [...safePreference, type]
+
+
+
+    const updateData = {
+      ...formData,  
+      preference: newPreference
+    }
+
+  
+
     onChange({ preference: newPreference })
   }
 
@@ -72,52 +86,54 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
 
   return (
     <div className="flex w-full flex-col gap-1">
-      <div className="flex gap-2 my-4">
-  <Button
-    type="button"
-    className={
-      preference.includes(AssociationType.local)
-        ? "bg-[#F7B350] text-white border border-[#E79927] hover:bg-[#eaa73e]"
-        : "bg-white text-[#A0A0A0] border border-[#A0A0A0] hover:bg-[#f5f5f5]"
-    }
-    onClick={() => togglePreference(AssociationType.local)}
-  >
-    Local
-  </Button>
+      <label className="block text-sm font-medium">Preferências</label>
 
-  <Button
-    type="button"
-    className={
-      preference.includes(AssociationType.equipment)
-        ? "bg-[#F7B350] text-white border border-[#E79927] hover:bg-[#eaa73e]"
-        : "bg-white text-[#A0A0A0] border border-[#A0A0A0] hover:bg-[#f5f5f5]"
-    }
-    onClick={() => togglePreference(AssociationType.equipment)}
-  >
-    Equipamento
-  </Button>
+      <div className="flex flex-wrap gap-2 my-4">
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            safePreference.includes(AssociationType.local)
+              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
+              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
+          }
+          onClick={() => togglePreference(AssociationType.local)}
+        >
+          Local 
+        </Button>
 
-  <Button
-    type="button"
-    className={
-      preference.includes(AssociationType.service)
-        ? "bg-[#F7B350] text-white border border-[#E79927] hover:bg-[#eaa73e]"
-        : "bg-white text-[#A0A0A0] border border-[#A0A0A0] hover:bg-[#f5f5f5]"
-    }
-    onClick={() => togglePreference(AssociationType.service)}
-  >
-    Serviço
-  </Button>
-</div>
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            safePreference.includes(AssociationType.equipment)
+              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
+              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
+          }
+          onClick={() => togglePreference(AssociationType.equipment)}
+        >
+          Equipamento 
+        </Button>
 
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            safePreference.includes(AssociationType.service)
+              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
+              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
+          }
+          onClick={() => togglePreference(AssociationType.service)}
+        >
+          Serviço 
+        </Button>
+      </div>
 
-
-      {/* ...restante do formulário... */}
       <label className="block text-sm font-medium">CEP</label>
       <Input
         placeholder="Digite o CEP"
         value={zipcode}
-        onChange={(e) => onChange({ zipcode: formatCEP(e.target.value) })}
+        onChange={e => onChange({ zipcode: formatCEP(e.target.value) })}
         maxLength={9}
         autoComplete="postal-code"
         className={fieldErrors.zipcode ? 'border-red-500 focus:ring-red-500' : ''}
@@ -130,20 +146,20 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <Input
         placeholder="Rua"
         value={street}
-        onChange={(e) => onChange({ street: e.target.value })}
+        onChange={e => onChange({ street: e.target.value })}
         className={fieldErrors.street ? 'border-red-500 focus:ring-red-500' : ''}
       />
       {fieldErrors.street && (
         <p className="text-red-500 text-xs">{fieldErrors.street}</p>
       )}
 
-      <div className='flex gap-2'>
-        <div className='flex-col'>
+      <div className="flex gap-2">
+        <div className="flex-1 flex-col">
           <label className="block text-sm font-medium">Cidade</label>
           <Input
             placeholder="Cidade"
             value={city}
-            onChange={(e) => onChange({ city: e.target.value })}
+            onChange={e => onChange({ city: e.target.value })}
             className={fieldErrors.city ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.city && (
@@ -151,12 +167,12 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
           )}
         </div>
 
-        <div className='flex-col'>
+        <div className="flex-1 flex-col">
           <label className="block text-sm font-medium">Estado</label>
           <Input
             placeholder="Estado"
             value={state}
-            onChange={(e) => onChange({ state: e.target.value })}
+            onChange={e => onChange({ state: e.target.value })}
             className={fieldErrors.state ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.state && (

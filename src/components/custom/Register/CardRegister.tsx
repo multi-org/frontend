@@ -16,7 +16,7 @@ import StepPersonalData from './stpes/StepPersonalData';
 import ConfirmationOfValidation from './stpes/EmailValidation/ConfirmationOfValidation';
 import AddressAutoFillForm from './stpes/SetpAddressAutoFillForm';
 import api from '@/apis/api';
-
+import { Link } from 'react-router-dom';  
 export enum AssociationType {
   local = 1,
   equipment = 2,
@@ -31,10 +31,10 @@ type Registerschema = {
   phoneNumber: string;
   cpf: string;
   birthDate: string;
-  zipcode?: string;
-  street?: string;
-  city?: string;
-  state?: string;
+  zipcode: string;
+  street: string;
+  city: string;
+  state: string;
   code: string;
   preference?: AssociationType[];
   association?: string;
@@ -67,9 +67,7 @@ const CardRegister: React.FC = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    console.log('[LOG] Dados atuais do formulário:', formData);
-  }, [formData]);
+
 
   const next = () => {
     if (validarStepAtual()) setStep(prev => prev + 1);
@@ -161,7 +159,6 @@ const validarStepAtual = (): boolean => {
 
     toast({ description: 'Cadastro realizado com sucesso!' });
 
-    // Resetar campos
     setFormData(prev => ({
       ...prev,
       name: '',
@@ -241,21 +238,15 @@ const validarStepAtual = (): boolean => {
           />
         );
       case 4:
-        return (
-          <AddressAutoFillForm
-              formData={{
-                zipcode: formData.zipcode ?? "",
-                street: formData.street ?? "",
-                city: formData.city ?? "",
-                state: formData.state ?? "",
-              }}
+          return (
+            <AddressAutoFillForm
+              formData={formData}  
               onChange={(updatedFields) =>
                 setFormData((prev) => ({ ...prev, ...updatedFields }))
               }
               fieldErrors={fieldErrors}
-          />
-
-        );
+            />
+          );
       default:
         return null;
     }
@@ -291,9 +282,9 @@ const validarStepAtual = (): boolean => {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#ffff] px-4">
+    <div className="flex justify-center items-center h-full py-6 bg-[#FFFF] select-none  ">
       <Toaster />
-      <Card className="flex flex-row w-full max-w-[800px] shadow-md rounded-md overflow-hidden bg-[#F2F2F2]">
+      <Card className="flex flex-row w-full max-w-[800px] shadow-md rounded-md overflow-hidden bg-[#F2F2F2] ">
         {/* Lado da imagem */}
         <div className="w-1/2 hidden sm:flex">
           <img
@@ -331,7 +322,7 @@ const validarStepAtual = (): boolean => {
           <CardContent className="flex flex-col gap-4 flex-1 px-0">
             <div className="flex-1 w-full">{renderStep()}</div>
 
-            <div className="flex gap-2 mt-4 w-full justify-end">
+            <div className="flex flex-col gap-2 mt-4 w-full justify-end">
               {step === 0 && ( // Adicionar chamada para função que envia a verificação de e-mail
                 <Button className="bg-[#36858E] text-white" onClick={handleVerifyEmail}>
                   Verificar E-mail
@@ -357,6 +348,15 @@ const validarStepAtual = (): boolean => {
                   Finalizar Cadastro
                 </Button>
               )}
+              <Link to="/login">
+                <Button
+                  variant="link"
+                  className="text-blue-500 hover:underline"
+                  type="button"
+                >
+                Já possui conta? clique aqui
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </div>
