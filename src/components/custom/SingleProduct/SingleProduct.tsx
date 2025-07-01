@@ -36,7 +36,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { toast } from '@/components/ui/use-toast'
 import { toast } from '@/hooks/use-toast'
 import { useProducts } from '@/hooks/products-hooks'
 import { Loading } from '../Loading'
