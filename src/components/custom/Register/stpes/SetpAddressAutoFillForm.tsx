@@ -1,19 +1,15 @@
 import React, { useEffect } from 'react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-
-export enum AssociationType {
-  local = 1,
-  equipment = 2,
-  service = 3,
-}
 
 interface FormData {
-  zipcode: string
+  zipCode: string
   street: string
+  number?: string
+  complement?: string
+  country?: string
+  neighborhood?: string
   city: string
   state: string
-  preference?: AssociationType[]
 }
 
 interface AddressAutoFillFormProps {
@@ -34,35 +30,11 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   onChange,
   fieldErrors = {},
 }) => {
-  const { zipcode, street, city, state, preference } = formData
-
-  // Garante que preference é array válido
-  const safePreference: AssociationType[] = Array.isArray(preference) ? preference : []
-
-  const togglePreference = (type: AssociationType) => {
-
-    
-    const alreadySelected = safePreference.includes(type)
-
-    const newPreference = alreadySelected
-      ? safePreference.filter(t => t !== type)
-      : [...safePreference, type]
-
-
-
-    const updateData = {
-      ...formData,  
-      preference: newPreference
-    }
-
-  
-
-    onChange({ preference: newPreference })
-  }
+  const { zipCode, street, city, state, number, complement, neighborhood, country } = formData
 
   useEffect(() => {
     const fetchAddress = async () => {
-      const cleanCep = zipcode.replace(/\D/g, '')
+      const cleanCep = zipCode?.replace(/\D/g, '') || ''
       if (cleanCep.length !== 8) return
 
       try {
@@ -74,6 +46,8 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
             street: data.logradouro || '',
             city: data.localidade || '',
             state: data.uf || '',
+            neighborhood: data.bairro || '',
+            country: 'Brasil'
           })
         }
       } catch (error) {
@@ -81,104 +55,127 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       }
     }
 
-    fetchAddress()
-  }, [zipcode, onChange])
+    if (zipCode) {
+      fetchAddress()
+    }
+  }, [zipCode, onChange])
 
   return (
-    <div className="flex w-full flex-col gap-1">
-      <label className="block text-sm font-medium">Preferências</label>
-
-      <div className="flex flex-wrap gap-2 my-4">
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.local)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.local)}
-        >
-          Local 
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.equipment)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.equipment)}
-        >
-          Equipamento 
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.service)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.service)}
-        >
-          Serviço 
-        </Button>
+    <div className="flex w-full flex-col gap-3">
+      {/* CEP */}
+      <div>
+        <label className="block text-sm font-medium mb-1">CEP</label>
+        <Input
+          placeholder="Digite o CEP"
+          value={zipCode || ''}
+          onChange={e => onChange({ zipCode: formatCEP(e.target.value) })}
+          maxLength={9}
+          autoComplete="postal-code"
+          className={fieldErrors.zipCode ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.zipCode && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.zipCode}</p>
+        )}
       </div>
 
-      <label className="block text-sm font-medium">CEP</label>
-      <Input
-        placeholder="Digite o CEP"
-        value={zipcode}
-        onChange={e => onChange({ zipcode: formatCEP(e.target.value) })}
-        maxLength={9}
-        autoComplete="postal-code"
-        className={fieldErrors.zipcode ? 'border-red-500 focus:ring-red-500' : ''}
-      />
-      {fieldErrors.zipcode && (
-        <p className="text-red-500 text-xs">{fieldErrors.zipcode}</p>
-      )}
+      {/* Rua */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Rua</label>
+        <Input
+          placeholder="Rua"
+          value={street || ''}
+          onChange={e => onChange({ street: e.target.value })}
+          className={fieldErrors.street ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.street && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.street}</p>
+        )}
+      </div>
 
-      <label className="block text-sm font-medium">Rua</label>
-      <Input
-        placeholder="Rua"
-        value={street}
-        onChange={e => onChange({ street: e.target.value })}
-        className={fieldErrors.street ? 'border-red-500 focus:ring-red-500' : ''}
-      />
-      {fieldErrors.street && (
-        <p className="text-red-500 text-xs">{fieldErrors.street}</p>
-      )}
+      {/* Número e Complemento */}
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Número</label>
+          <Input
+            placeholder="Número"
+            value={number || ''}
+            onChange={e => onChange({ number: e.target.value })}
+            className={fieldErrors.number ? 'border-red-500 focus:ring-red-500' : ''}
+          />
+          {fieldErrors.number && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.number}</p>
+          )}
+        </div>
 
-      <div className="flex gap-2">
-        <div className="flex-1 flex-col">
-          <label className="block text-sm font-medium">Cidade</label>
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Complemento</label>
+          <Input
+            placeholder="Apto, Bloco, etc. (opcional)"
+            value={complement || ''}
+            onChange={e => onChange({ complement: e.target.value })}
+            className={fieldErrors.complement ? 'border-red-500 focus:ring-red-500' : ''}
+          />
+          {fieldErrors.complement && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.complement}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Bairro */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Bairro</label>
+        <Input
+          placeholder="Bairro"
+          value={neighborhood || ''}
+          onChange={e => onChange({ neighborhood: e.target.value })}
+          className={fieldErrors.neighborhood ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.neighborhood && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.neighborhood}</p>
+        )}
+      </div>
+
+      {/* Cidade e Estado */}
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Cidade</label>
           <Input
             placeholder="Cidade"
-            value={city}
+            value={city || ''}
             onChange={e => onChange({ city: e.target.value })}
             className={fieldErrors.city ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.city && (
-            <p className="text-red-500 text-xs">{fieldErrors.city}</p>
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>
           )}
         </div>
 
-        <div className="flex-1 flex-col">
-          <label className="block text-sm font-medium">Estado</label>
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Estado</label>
           <Input
             placeholder="Estado"
-            value={state}
+            value={state || ''}
             onChange={e => onChange({ state: e.target.value })}
             className={fieldErrors.state ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.state && (
-            <p className="text-red-500 text-xs">{fieldErrors.state}</p>
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>
           )}
         </div>
+      </div>
+
+      {/* País */}
+      <div>
+        <label className="block text-sm font-medium mb-1">País</label>
+        <Input
+          placeholder="País"
+          value={country || 'Brasil'}
+          onChange={e => onChange({ country: e.target.value })}
+          className={fieldErrors.country ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.country && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.country}</p>
+        )}
       </div>
     </div>
   )

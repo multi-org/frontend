@@ -14,8 +14,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Eye, EyeOff } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Toaster } from '@/components/ui/toaster'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from '@/hooks/use-toast'
 import api from '@/apis/api'
 
 const loginSchema = z.object({
@@ -37,7 +36,6 @@ const CardLogin: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const { toast } = useToast()
   const navigate = useNavigate()
 
   const onSubmit = async (data: FormData) => {
@@ -119,7 +117,6 @@ const CardLogin: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center h-full py-6 bg-[#FFFF] select-none ">
-      <Toaster />
       <Card className="flex flex-row h-full bg-[#F2F2F2] shadow-md rounded-l-md">
         <div className="w-[400px] h-[645px] relative hidden sm:flex">
           <img
