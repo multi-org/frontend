@@ -17,7 +17,7 @@ export default function AddProduct({ onChosenProduct }: AddProductProps) {
             </header>
             <div className="grid auto-rows-min gap-2 md:grid-cols-3 p-6">
                 <div
-                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-esp.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden"
+                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-esp.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300"
                     onClick={() => onChosenProduct(1)}
                 >
                     <h1
@@ -27,7 +27,7 @@ export default function AddProduct({ onChosenProduct }: AddProductProps) {
                     </h1>
                 </div>
                 <div
-                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-serv.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden"
+                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-serv.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300"
                     onClick={() => onChosenProduct(2)}
                 >
                     <h1
@@ -37,7 +37,7 @@ export default function AddProduct({ onChosenProduct }: AddProductProps) {
                     </h1>
                 </div>
                 <div
-                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-equip.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden"
+                    className="bg-muted/50 aspect-video rounded-xl p-6 bg-[url('/src/assets/multi-prod-equip.png')] bg-cover bg-center bg-no-repeat hover:cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300"
                     onClick={() => onChosenProduct(3)}
                 >
                     <h1

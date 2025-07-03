@@ -25,3 +25,12 @@ export const maskCEP = (value: string) => {
     .replace(/^(\d{5})(\d)/, "$1-$2") // Adiciona o traço após os 5 primeiros dígitos
     .slice(0, 9); // Limita a 9 caracteres (incluindo o "-")
 }
+
+export const maskCPF = (value: string) => {
+  return value
+    .replace(/\D/g, "") // Remove tudo que não for número
+    .replace(/^(\d{3})(\d)/, "$1.$2") // Primeiro ponto
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3") // Segundo ponto
+    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4") // Traço
+    .slice(0, 14); // Limita a 14 caracteres (incluindo pontos e traço)
+}
