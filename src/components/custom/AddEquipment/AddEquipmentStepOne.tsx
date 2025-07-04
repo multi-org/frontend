@@ -28,38 +28,23 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MultiSelectCheckbox } from "../MultiSelectCheckbox"
 
 type AddEquipmentStepOneProps = {
-    onNext: (data: z.infer<typeof addEquipmentSchema>) => void
+    onNext: (data: z.infer<typeof addEquipmentStepOneSchema>) => void
     onBack: () => void
     className?: string
 }
 
-const days = [
-    'segunda-feira',
-    'terça-feira',
-    'quarta-feira',
-    'quinta-feira',
-    'sexta-feira',
-    'sábado',
-    'domingo',
-] as const
+export type StepOneData = z.infer<typeof addEquipmentStepOneSchema>
 
-const hours = [
-    '8h-9h', '9h-10h', '10h-11h', '11h-12h',
-    '12h-13h', '13h-14h', '14h-15h', '15h-16h',
-    '16h-17h', '17h-18h', '18h-19h', '19h-20h',
-    '20h-21h', '21h-22h',
-] as const
-
-const addEquipmentSchema = z.object({
+const addEquipmentStepOneSchema = z.object({
     title: z.string().min(1, 'Título é obrigatório.'),
-    description: z.string().min(1, 'Descrição é obrigatória.'),
+    description: z.string()
+        .min(1, 'Descrição é obrigatória.')
+        .max(300, 'A descrição deve ter no máximo 300 caracteres.'),
     category: z.enum(['Audio', 'Video', 'Esportivo', 'Informatica', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
-    price: z.number().min(0, 'Preço deve ser maior ou igual a 0.'),
     image: z
         .any()
         .refine(
@@ -71,25 +56,6 @@ const addEquipmentSchema = z.object({
                 files.every((file) => file.size <= 3 * 1024 * 1024),
             'Cada imagem deve ter no máximo 3MB.'
         ),
-    day: z
-        .array(z.enum([
-            'segunda-feira',
-            'terça-feira',
-            'quarta-feira',
-            'quinta-feira',
-            'sexta-feira',
-            'sábado',
-            'domingo',
-        ]))
-        .min(1, 'Escolha ao menos um dia.'),
-    hour: z
-        .array(z.enum([
-            '8h-9h', '9h-10h', '10h-11h', '11h-12h',
-            '12h-13h', '13h-14h', '14h-15h', '15h-16h',
-            '16h-17h', '17h-18h', '18h-19h', '19h-20h',
-            '20h-21h', '21h-22h'
-        ]))
-        .min(1, 'Escolha ao menos um horário.'),
 })
 
 export default function AddEquipmentStepOne({
@@ -99,20 +65,17 @@ export default function AddEquipmentStepOne({
     ...props
 }: AddEquipmentStepOneProps) {
 
-    const form = useForm<z.infer<typeof addEquipmentSchema>>({
-        resolver: zodResolver(addEquipmentSchema),
+    const form = useForm<z.infer<typeof addEquipmentStepOneSchema>>({
+        resolver: zodResolver(addEquipmentStepOneSchema),
         defaultValues: {
             title: '',
             description: '',
             category: undefined,
-            price: undefined,
             image: [],
-            day: [],
-            hour: []
         },
     })
 
-    function onSubmit(data: z.infer<typeof addEquipmentSchema>) {
+    function onSubmit(data: z.infer<typeof addEquipmentStepOneSchema>) {
         onNext(data)
     }
 
@@ -142,7 +105,7 @@ export default function AddEquipmentStepOne({
                                             Informe os dados gerais do equipamento que deseja cadastrar.
                                         </p>
                                         <p className="text-balance font-semibold">
-                                            Etapa 1/2
+                                            Etapa 1/3
                                         </p>
                                     </div>
                                     <div className="grid gap-3">
@@ -159,7 +122,7 @@ export default function AddEquipmentStepOne({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage className="text-grayLight"/>
+                                                    <FormMessage className="text-grayLight" />
                                                 </FormItem>
                                             )}
                                         />
@@ -168,19 +131,34 @@ export default function AddEquipmentStepOne({
                                         <FormField
                                             control={form.control}
                                             name="description"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="text-grayLight">Descrição</FormLabel>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder="Ex.: um retroprojetor de alta resolução para exibição de apresentações"
-                                                            className="resize-none text-black focus-visible:ring-yellowLight"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-grayLight"/>
-                                                </FormItem>
-                                            )}
+                                            render={({ field }) => {
+                                                const remainingCharacters = 300 - field.value.length
+                                                return (
+                                                    <FormItem>
+                                                        <FormLabel className="text-grayLight">Descrição</FormLabel>
+                                                        <FormControl>
+                                                            <div
+                                                                className="relative"
+                                                            >
+                                                                <Textarea
+                                                                    placeholder="Ex.: um retroprojetor de alta resolução para exibição de apresentações"
+                                                                    className="resize-none text-black focus-visible:ring-yellowLight"
+                                                                    maxLength={300}
+                                                                    {...field}
+                                                                />
+                                                                <div
+                                                                    className={cn(
+                                                                        "absolute right-1 bottom-[-20px] text-xs text-grayLight"
+                                                                    )}
+                                                                >
+                                                                    {remainingCharacters} caracteres restantes
+                                                                </div>
+                                                            </div>
+                                                        </FormControl>
+                                                        <FormMessage className="text-grayLight" />
+                                                    </FormItem>
+                                                )
+                                            }}
                                         />
                                     </div>
                                     <div className="grid gap-3">
@@ -212,31 +190,7 @@ export default function AddEquipmentStepOne({
                                                             </SelectGroup>
                                                         </SelectContent>
                                                     </Select>
-                                                    <FormMessage className="text-grayLight"/>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="grid gap-3">
-                                        <FormField
-                                            control={form.control}
-                                            name="price"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="text-grayLight">Preço</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            className="text-black focus-visible:ring-yellowLight"
-                                                            placeholder="Ex.: R$ 100"
-                                                            type="number"
-                                                            value={field.value === undefined || field.value === null ? "" : field.value}
-                                                            onChange={(e) => {
-                                                                const value = e.target.value
-                                                                field.onChange(value === "" ? undefined : parseFloat(value));
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage className="text-grayLight"/>
+                                                    <FormMessage className="text-grayLight" />
                                                 </FormItem>
                                             )}
                                         />
@@ -252,54 +206,10 @@ export default function AddEquipmentStepOne({
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormMessage className="text-grayLight"/>
+                                                    <FormMessage className="text-grayLight" />
                                                 </FormItem>
                                             )}
                                         />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <FormField
-                                                control={form.control}
-                                                name="day"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-grayLight">Dias disponíveis</FormLabel>
-                                                        <FormControl>
-                                                            <MultiSelectCheckbox
-                                                                options={days}
-                                                                selected={field.value}
-                                                                onChange={field.onChange}
-                                                                placeholder="Selecione os dias"
-                                                                checkboxColor="yellow"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-grayLight"/>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                        <div>
-                                            <FormField
-                                                control={form.control}
-                                                name="hour"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-grayLight">Horários disponíveis</FormLabel>
-                                                        <FormControl>
-                                                            <MultiSelectCheckbox
-                                                                options={hours}
-                                                                selected={field.value}
-                                                                onChange={field.onChange}
-                                                                placeholder="Selecione os horários"
-                                                                checkboxColor="yellow"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-grayLight"/>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <Button

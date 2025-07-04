@@ -7,12 +7,12 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { FormProvider, useForm } from "react-hook-form"
-import { 
-    FormControl, 
-    FormField, 
-    FormItem, 
-    FormLabel, 
-    FormMessage 
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
 } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -132,7 +132,8 @@ export default function AddAskedQuestion({
                                                                 <FormItem>
                                                                     <FormLabel className="text-black">Dúvida</FormLabel>
                                                                     <FormControl>
-                                                                        <div className="relative">
+                                                                        <div className="relative"
+                                                                        >
                                                                             <Textarea
                                                                                 placeholder="Ex.: Como faço uma reserva?"
                                                                                 className="resize-none text-black focus-visible:ring-yellowLight pr-16"
