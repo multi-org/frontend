@@ -3,6 +3,7 @@ import {
     Contact,
     PackagePlus,
     MessageCircleQuestion,
+    House,
 } from "lucide-react"
 import { NavUser } from "../NavUser"
 import {
@@ -39,18 +40,24 @@ export default function UserSidebar({
         items: [
             {
                 id: 0,
+                title: "Página inicial",
+                // url: "#",
+                icon: House,
+            },
+            {
+                id: 1,
                 title: "Cadastrar produtos",
                 // url: "#",
                 icon: PackagePlus,
             },
             {
-                id: 1,
+                id: 2,
                 title: "Associar-se",
                 // url: "#",
                 icon: Contact,
             },
             {
-                id: 2,
+                id: 3,
                 title: "Dúvidas",
                 // url: "#",
                 icon: MessageCircleQuestion,

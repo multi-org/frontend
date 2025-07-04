@@ -7,7 +7,13 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { FormProvider, useForm } from "react-hook-form"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Textarea } from "@/components/ui/textarea"
@@ -22,7 +28,9 @@ type AddAskedQuestionProps = {
 }
 
 const addAskedQuestionSchema = z.object({
-    question: z.string().min(1, 'Descrição da dúvida é obrigatória.'),
+    question: z.string()
+        .min(1, 'Descrição da dúvida é obrigatória.')
+        .max(400, 'A dúvida deve ter no máximo 400 caracteres.'),
     answer: z.string().min(0),
 })
 
@@ -112,27 +120,40 @@ export default function AddAskedQuestion({
                                 <FormProvider  {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)}>
                                         <div className="grid gap-6">
-                                            {/* <div className="grid gap-3">
-                                        <p className="text-center">Sua dúvida foi enviada e será respondida o quanto antes</p>
-                                    </div> */}
                                             <div className="grid gap-6">
                                                 <div className="grid gap-3">
                                                     <FormField
                                                         control={form.control}
                                                         name="question"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel className="text-black">Dúvida</FormLabel>
-                                                                <FormControl>
-                                                                    <Textarea
-                                                                        placeholder="Ex.: Como faço uma reserva?"
-                                                                        className="resize-none text-black focus-visible:ring-yellowLight"
-                                                                        {...field}
-                                                                    />
-                                                                </FormControl>
-                                                                <FormMessage className="text-red-500" />
-                                                            </FormItem>
-                                                        )}
+                                                        render={({ field }) => {
+                                                            const remainingCharacters = 400 - field.value.length
+
+                                                            return (
+                                                                <FormItem>
+                                                                    <FormLabel className="text-black">Dúvida</FormLabel>
+                                                                    <FormControl>
+                                                                        <div className="relative"
+                                                                        >
+                                                                            <Textarea
+                                                                                placeholder="Ex.: Como faço uma reserva?"
+                                                                                className="resize-none text-black focus-visible:ring-yellowLight pr-16"
+                                                                                maxLength={400}
+                                                                                {...field}
+                                                                            />
+                                                                            <div
+                                                                                className={cn(
+                                                                                    "absolute right-1 bottom-[-20px] text-xs",
+                                                                                    remainingCharacters < 50 ? "text-red-500" : "text-muted-foreground"
+                                                                                )}
+                                                                            >
+                                                                                {remainingCharacters} caracteres restantes
+                                                                            </div>
+                                                                        </div>
+                                                                    </FormControl>
+                                                                    <FormMessage className="text-red-500" />
+                                                                </FormItem>
+                                                            )
+                                                        }}
                                                     />
                                                 </div>
                                                 <Button type="submit" className="w-full bg-blueNormal hover:bg-blueLight">

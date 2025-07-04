@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { AddSpaceStepOne } from "./AddSpaceStepOne";
-import { AddSpaceStepTwo } from "./AddSpaceStepTwo";
+import { AddSpaceStepOne, StepOneData } from "./AddSpaceStepOne";
+import { AddSpaceStepTwo, StepTwoData } from "./AddSpaceStepTwo";
 import { toast } from "@/hooks/use-toast";
 import { CircleCheck } from "lucide-react";
+import AddSpaceStepThree from "./AddSpaceStepThree";
 
 type AddSpaceStepZeroProps = {
     onChosenProduct: (chosenProduct: number) => void;
@@ -12,16 +13,32 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
 
     const [step, setStep] = useState(1);
     const [data, setData] = useState<any>(null);
+    const [stepOneData, setStepOneData] = useState<StepOneData | null>(null);
+    const [stepTwoData, setStepTwoData] = useState<StepTwoData | null>(null);
 
-    const handleNextStep = (formData: any) => {
-        setData(formData)
+    const handleNextStepOne = (formStepOneData: StepOneData) => {
+        setStepOneData(formStepOneData)
         setStep(2)
     }
 
+    const handleNextStepTwo = (formStepTwoData: StepTwoData) => {
+        const fullData = {
+            ...stepOneData!,
+            ...formStepTwoData,
+        };
+        setStepTwoData(formStepTwoData)
+        setData(fullData);
+        setStep(3)
+    }
+
     const handleConfirm = () => {
-        if (!data) return
+        const fullData = {
+            ...stepOneData!,
+            ...stepTwoData!,
+        };
+        if (!fullData) return
         // Enviar os dados para o backend aqui
-        console.log("Dados enviados:", data)
+        console.log("Dados enviados:", fullData)
         toast({
             description: (
                 <div className="flex items-center gap-2">
@@ -36,20 +53,27 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
             },
         })
         setData(null)
-        setStep(1)
+        onChosenProduct(0)
     }
 
     return (
         <div>
-            {step === 1 ? (
+            {step === 1 && (
                 <AddSpaceStepOne
-                    onNext={handleNextStep}
+                    onNext={handleNextStepOne}
                     onBack={() => onChosenProduct(0)}
                 />
-            ) : (
+            )}
+            {step === 2 && (
                 <AddSpaceStepTwo
-                    data={data!}
+                    onNext={handleNextStepTwo}
                     onBack={() => setStep(1)}
+                />
+            )}
+            {step === 3 && (
+                <AddSpaceStepThree
+                    data={data!}
+                    onBack={() => setStep(2)}
                     onConfirm={handleConfirm}
                 />
             )}

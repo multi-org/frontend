@@ -9,12 +9,20 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { FormProvider, useForm } from "react-hook-form"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { PDFUploader } from "../PDFUploader"
 import { CircleCheck, Search } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
+import { MaskedInput } from "../MaskedInput.tsx"
+import { maskCPF } from "@/utils/masks.ts"
 
 type associateToCompanyProps = {
     onNext: () => void;
@@ -22,7 +30,11 @@ type associateToCompanyProps = {
 }
 
 const associateToCompanySchema = z.object({
-    enrollmentNumber: z.string().min(1, 'Nº de matrícula é obrigatório.'),
+    cpf: z.string().
+        min(1, 'Nº de CPF é obrigatório.')
+        .refine((value) => value.replace(/\D/g, '').length === 11, {
+            message: 'CPF deve conter exatamente 11 números.',
+        }),
     document: z
         .any()
         .refine(
@@ -51,7 +63,7 @@ export default function AssociateToCompany({
     const form = useForm<z.infer<typeof associateToCompanySchema>>({
         resolver: zodResolver(associateToCompanySchema),
         defaultValues: {
-            enrollmentNumber: '',
+            cpf: '',
             document: [],
             companyName: '',
         },
@@ -127,14 +139,17 @@ export default function AssociateToCompany({
                                         <div className="grid gap-3">
                                             <FormField
                                                 control={form.control}
-                                                name="enrollmentNumber"
+                                                name="cpf"
                                                 render={({ field }) => (
                                                     <FormItem>
-                                                        <FormLabel className="text-black">Nº de matrícula</FormLabel>
+                                                        <FormLabel className="text-black">
+                                                            CPF
+                                                        </FormLabel>
                                                         <FormControl>
-                                                            <Input
+                                                            <MaskedInput
                                                                 className="text-black focus-visible:ring-yellowLight"
-                                                                placeholder="Ex.: 123456789"
+                                                                placeholder="Ex.: 000.000.000-00"
+                                                                mask={maskCPF}
                                                                 {...field}
                                                             />
                                                         </FormControl>
