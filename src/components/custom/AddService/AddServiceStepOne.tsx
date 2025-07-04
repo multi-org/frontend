@@ -42,7 +42,7 @@ const addServiceStepOneSchema = z.object({
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
         .max(300, 'A descrição deve ter no máximo 300 caracteres.'),
-    category: z.enum(['Impressão 3D', 'Exame laboratorial', 'Outros'], {
+    category: z.enum(['Técnico/operacional', 'Acadêmico/profissional', 'Logística e organização', 'Alimentação', 'Comunicação e marketing', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
     image: z
@@ -84,17 +84,17 @@ export default function AddServiceStepOne({
             <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
                 <Card className="overflow-hidden p-0 bg-blueDark text-grayLight">
                     <CardContent className="grid p-0 md:grid-cols-2">
-                        <div className="bg-muted relative hidden md:block">
+                        <div className="relative hidden md:flex min-h-[600px] flex-1 items-center justify-center bg-muted">
                             <img
                                 src="/src/assets/multi-prod-serv-blue.png"
                                 alt="Imagem exemplo de serviço"
                                 className="absolute inset-0 h-full w-full object-cover"
                             />
-                            <h1
-                                className="absolute inset-0 mt-96 text-4xl text-grayLight font-bold text-center"
-                            >
-                                Cadastro de <br /> Serviços
-                            </h1>
+                            <div className="relative z-10 text-center">
+                                <h1 className="text-4xl text-grayLight font-bold">
+                                    Cadastro de <br /> Serviços
+                                </h1>
+                            </div>
                         </div>
                         <FormProvider  {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
@@ -174,7 +174,7 @@ export default function AddServiceStepOne({
 
                                                     >
                                                         <SelectTrigger
-                                                            className="text-black focus-visible:ring-blueLight"
+                                                            className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2t"
                                                         >
                                                             <SelectValue
                                                                 placeholder="Categoria"
@@ -182,8 +182,11 @@ export default function AddServiceStepOne({
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectGroup>
-                                                                <SelectItem value="Impressão 3D">Impressão 3D</SelectItem>
-                                                                <SelectItem value="Exame laboratorial">Exame laboratorial</SelectItem>
+                                                                <SelectItem value="Técnico/operacional">Técnico/operacional</SelectItem>
+                                                                <SelectItem value="Acadêmico/profissional">Acadêmico/profissional</SelectItem>
+                                                                <SelectItem value="Logística e organização">Logística e organização</SelectItem>
+                                                                <SelectItem value="Alimentação">Alimentação</SelectItem>
+                                                                <SelectItem value="Comunicação e marketing">Comunicação e marketing</SelectItem>
                                                                 <SelectItem value="Outros">Outros</SelectItem>
                                                             </SelectGroup>
                                                         </SelectContent>

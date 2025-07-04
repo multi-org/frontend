@@ -56,11 +56,21 @@ export default function AddSpaceStepThree({
                         <SummaryItem label="Categoria" value={data.category} />
 
                         {data.chargingModel === "por_hora" || data.chargingModel === "ambos" ? (
-                            <SummaryItem label="Preço por hora" value={`R$ ${data.pricePerHour?.toFixed(2)}`} />
+                            <SummaryItem
+                                label="Preço por hora"
+                                value={`R$ ${data.pricePerHour?.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`} />
                         ) : null}
 
                         {data.chargingModel === "por_dia" || data.chargingModel === "ambos" ? (
-                            <SummaryItem label="Preço por dia" value={`R$ ${data.pricePerDay?.toFixed(2)}`} />
+                            <SummaryItem
+                                label="Preço por dia"
+                                value={`R$ ${data.pricePerDay?.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                })}`} />
                         ) : null}
 
                         <div className="flex flex-col gap-4">

@@ -28,6 +28,8 @@ type AddServiceStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addServiceStepTwoSchema>
 
+const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
+
 const addServiceStepTwoSchema = z.object({
     pricePerHour: z.number().optional(),
     weekdayHourStart: z.string().min(1),
@@ -36,6 +38,30 @@ const addServiceStepTwoSchema = z.object({
     saturdayHourEnd: z.string().optional(),
     sundayHourStart: z.string().optional(),
     sundayHourEnd: z.string().optional(),
+}).superRefine((data, ctx) => {
+    const intervals = [
+        ["weekdayHourStart", "weekdayHourEnd"],
+        ["saturdayHourStart", "saturdayHourEnd"],
+        ["sundayHourStart", "sundayHourEnd"],
+    ] as const
+
+    intervals.forEach(([startKey, endKey]) => {
+        const start = data[startKey]
+        const end = data[endKey]
+
+        if (start && end) {
+            const startNum = hourStringToNumber(start)
+            const endNum = hourStringToNumber(end)
+
+            if (startNum >= endNum) {
+                ctx.addIssue({
+                    path: [endKey],
+                    code: z.ZodIssueCode.custom,
+                    message: "O horário de término deve ser maior que o de início",
+                })
+            }
+        }
+    })
 })
 
 export default function AddServiceStepTwo({
@@ -59,17 +85,17 @@ export default function AddServiceStepTwo({
             <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
                 <Card className="overflow-hidden p-0 bg-blueDark text-grayLight">
                     <CardContent className="grid p-0 md:grid-cols-2">
-                        <div className="bg-muted relative hidden md:block">
+                        <div className="relative hidden md:flex min-h-[600px] flex-1 items-center justify-center bg-muted">
                             <img
                                 src="/src/assets/multi-prod-serv-blue.png"
                                 alt="Imagem exemplo de serviço"
                                 className="absolute inset-0 h-full w-full object-cover"
                             />
-                            <h1
-                                className="absolute inset-0 mt-96 text-4xl text-grayLight font-bold text-center"
-                            >
-                                Cadastro de <br /> Serviços
-                            </h1>
+                            <div className="relative z-10 text-center">
+                                <h1 className="text-4xl text-grayLight font-bold">
+                                    Cadastro de <br /> Serviços
+                                </h1>
+                            </div>
                         </div>
                         <FormProvider  {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
@@ -111,7 +137,7 @@ export default function AddServiceStepTwo({
                                         <AvailabilityIntervalSelect
                                             control={form.control}
                                             textColor="text-grayLight"
-                                            ringColor="focus-visible:ring-blueLight"
+                                            ringColor="ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2"
                                             inputColor="text-black"
                                         />
                                     </div>

@@ -48,7 +48,12 @@ export default function AddServiceStepThree({
                         <SummaryItem label="Título" value={data.title} />
                         <SummaryItem label="Descrição" value={data.description} />
                         <SummaryItem label="Categoria" value={data.category} />
-                        <SummaryItem label="Preço por hora" value={`R$ ${data.pricePerHour?.toFixed(2)}`} />
+                        <SummaryItem
+                            label="Preço por hora"
+                            value={`R$ ${data.pricePerHour?.toLocaleString('pt-BR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            })}`} />
 
                         <div className="flex flex-col gap-4">
                             {data.weekdayHourStart && data.weekdayHourEnd && (

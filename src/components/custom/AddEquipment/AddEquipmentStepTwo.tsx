@@ -35,6 +35,8 @@ type AddEquipmentStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addquipmentStepTwoSchema>
 
+const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
+
 const addquipmentStepTwoSchema = z.object({
     chargingModel: z.enum(['por_hora', 'por_dia', 'ambos']),
     pricePerHour: z.number().optional(),
@@ -45,15 +47,66 @@ const addquipmentStepTwoSchema = z.object({
     saturdayHourEnd: z.string().optional(),
     sundayHourStart: z.string().optional(),
     sundayHourEnd: z.string().optional(),
-}).refine((data) => {
-    if (data.chargingModel === 'por_hora') return data.pricePerHour !== undefined
-    if (data.chargingModel === 'por_dia') return data.pricePerDay !== undefined
-    if (data.chargingModel === 'ambos') return data.pricePerHour && data.pricePerDay
-    return true
-}, {
-    message: 'Informe os preços corretos para o modelo de cobrança.',
-    path: ['pricePerHour']
-})
+}).superRefine((data, ctx) => {
+    const intervals = [
+      ["weekdayHourStart", "weekdayHourEnd"],
+      ["saturdayHourStart", "saturdayHourEnd"],
+      ["sundayHourStart", "sundayHourEnd"],
+    ] as const
+
+    intervals.forEach(([startKey, endKey]) => {
+      const start = data[startKey]
+      const end = data[endKey]
+
+      if (start && end) {
+        const startNum = hourStringToNumber(start)
+        const endNum = hourStringToNumber(end)
+
+        if (startNum >= endNum) {
+          ctx.addIssue({
+            path: [endKey],
+            code: z.ZodIssueCode.custom,
+            message: "O horário de término deve ser maior que o de início",
+          })
+        }
+      }
+    })
+
+    // Validação de preços
+    if (data.chargingModel === "por_hora" && data.pricePerHour === undefined) {
+      ctx.addIssue({
+        path: ["pricePerHour"],
+        code: z.ZodIssueCode.custom,
+        message: "Informe o preço por hora",
+      })
+    }
+    if (data.chargingModel === "por_dia" && data.pricePerDay === undefined) {
+      ctx.addIssue({
+        path: ["pricePerDay"],
+        code: z.ZodIssueCode.custom,
+        message: "Informe o preço por dia",
+      })
+    }
+    if (
+      data.chargingModel === "ambos" &&
+      (data.pricePerHour === undefined || data.pricePerDay === undefined)
+    ) {
+      ctx.addIssue({
+        path: ["pricePerHour"],
+        code: z.ZodIssueCode.custom,
+        message: "Informe os dois preços para o modelo 'ambos'",
+      })
+    }
+  })
+// .refine((data) => {
+//     if (data.chargingModel === 'por_hora') return data.pricePerHour !== undefined
+//     if (data.chargingModel === 'por_dia') return data.pricePerDay !== undefined
+//     if (data.chargingModel === 'ambos') return data.pricePerHour && data.pricePerDay
+//     return true
+// }, {
+//     message: 'Informe os preços corretos para o modelo de cobrança.',
+//     path: ['pricePerHour']
+// })
 
 export default function AddEquipmentStepTwo({
     onNext,
@@ -76,17 +129,17 @@ export default function AddEquipmentStepTwo({
             <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
                 <Card className="overflow-hidden p-0 bg-yellowDark text-grayLight">
                     <CardContent className="grid p-0 md:grid-cols-2">
-                        <div className="bg-muted relative hidden md:block">
+                        <div className="relative hidden md:flex min-h-[600px] flex-1 items-center justify-center bg-muted">
                             <img
                                 src="/src/assets/multi-prod-equip-yellow.png"
                                 alt="Imagem exemplo de espaço"
                                 className="absolute inset-0 h-full w-full object-cover"
                             />
-                            <h1
-                                className="absolute inset-0 mt-96 text-4xl text-grayLight font-bold text-center"
-                            >
-                                Cadastro de <br /> Equipamentos
-                            </h1>
+                            <div className="relative z-10 text-center">
+                                <h1 className="text-4xl text-grayLight font-bold">
+                                    Cadastro de <br /> Equipamentos
+                                </h1>
+                            </div>
                         </div>
                         <FormProvider  {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
@@ -108,7 +161,7 @@ export default function AddEquipmentStepTwo({
                                                 <FormItem>
                                                     <FormLabel className="text-grayLight">Modelo de cobrança</FormLabel>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <SelectTrigger className="text-black focus-visible:ring-yellowLight">
+                                                        <SelectTrigger className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-yellowLight focus:ring-offset-2">
                                                             <SelectValue placeholder="Selecione o modelo de cobrança" />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -177,7 +230,7 @@ export default function AddEquipmentStepTwo({
                                         <AvailabilityIntervalSelect
                                             control={form.control}
                                             textColor="text-grayLight"
-                                            ringColor="focus-visible:ring-yellowLight"
+                                            ringColor="ring-1 ring-transparent focus:ring-2 focus:ring-yellowLight focus:ring-offset-2"
                                             inputColor="text-black"
                                         />
                                     </div>
