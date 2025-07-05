@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
+import { getUserInitials } from "@/utils/manipulateNames"
 
 export default function NavUser({
   user,
@@ -37,19 +38,16 @@ export default function NavUser({
   const { toast } = useToast()
 
   const handleLogout = () => {
-    // Limpar dados do localStorage
     localStorage.removeItem('userName')
     localStorage.removeItem('user')
-    
-    // Mostrar toast de confirmação
     toast({
       title: "Logout realizado",
       description: "Até logo!",
     })
-    
-    // Redirecionar para login
     navigate('/login')
   }
+
+  const initials = getUserInitials(user.name);
 
   return (
     <SidebarMenu>
@@ -62,7 +60,7 @@ export default function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">UN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
