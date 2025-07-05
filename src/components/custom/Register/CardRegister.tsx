@@ -15,7 +15,7 @@ import StepPersonalData from './stpes/StepPersonalData';
 import ConfirmationOfValidation from './stpes/EmailValidation/ConfirmationOfValidation';
 import AddressAutoFillForm from './stpes/SetpAddressAutoFillForm';
 import api from '@/apis/api';
-import { Link } from 'react-router-dom';  
+import { Link, useNavigate } from 'react-router-dom';  
 import { format } from 'path';
 export enum AssociationType {
   local = 1,
@@ -48,6 +48,9 @@ type Registerschema = {
 const CardRegister: React.FC = () => {
   const [step, setStep] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState<Registerschema>({
     name: '',
     email: '',
@@ -188,7 +191,10 @@ const validarStepAtual = (): boolean => {
 };
 
   
-  const handleVerifyEmail = async () => {
+
+const handleVerifyEmail = async () => {
+  if (isLoading) return; // Previne múltiplas execuções
+  
   if (!formData.email) {
     toast({
       variant: "destructive",
@@ -197,6 +203,7 @@ const validarStepAtual = (): boolean => {
     return;
   }
 
+  setIsLoading(true);
   try {
     console.log("[LOG] Verificando e-mail:", formData.email);
     const response = await api.post("/users/sendCode-email", { email: formData.email });
@@ -214,6 +221,8 @@ const validarStepAtual = (): boolean => {
         error.message ||
         "Erro ao verificar e-mail.",
     });
+  } finally {
+    setIsLoading(false);
   }
 };
   const renderStep = () => {
@@ -376,9 +385,10 @@ const handleSubmitAddress = async () => {
       neighborhood: '',
       country: ''
     }));
-
-    // Avançar para próximo step ou finalizar
-    next();
+    toast({
+      description: 'Cadastro concluído com sucesso! Você será redirecionado para o login.',
+    });
+    navigate('/login'); 
 
   } catch (error: any) {
     console.error("[ERRO] Erro ao enviar endereço:", error.response || error.message || error);
@@ -436,9 +446,13 @@ return (
             <div className="flex-1 w-full">{renderStep()}</div>
 
             <div className="flex flex-col gap-2 mt-4 w-full justify-end">
-              {step === 0 && ( // Adicionar chamada para função que envia a verificação de e-mail
-                <Button className="bg-[#36858E] text-white" onClick={handleVerifyEmail}>
-                  Verificar E-mail
+              {step === 0 && (
+                <Button 
+                  className="bg-[#36858E] text-white" 
+                  onClick={handleVerifyEmail}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Verificando..." : "Verificar E-mail"}
                 </Button>
               )}
               {step === 1 && (// Adicionar chamada para função que valida o codigo e fazer a função de validação

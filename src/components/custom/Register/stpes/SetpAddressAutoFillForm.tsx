@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 
 interface FormData {
@@ -31,40 +31,72 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   fieldErrors = {},
 }) => {
   const { zipCode, street, city, state, number, complement, neighborhood, country } = formData
+  const [isLoading, setIsLoading] = useState(false)
+  const [lastSearchedCep, setLastSearchedCep] = useState('')
+
+  // Função debounce
+  const debounce = useCallback((func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout
+    return (...args: any[]) => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => func.apply(null, args), delay)
+    }
+  }, [])
+
+  // Função para buscar endereço
+  const fetchAddress = useCallback(async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '')
+    
+    // Verificar se o CEP tem 8 dígitos
+    if (cleanCep.length !== 8) return
+    
+    // Evitar buscar o mesmo CEP novamente
+    if (cleanCep === lastSearchedCep) return
+    
+    setIsLoading(true)
+    setLastSearchedCep(cleanCep)
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await response.json()
+
+      if (!data.erro) {
+        onChange({
+          street: data.logradouro || '',
+          city: data.localidade || '',
+          state: data.uf || '',
+          neighborhood: data.bairro || '',
+          country: 'Brasil'
+        })
+      } else {
+        console.log('CEP não encontrado')
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [onChange, lastSearchedCep])
+
+  // Debounce da função de busca (espera 800ms após parar de digitar)
+  const debouncedFetchAddress = useCallback(
+    debounce(fetchAddress, 800),
+    [fetchAddress]
+  )
 
   useEffect(() => {
-    const fetchAddress = async () => {
-      const cleanCep = zipCode?.replace(/\D/g, '') || ''
-      if (cleanCep.length !== 8) return
-
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
-        const data = await response.json()
-
-        if (!data.erro) {
-          onChange({
-            street: data.logradouro || '',
-            city: data.localidade || '',
-            state: data.uf || '',
-            neighborhood: data.bairro || '',
-            country: 'Brasil'
-          })
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CEP:', error)
-      }
-    }
-
     if (zipCode) {
-      fetchAddress()
+      debouncedFetchAddress(zipCode)
     }
-  }, [zipCode, onChange])
+  }, [zipCode, debouncedFetchAddress])
 
   return (
     <div className="flex w-full flex-col gap-3">
       {/* CEP */}
       <div>
-        <label className="block text-sm font-medium mb-1">CEP</label>
+        <label className="block text-sm font-medium mb-1">
+          CEP {isLoading && <span className="text-blue-500 text-xs">(Buscando...)</span>}
+        </label>
         <Input
           placeholder="Digite o CEP"
           value={zipCode || ''}
@@ -78,7 +110,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         )}
       </div>
 
-      {/* Rua */}
+      {/* Resto dos campos... */}
       <div>
         <label className="block text-sm font-medium mb-1">Rua</label>
         <Input
@@ -92,7 +124,6 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         )}
       </div>
 
-      {/* Número e Complemento */}
       <div className="flex gap-3">
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Número</label>
@@ -121,7 +152,6 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         </div>
       </div>
 
-      {/* Bairro */}
       <div>
         <label className="block text-sm font-medium mb-1">Bairro</label>
         <Input
@@ -135,7 +165,6 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         )}
       </div>
 
-      {/* Cidade e Estado */}
       <div className="flex gap-3">
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Cidade</label>
@@ -164,7 +193,6 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         </div>
       </div>
 
-      {/* País */}
       <div>
         <label className="block text-sm font-medium mb-1">País</label>
         <Input
