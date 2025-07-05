@@ -7,8 +7,7 @@ import {
   CardDescription
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Toaster } from '@/components/ui/toaster';
-import { useToast } from "@/components/ui/use-toast"
+import {toast} from '@/hooks/use-toast';
 import { ChevronLeft } from 'lucide-react';
 import StepEmail from './stpes/StepEmail';
 import CodeValidation from './stpes/EmailValidation/CodeValidation';
@@ -16,7 +15,8 @@ import StepPersonalData from './stpes/StepPersonalData';
 import ConfirmationOfValidation from './stpes/EmailValidation/ConfirmationOfValidation';
 import AddressAutoFillForm from './stpes/SetpAddressAutoFillForm';
 import api from '@/apis/api';
-import { Link } from 'react-router-dom';  
+import { Link, useNavigate } from 'react-router-dom';  
+import { format } from 'path';
 export enum AssociationType {
   local = 1,
   equipment = 2,
@@ -31,12 +31,16 @@ type Registerschema = {
   phoneNumber: string;
   cpf: string;
   birthDate: string;
-  zipcode: string;
+  zipCode: string;
   street: string;
   city: string;
+  number?: string
+  complement?: string
+  country?: string
+  neighborhood?: string
   state: string;
   code: string;
-  preference?: AssociationType[];
+  preferences?: AssociationType[];
   association?: string;
   isEmailVerified: boolean;
 };
@@ -44,7 +48,9 @@ type Registerschema = {
 const CardRegister: React.FC = () => {
   const [step, setStep] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState<Registerschema>({
     name: '',
     email: '',
@@ -53,12 +59,16 @@ const CardRegister: React.FC = () => {
     phoneNumber: '',
     cpf: '',
     birthDate: '',
-    zipcode: '',
+    zipCode: '',
     street: '',
+    number: '',
+    complement: '',
+    country: '',
+    neighborhood: '',
     city: '',
     state: '',
     code: '',
-    preference: [],
+    preferences: [],
     association: '',
     isEmailVerified: false,
   });
@@ -108,35 +118,40 @@ const validarStepAtual = (): boolean => {
   const errors: { [key: string]: string } = {};
 
   if (!formData.name.trim()) {
-    errors.name = "Name is required";
+    errors.name = "Nome é obrigatório";
   }
 
   if (formData.password.length < 8) {
-    errors.password = "Password must be at least 8 characters long";
+    errors.password = "Senha deve ter pelo menos 8 caracteres";
   }
 
   if (formData.confirmPassword.length < 8) {
-    errors.confirmPassword = "Confirm password must be at least 8 characters long";
+    errors.confirmPassword = "Confirmação de senha deve ter pelo menos 8 caracteres";
   }
 
   if (formData.password !== formData.confirmPassword) {
-    errors.confirmPassword = "Passwords do not match";
+    errors.confirmPassword = "As senhas não coincidem";
   }
 
   const phone = formData.phoneNumber.replace(/\D/g, '');
   if (phone.length < 10) {
-    errors.phoneNumber = "Phone number must be at least 10 characters long";
+    errors.phoneNumber = "Telefone deve ter pelo menos 10 dígitos";
   }
 
   const cpf = formData.cpf.replace(/\D/g, '');
   if (cpf.length !== 11) {
-    errors.cpf = "CPF must be exactly 11 characters long";
+    errors.cpf = "CPF deve ter exatamente 11 dígitos";
   }
 
   if (!formData.birthDate || isNaN(new Date(formData.birthDate).getTime())) {
-    errors.birthDate = "Invalid date format";
+    errors.birthDate = "Data de nascimento inválida";
   }
 
+  if (!formData.preferences || formData.preferences.length === 0) {
+     errors.preferences = "Selecione pelo menos uma preferência";
+    }
+
+    console.log(formData);
   if (Object.keys(errors).length > 0) {
     setFieldErrors(errors);
     toast({
@@ -148,37 +163,38 @@ const validarStepAtual = (): boolean => {
 
   try {
     const response = await api.post('/users/create', {
-      name: formData.name,
-      password: formData.password,
-      confirmPassword: formData.confirmPassword,
-      phoneNumber: formData.phoneNumber,
-      cpf: formData.cpf,
-      birthDate: formData.birthDate,
-    });
+  name: formData.name,
+  password: formData.password,
+  confirmPassword: formData.confirmPassword,
+  phoneNumber: formData.phoneNumber,
+  cpf: formData.cpf,
+  birthDate: formData.birthDate,
+  preferences: formData.preferences ?? [],
+});
+    
+    toast({ description: 'Dados pessoais cadastrados com sucesso!' });
+    console.log("[LOG] Dados pessoais enviados:", response.data);
+    
+    // Avançar para próximo step
     next();
 
-    toast({ description: 'Cadastro realizado com sucesso!' });
-
-    setFormData(prev => ({
-      ...prev,
-      name: '',
-      password: '',
-      confirmPassword: '',
-      phoneNumber: '',
-      cpf: '',
-      birthDate: '',
-    }));
-
   } catch (error: any) {
+    console.error("[ERRO] Erro ao cadastrar dados pessoais:", error.response || error.message || error);
     toast({
       variant: "destructive",
-      description: error.response?.data?.error || 'Erro ao cadastrar usuário.',
+      description: 
+        error.response?.data?.error || 
+        error.response?.data?.message ||
+        'Erro ao cadastrar dados pessoais.',
     });
   }
 };
 
   
-  const handleVerifyEmail = async () => {
+
+const handleVerifyEmail = async () => {
+  if (isLoading) return; // Previne múltiplas execuções
+  
   if (!formData.email) {
     toast({
       variant: "destructive",
@@ -187,6 +203,7 @@ const validarStepAtual = (): boolean => {
     return;
   }
 
+  setIsLoading(true);
   try {
     console.log("[LOG] Verificando e-mail:", formData.email);
     const response = await api.post("/users/sendCode-email", { email: formData.email });
@@ -204,6 +221,8 @@ const validarStepAtual = (): boolean => {
         error.message ||
         "Erro ao verificar e-mail.",
     });
+  } finally {
+    setIsLoading(false);
   }
 };
   const renderStep = () => {
@@ -224,35 +243,49 @@ const validarStepAtual = (): boolean => {
         );
       case 2:
         return <ConfirmationOfValidation />;
-      case 3:
+  case 3:
+    return (
+      <StepPersonalData
+        name={formData.name}
+        phoneNumber={formData.phoneNumber}
+        cpf={formData.cpf}
+        birthDate={formData.birthDate}
+        password={formData.password}
+        confirmPassword={formData.confirmPassword}
+        preferences={formData.preferences} // se estiver usando preferências aqui
+        onChange={(field, value) =>
+          setFormData((prev) => ({
+            ...prev,
+            [field]: value,
+          }))
+        }
+        fieldErrors={fieldErrors}
+      />
+    );
+// ...existing code...
+
+
+
+      case 4:
         return (
-          <StepPersonalData
-            name={formData.name}
-            phoneNumber={formData.phoneNumber}
-            cpf={formData.cpf}
-            birthDate={formData.birthDate}
-            password={formData.password}
-            confirmPassword={formData.confirmPassword}
-            onChange={(field, value) => updateForm(field, value)}
+          <AddressAutoFillForm
+            formData={formData}
+            onChange={(updatedFields) =>
+              setFormData((prev) => ({
+                ...prev,
+                ...updatedFields,
+              }))
+            }
             fieldErrors={fieldErrors}
           />
         );
-      case 4:
-          return (
-            <AddressAutoFillForm
-              formData={formData}  
-              onChange={(updatedFields) =>
-                setFormData((prev) => ({ ...prev, ...updatedFields }))
-              }
-              fieldErrors={fieldErrors}
-            />
-          );
+
       default:
         return null;
-    }
-  };
-  const handleValidateCode = async () => {
-  if (!formData.email || !formData.code) {
+      }
+    };
+    const handleValidateCode = async () => {
+      if (!formData.email || !formData.code) {
     toast({
       variant: "destructive",
       description: "Digite o código e o e-mail para validação.",
@@ -279,11 +312,101 @@ const validarStepAtual = (): boolean => {
     });
   }
 };
+const handleSubmitAddress = async () => {
+  const errors: { [key: string]: string } = {};
+
+  // Validação dos campos obrigatórios de endereço
+  if (!formData.zipCode?.trim()) {
+    errors.zipCode = "CEP é obrigatório";
+  }
+
+  if (!formData.street?.trim()) {
+    errors.street = "Rua é obrigatória";
+  }
+
+  if (!formData.city?.trim()) {
+    errors.city = "Cidade é obrigatória";
+  }
+
+  if (!formData.state?.trim()) {
+    errors.state = "Estado é obrigatório";
+  }
+
+  // Validar formato do CEP
+  const cleanCep = formData.zipCode?.replace(/\D/g, '') || '';
+  if (cleanCep.length !== 8) {
+    errors.zipCode = "CEP deve ter 8 dígitos";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
+    toast({
+      variant: "destructive",
+      description: Object.values(errors)[0],
+    });
+    return;
+  }
+
+  try {
+    console.log("[LOG] Enviando endereço:", {
+      zipCode: formData.zipCode,
+      street: formData.street,
+      city: formData.city,
+      state: formData.state,
+      number: formData.number,
+      complement: formData.complement,
+      neighborhood: formData.neighborhood,
+      country: formData.country || 'Brasil'
+    });
+
+    const response = await api.post('/users/address', {
+      zipCode: formData.zipCode,
+      street: formData.street,
+      city: formData.city,
+      state: formData.state,
+      number: formData.number || '',
+      complement: formData.complement || '',
+      neighborhood: formData.neighborhood || '',
+      country: formData.country || 'Brasil'
+    });
+
+    toast({ description: 'Endereço cadastrado com sucesso!' });
+    console.log("[LOG] Endereço enviado com sucesso:", response.data);
+
+    // Limpar dados de endereço após sucesso (opcional)
+    setFormData(prev => ({
+      ...prev,
+      zipCode: '',
+      street: '',
+      city: '',
+      state: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      country: ''
+    }));
+    toast({
+      description: 'Cadastro concluído com sucesso! Você será redirecionado para o login.',
+    });
+    navigate('/login'); 
+
+  } catch (error: any) {
+    console.error("[ERRO] Erro ao enviar endereço:", error.response || error.message || error);
+    
+    toast({
+      variant: "destructive",
+      description:
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Erro ao cadastrar endereço.",
+    });
+  }
+};
 
 
-  return (
-    <div className="flex justify-center items-center h-full py-6 bg-[#FFFF] select-none  ">
-      <Toaster />
+return (
+  <div className="flex justify-center items-center h-full py-6 bg-[#FFFF] select-none  ">
       <Card className="flex flex-row w-full max-w-[800px] shadow-md rounded-md overflow-hidden bg-[#F2F2F2] ">
         {/* Lado da imagem */}
         <div className="w-1/2 hidden sm:flex">
@@ -323,9 +446,13 @@ const validarStepAtual = (): boolean => {
             <div className="flex-1 w-full">{renderStep()}</div>
 
             <div className="flex flex-col gap-2 mt-4 w-full justify-end">
-              {step === 0 && ( // Adicionar chamada para função que envia a verificação de e-mail
-                <Button className="bg-[#36858E] text-white" onClick={handleVerifyEmail}>
-                  Verificar E-mail
+              {step === 0 && (
+                <Button 
+                  className="bg-[#36858E] text-white" 
+                  onClick={handleVerifyEmail}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Verificando..." : "Verificar E-mail"}
                 </Button>
               )}
               {step === 1 && (// Adicionar chamada para função que valida o codigo e fazer a função de validação
@@ -344,7 +471,7 @@ const validarStepAtual = (): boolean => {
                 </Button>
               )}
               {step === 4 && (
-                <Button className="bg-[#36858E] text-white" onClick={handleSubmit}>
+                <Button className="bg-[#36858E] text-white" onClick={handleSubmitAddress}>
                   Finalizar Cadastro
                 </Button>
               )}
