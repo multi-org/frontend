@@ -1,19 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-
-export enum AssociationType {
-  local = 1,
-  equipment = 2,
-  service = 3,
-}
 
 interface FormData {
-  zipcode: string
+  zipCode: string
   street: string
+  number?: string
+  complement?: string
+  country?: string
+  neighborhood?: string
   city: string
   state: string
-  preference?: AssociationType[]
 }
 
 interface AddressAutoFillFormProps {
@@ -34,151 +30,180 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   onChange,
   fieldErrors = {},
 }) => {
-  const { zipcode, street, city, state, preference } = formData
+  const { zipCode, street, city, state, number, complement, neighborhood, country } = formData
+  const [isLoading, setIsLoading] = useState(false)
+  const [lastSearchedCep, setLastSearchedCep] = useState('')
 
-  // Garante que preference é array válido
-  const safePreference: AssociationType[] = Array.isArray(preference) ? preference : []
-
-  const togglePreference = (type: AssociationType) => {
-
-    
-    const alreadySelected = safePreference.includes(type)
-
-    const newPreference = alreadySelected
-      ? safePreference.filter(t => t !== type)
-      : [...safePreference, type]
-
-
-
-    const updateData = {
-      ...formData,  
-      preference: newPreference
+  // Função debounce
+  const debounce = useCallback((func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout
+    return (...args: any[]) => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => func.apply(null, args), delay)
     }
+  }, [])
 
-  
+  // Função para buscar endereço
+  const fetchAddress = useCallback(async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '')
+    
+    // Verificar se o CEP tem 8 dígitos
+    if (cleanCep.length !== 8) return
+    
+    // Evitar buscar o mesmo CEP novamente
+    if (cleanCep === lastSearchedCep) return
+    
+    setIsLoading(true)
+    setLastSearchedCep(cleanCep)
 
-    onChange({ preference: newPreference })
-  }
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await response.json()
+
+      if (!data.erro) {
+        onChange({
+          street: data.logradouro || '',
+          city: data.localidade || '',
+          state: data.uf || '',
+          neighborhood: data.bairro || '',
+          country: 'Brasil'
+        })
+      } else {
+        console.log('CEP não encontrado')
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [onChange, lastSearchedCep])
+
+  // Debounce da função de busca (espera 800ms após parar de digitar)
+  const debouncedFetchAddress = useCallback(
+    debounce(fetchAddress, 800),
+    [fetchAddress]
+  )
 
   useEffect(() => {
-    const fetchAddress = async () => {
-      const cleanCep = zipcode.replace(/\D/g, '')
-      if (cleanCep.length !== 8) return
-
-      try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
-        const data = await response.json()
-
-        if (!data.erro) {
-          onChange({
-            street: data.logradouro || '',
-            city: data.localidade || '',
-            state: data.uf || '',
-          })
-        }
-      } catch (error) {
-        console.error('Erro ao buscar CEP:', error)
-      }
+    if (zipCode) {
+      debouncedFetchAddress(zipCode)
     }
-
-    fetchAddress()
-  }, [zipcode, onChange])
+  }, [zipCode, debouncedFetchAddress])
 
   return (
-    <div className="flex w-full flex-col gap-1">
-      <label className="block text-sm font-medium">Preferências</label>
-
-      <div className="flex flex-wrap gap-2 my-4">
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.local)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.local)}
-        >
-          Local 
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.equipment)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.equipment)}
-        >
-          Equipamento 
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className={
-            safePreference.includes(AssociationType.service)
-              ? "bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md"
-              : "bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]"
-          }
-          onClick={() => togglePreference(AssociationType.service)}
-        >
-          Serviço 
-        </Button>
+    <div className="flex w-full flex-col gap-3">
+      {/* CEP */}
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          CEP {isLoading && <span className="text-blue-500 text-xs">(Buscando...)</span>}
+        </label>
+        <Input
+          placeholder="Digite o CEP"
+          value={zipCode || ''}
+          onChange={e => onChange({ zipCode: formatCEP(e.target.value) })}
+          maxLength={9}
+          autoComplete="postal-code"
+          className={fieldErrors.zipCode ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.zipCode && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.zipCode}</p>
+        )}
       </div>
 
-      <label className="block text-sm font-medium">CEP</label>
-      <Input
-        placeholder="Digite o CEP"
-        value={zipcode}
-        onChange={e => onChange({ zipcode: formatCEP(e.target.value) })}
-        maxLength={9}
-        autoComplete="postal-code"
-        className={fieldErrors.zipcode ? 'border-red-500 focus:ring-red-500' : ''}
-      />
-      {fieldErrors.zipcode && (
-        <p className="text-red-500 text-xs">{fieldErrors.zipcode}</p>
-      )}
+      {/* Resto dos campos... */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Rua</label>
+        <Input
+          placeholder="Rua"
+          value={street || ''}
+          onChange={e => onChange({ street: e.target.value })}
+          className={fieldErrors.street ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.street && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.street}</p>
+        )}
+      </div>
 
-      <label className="block text-sm font-medium">Rua</label>
-      <Input
-        placeholder="Rua"
-        value={street}
-        onChange={e => onChange({ street: e.target.value })}
-        className={fieldErrors.street ? 'border-red-500 focus:ring-red-500' : ''}
-      />
-      {fieldErrors.street && (
-        <p className="text-red-500 text-xs">{fieldErrors.street}</p>
-      )}
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Número</label>
+          <Input
+            placeholder="Número"
+            value={number || ''}
+            onChange={e => onChange({ number: e.target.value })}
+            className={fieldErrors.number ? 'border-red-500 focus:ring-red-500' : ''}
+          />
+          {fieldErrors.number && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.number}</p>
+          )}
+        </div>
 
-      <div className="flex gap-2">
-        <div className="flex-1 flex-col">
-          <label className="block text-sm font-medium">Cidade</label>
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Complemento</label>
+          <Input
+            placeholder="Apto, Bloco, etc. (opcional)"
+            value={complement || ''}
+            onChange={e => onChange({ complement: e.target.value })}
+            className={fieldErrors.complement ? 'border-red-500 focus:ring-red-500' : ''}
+          />
+          {fieldErrors.complement && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.complement}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Bairro</label>
+        <Input
+          placeholder="Bairro"
+          value={neighborhood || ''}
+          onChange={e => onChange({ neighborhood: e.target.value })}
+          className={fieldErrors.neighborhood ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.neighborhood && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.neighborhood}</p>
+        )}
+      </div>
+
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Cidade</label>
           <Input
             placeholder="Cidade"
-            value={city}
+            value={city || ''}
             onChange={e => onChange({ city: e.target.value })}
             className={fieldErrors.city ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.city && (
-            <p className="text-red-500 text-xs">{fieldErrors.city}</p>
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.city}</p>
           )}
         </div>
 
-        <div className="flex-1 flex-col">
-          <label className="block text-sm font-medium">Estado</label>
+        <div className="flex-1">
+          <label className="block text-sm font-medium mb-1">Estado</label>
           <Input
             placeholder="Estado"
-            value={state}
+            value={state || ''}
             onChange={e => onChange({ state: e.target.value })}
             className={fieldErrors.state ? 'border-red-500 focus:ring-red-500' : ''}
           />
           {fieldErrors.state && (
-            <p className="text-red-500 text-xs">{fieldErrors.state}</p>
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.state}</p>
           )}
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">País</label>
+        <Input
+          placeholder="País"
+          value={country || 'Brasil'}
+          onChange={e => onChange({ country: e.target.value })}
+          className={fieldErrors.country ? 'border-red-500 focus:ring-red-500' : ''}
+        />
+        {fieldErrors.country && (
+          <p className="text-red-500 text-xs mt-1">{fieldErrors.country}</p>
+        )}
       </div>
     </div>
   )

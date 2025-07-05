@@ -6,10 +6,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Eye, EyeOff } from 'lucide-react'
-import { CalendarIcon } from 'lucide-react'
+import { Eye, EyeOff, CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import React, { useState } from 'react'
+import { useToast } from "@/components/ui/use-toast"
+
+export enum AssociationType {
+  local = 1,
+  equipment = 2,
+  service = 3,
+}
 
 type StepPersonalDataProps = {
   name: string
@@ -18,6 +24,7 @@ type StepPersonalDataProps = {
   birthDate: string
   password?: string
   confirmPassword?: string
+  preferences?: AssociationType[]
   onChange: (
     field:
       | 'name'
@@ -25,8 +32,9 @@ type StepPersonalDataProps = {
       | 'cpf'
       | 'birthDate'
       | 'password'
-      | 'confirmPassword',
-    value: string,
+      | 'confirmPassword'
+      | 'preferences',
+    value: any
   ) => void
   fieldErrors?: { [key: string]: string }
 }
@@ -39,7 +47,6 @@ function formatPhone(value: string) {
     .replace(/(-\d{4})\d+?$/, '$1')
 }
 
-// Função para formatar CPF (ex: 999.999.999-99)
 function formatCPF(value: string) {
   return value
     .replace(/\D/g, '')
@@ -55,13 +62,23 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   birthDate,
   password,
   confirmPassword,
+  preferences,
   onChange,
   fieldErrors = {},
 }) => {
   const [open, setOpen] = useState(false)
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false)
+
   const selectedDate = birthDate ? new Date(birthDate) : undefined
+
+  const togglePreference = (type: AssociationType) => {
+    const newPreferences = preferences?.includes(type)
+      ? preferences.filter((item) => item !== type)
+      : [...(preferences ?? []), type]
+    onChange('preferences', newPreferences)
+  }
 
   return (
     <div className="flex w-full flex-col gap-1">
@@ -85,7 +102,9 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
         autoComplete="tel"
         maxLength={15}
-        className={fieldErrors.phoneNumber ? 'border-red-500 focus:ring-red-500' : ''}
+        className={
+          fieldErrors.phoneNumber ? 'border-red-500 focus:ring-red-500' : ''
+        }
       />
       {fieldErrors.phoneNumber && (
         <p className="text-red-500 text-xs">{fieldErrors.phoneNumber}</p>
@@ -110,7 +129,9 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={`w-full justify-start text-left font-normal ${fieldErrors.birthDate ? 'border-red-500 focus:ring-red-500' : ''}`}
+              className={`w-full justify-start text-left font-normal ${
+                fieldErrors.birthDate ? 'border-red-500 focus:ring-red-500' : ''
+              }`}
             >
               {birthDate ? (
                 format(new Date(birthDate), 'dd/MM/yyyy')
@@ -119,42 +140,84 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
               )}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
-         </PopoverTrigger>
-<PopoverContent className="w-auto p-0" align="start">
-  <Calendar
-    mode="single"
-    selected={selectedDate}
-    onSelect={(date) => {
-      setOpen(false)
-      if (date) {
-        const iso = date.toISOString().split('T')[0]
-        onChange('birthDate', iso)
-      }
-    }}
-    disabled={(date) =>
-      date > new Date() || date < new Date('1900-01-01')
-    }
-    captionLayout="dropdown"
-    fromYear={1900}
-    toYear={new Date().getFullYear()}
-  />
-</PopoverContent>
-
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => {
+                setOpen(false)
+                if (date) {
+                  const iso = date.toISOString().split('T')[0]
+                  onChange('birthDate', iso)
+                }
+              }}
+              disabled={(date) =>
+                date > new Date() || date < new Date('1900-01-01')
+              }
+              captionLayout="dropdown"
+              fromYear={1900}
+              toYear={new Date().getFullYear()}
+            />
+          </PopoverContent>
         </Popover>
         {fieldErrors.birthDate && (
           <p className="text-red-500 text-xs">{fieldErrors.birthDate}</p>
         )}
       </div>
+      <label className="block text-sm font-medium mt-2">Preferências</label>
+      <div className="flex flex-wrap gap-2 my-4">
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            (preferences ?? []).includes(AssociationType.local)
+              ? 'bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md'
+              : 'bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]'
+          }
+          onClick={() => togglePreference(AssociationType.local)}
+        >
+          Local
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            (preferences ?? []).includes(AssociationType.equipment)
+              ? 'bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md'
+              : 'bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]'
+          }
+          onClick={() => togglePreference(AssociationType.equipment)}
+        >
+          Equipamento
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          className={
+            (preferences ?? []).includes(AssociationType.service)
+              ? 'bg-[#F7B350] text-white border-[#E79927] hover:bg-[#eaa73e] shadow-md'
+              : 'bg-white text-[#A0A0A0] border-[#A0A0A0] hover:bg-[#f5f5f5]'
+          }
+          onClick={() => togglePreference(AssociationType.service)}
+        >
+          Serviço
+        </Button>
+      </div>
 
       <label className="block text-sm font-medium">Senha</label>
       <div className="relative">
         <Input
-          type={isPasswordVisible ? "text" : "password"}
+          type={isPasswordVisible ? 'text' : 'password'}
           placeholder="Senha"
           value={password}
           onChange={(e) => onChange('password', e.target.value)}
           autoComplete="new-password"
-          className={fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''}
+          className={
+            fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''
+          }
         />
         <button
           type="button"
@@ -172,12 +235,16 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
       <label className="block text-sm font-medium">Confirmar Senha</label>
       <div className="relative">
         <Input
-          type={isConfirmPasswordVisible ? "text" : "password"}
+          type={isConfirmPasswordVisible ? 'text' : 'password'}
           placeholder="Confirmar Senha"
           value={confirmPassword}
           onChange={(e) => onChange('confirmPassword', e.target.value)}
           autoComplete="new-password"
-          className={fieldErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : ''}
+          className={
+            fieldErrors.confirmPassword
+              ? 'border-red-500 focus:ring-red-500'
+              : ''
+          }
         />
         <button
           type="button"
@@ -191,8 +258,9 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
       {fieldErrors.confirmPassword && (
         <p className="text-red-500 text-xs">{fieldErrors.confirmPassword}</p>
       )}
-      </div>
-    );
-  };
-  
-  export default StepPersonalData;
+
+    </div>
+  )
+}
+
+export default StepPersonalData
