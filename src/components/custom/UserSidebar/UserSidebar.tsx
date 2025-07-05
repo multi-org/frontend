@@ -68,7 +68,7 @@ export default function UserSidebar({
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <NavUser user={data.user} />
+                <NavUser />
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
