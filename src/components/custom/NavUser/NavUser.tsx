@@ -24,32 +24,41 @@ import {
 } from "@/components/ui/sidebar"
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
+import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
+import { useEffect, useState } from "react"
+
+type NavUserProps = {
+  onOption: () => void;
+}
 
 export default function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    avatar: string
-  }
-}) {
+  onOption,
+}: NavUserProps) {
+
   const navigate = useNavigate()
   const { toast } = useToast()
+  const [userName, setUserName] = useState("")
+  const [userAvatar, setUserAvatar] = useState("")
 
   const handleLogout = () => {
-    // Limpar dados do localStorage
     localStorage.removeItem('userName')
     localStorage.removeItem('user')
-    
-    // Mostrar toast de confirmação
     toast({
       title: "Logout realizado",
       description: "Até logo!",
     })
-    
-    // Redirecionar para login
     navigate('/login')
   }
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("userName") || ""
+    const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
+    setUserName(storedName)
+    setUserAvatar(storedUser.avatar || "")
+  }, [])
+
+  const initials = getUserInitials(userName);
+  const firstName = getFirstName(userName);
 
   return (
     <SidebarMenu>
@@ -61,11 +70,11 @@ export default function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">UN</AvatarFallback>
+                <AvatarImage src={userAvatar} alt={userName} />
+                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{firstName}</span>
               </div>
               <ChevronDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -77,7 +86,10 @@ export default function NavUser({
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={onOption}
+              >
                 <BadgeCheck />
                 Minha conta
               </DropdownMenuItem>
@@ -87,7 +99,7 @@ export default function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="cursor-pointer text-red-600 focus:text-red-600"
               onClick={handleLogout}
             >
