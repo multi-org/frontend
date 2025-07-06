@@ -14,9 +14,10 @@ import {
 import { cn } from "@/lib/utils";
 import { getUserInitials } from "@/utils/manipulateNames";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImageUp } from "lucide-react";
+import { CircleCheck, ImageUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 type UserAvatarUploadProps = {
@@ -79,49 +80,63 @@ export default function UserAvatarUpload({
         const file = data.image[0];
         console.log("Arquivo válido para envio:", file);
         // enviar imagem para o backend
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Avatar atualizado com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
+        form.reset()
     };
 
     return (
-            <div className={cn("flex flex-col gap-6 justify-center items-center", className)} {...props}>
-                <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
-                    <CardHeader className="text-center">
-                        <CardTitle>Avatar</CardTitle>
-                        <CardDescription>Carregue uma imagem para alterar</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col justify-center items-center gap-6">
-                        <FormProvider  {...form}>
-                            <form onSubmit={form.handleSubmit(handleImageSubmit)}>
-                                <div className="relative w-fit mx-auto">
-                                    <Avatar className="h-32 w-32 rounded-full border border-gray-300">
-                                        <AvatarImage src={previewAvatar || userAvatar} alt={userName} />
-                                        <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
-                                    </Avatar>
-                                    <ImageUp
-                                        className="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 h-6 w-6 bg-white border rounded cursor-pointer hover:bg-gray-100 transition"
-                                        onClick={handleImageClick}
-                                    />
-                                </div>
-                                <input
-                                    type="file"
-                                    accept=".jpg,.jpeg,.png"
-                                    ref={fileInputRef}
-                                    className="hidden"
-                                    onChange={handleImageChange}
+        <div className={cn("flex flex-col gap-6 justify-center items-center", className)} {...props}>
+            <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
+                <CardHeader className="text-center">
+                    <CardTitle>Alteração de avatar</CardTitle>
+                    <CardDescription>Carregue uma imagem para alterar</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col justify-center items-center gap-6">
+                    <FormProvider  {...form}>
+                        <form onSubmit={form.handleSubmit(handleImageSubmit)}>
+                            <div className="relative w-fit mx-auto">
+                                <Avatar className="h-32 w-32 rounded-full border border-gray-300">
+                                    <AvatarImage src={previewAvatar || userAvatar} alt={userName} />
+                                    <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
+                                </Avatar>
+                                <ImageUp
+                                    className="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 h-6 w-6 bg-white border rounded cursor-pointer hover:bg-gray-100 transition"
+                                    onClick={handleImageClick}
                                 />
-                                <div className="flex justify-center mt-6">
-                                    <Button
-                                        type="submit"
-                                        variant={"outline"}
-                                        className="hover:bg-yellowDark hover:text-grayLight"
-                                    >
-                                        Salvar
-                                    </Button>
-                                </div>
-                            </form>
-                        </FormProvider>
-                    </CardContent>
-                </Card>
-            </div>
+                            </div>
+                            <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png"
+                                ref={fileInputRef}
+                                className="hidden"
+                                onChange={handleImageChange}
+                            />
+                            <div className="flex justify-center mt-6">
+                                <Button
+                                    type="submit"
+                                    variant={"outline"}
+                                    className="hover:bg-yellowDark hover:text-grayLight"
+                                >
+                                    Salvar
+                                </Button>
+                            </div>
+                        </form>
+                    </FormProvider>
+                </CardContent>
+            </Card>
+        </div>
     )
 }
 

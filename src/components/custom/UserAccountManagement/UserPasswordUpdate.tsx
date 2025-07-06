@@ -10,9 +10,10 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { CircleCheck, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
 
 type UserPasswordUpdateProps = {
@@ -22,6 +23,9 @@ type UserPasswordUpdateProps = {
 const userPasswordUpdateSchema = z.object({
     password: z.string().regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$%^&+=]).{8,}$/, "A senha precisa ter no mínimo 8 caracteres, com letras, números e caracteres especiais como @, #, $, %, &, *"),
     confirmPassword: z.string().regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$%^&+=]).{8,}$/, "A senha precisa ter no mínimo 8 caracteres, com letras, números e caracteres especiais como @, #, $, %, &, *"),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem.",
+    path: ["confirmPassword"],
 })
 
 export default function UserPasswordUpdate({
@@ -42,13 +46,32 @@ export default function UserPasswordUpdate({
 
     function onSubmit(data: z.infer<typeof userPasswordUpdateSchema>) {
         console.log(data);
+        toast({
+            description: (
+                <div className="flex items-center gap-2">
+                    <CircleCheck className="text-white" size={20} />
+                    Senha alterada com sucesso
+                </div>
+            ),
+            variant: 'default',
+            style: {
+                backgroundColor: "#4E995E",
+                color: "#FFFFFF",
+            },
+        })
+        form.reset()
+    }
+
+    function handleCancel() {
+        setWantsToUpdatePassword(false)
+        form.reset()
     }
 
     return (
         <div className={cn("flex flex-col gap-6 justify-center items-center", className)} {...props}>
             <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
                 <CardHeader className="text-center">
-                    <CardTitle>Alterar senha</CardTitle>
+                    <CardTitle>Alteração de senha</CardTitle>
                     {wantsToUpdatePassword ? (
                         <CardDescription>
                             Preencha os campos de senha e confirmação para alterar corretamente
@@ -75,7 +98,7 @@ export default function UserPasswordUpdate({
                                             <FormControl>
                                                 <div className="flex items-center space-x-2 relative">
                                                     <Input
-                                                        className="w-full pr-10"
+                                                        className="w-full pr-10 focus-visible:ring-blueLight"
                                                         type={showPassword
                                                             ? "password"
                                                             : "text"
@@ -109,7 +132,7 @@ export default function UserPasswordUpdate({
                                             <FormControl>
                                                 <div className="flex items-center space-x-2 relative">
                                                     <Input
-                                                        className="w-full pr-10"
+                                                        className="w-full pr-10 focus-visible:ring-blueLight"
                                                         type={showPassword
                                                             ? "password"
                                                             : "text"
@@ -138,7 +161,7 @@ export default function UserPasswordUpdate({
                                     <Button
                                         type="button"
                                         variant={"outline"}
-                                        onClick={() => setWantsToUpdatePassword(false)}
+                                        onClick={handleCancel}
                                         className="hover:bg-blue-50"
                                     >
                                         Cancelar
