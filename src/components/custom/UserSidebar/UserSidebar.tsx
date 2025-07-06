@@ -39,25 +39,25 @@ export default function UserSidebar({
         },
         items: [
             {
-                id: 0,
+                id: 1,
                 title: "Página inicial",
                 // url: "#",
                 icon: House,
             },
             {
-                id: 1,
+                id: 2,
                 title: "Cadastrar produtos",
                 // url: "#",
                 icon: PackagePlus,
             },
             {
-                id: 2,
+                id: 3,
                 title: "Associar-se",
                 // url: "#",
                 icon: Contact,
             },
             {
-                id: 3,
+                id: 4,
                 title: "Dúvidas",
                 // url: "#",
                 icon: MessageCircleQuestion,
@@ -68,7 +68,7 @@ export default function UserSidebar({
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <NavUser />
+                <NavUser onOption={() => onMenuClick(0)}/>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>

@@ -27,7 +27,13 @@ import { useToast } from '@/components/ui/use-toast'
 import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
 import { useEffect, useState } from "react"
 
-export default function NavUser() {
+type NavUserProps = {
+  onOption: () => void;
+}
+
+export default function NavUser({
+  onOption,
+}: NavUserProps) {
 
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -80,7 +86,10 @@ export default function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={onOption}
+              >
                 <BadgeCheck />
                 Minha conta
               </DropdownMenuItem>
