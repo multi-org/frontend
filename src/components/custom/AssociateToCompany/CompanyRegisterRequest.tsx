@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast.ts"
 
 type companyRegisterRequestProps = {
     onBack: () => void;
+    onNext: () => void;
     className?: string;
 }
 
@@ -35,6 +36,7 @@ const companyRegisterRequestSchema = z.object({
 
 export default function CompanyRegisterRequest({
     onBack,
+    onNext,
     className,
     ...props
 }: companyRegisterRequestProps) {
@@ -243,6 +245,18 @@ export default function CompanyRegisterRequest({
                                         <Button type="submit" className="w-full bg-yellowDark hover:bg-yellowNormal">
                                             Prosseguir
                                         </Button>
+                                    </div>
+                                    <div className="text-center text-sm">
+                                        Clique{" "}
+                                        <Button
+                                            type="button"
+                                            className="p-0 text-yellowDark hover:text-blueDark"
+                                            variant="link"
+                                            onClick={onNext}
+                                        >
+                                            aqui
+                                        </Button>
+                                        {" "}caso deseje solicitar um responsável legal pela instituição.
                                     </div>
                                     <div className="flex justify-end text-center text-sm ">
                                         <Button
