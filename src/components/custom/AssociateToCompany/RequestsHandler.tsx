@@ -1,0 +1,101 @@
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
+import CompanyRegisterRequestCard from "./CompanyRegisterRequestCard";
+import CompanyRegisterForm from "./CompanyRegisterForm";
+import { Button } from "@/components/ui/button";
+import { SquarePen } from "lucide-react";
+import { useState } from "react";
+import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
+
+type requestsHandlerProps = {
+    className?: string;
+}
+
+export default function RequestsHandler({
+    className,
+    ...props
+}: requestsHandlerProps) {
+
+    const [companyRegisterStep, setCompanyRegisterStep] = useState(0)
+
+    return (
+        <>
+            <header>
+                <div className="flex flex-col items-center justify-center py-6">
+                    <h1 className="text-3xl text-center font-bold">
+                        Solicitações em pendência
+                    </h1>
+                </div>
+            </header>
+            <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+                <Tabs defaultValue="associate">
+                    <div className="flex justify-center max-[620px]:flex-col">
+                        <TabsList
+                            className="bg-orange-100 text-orangeLight max-[620px]:flex-col truncate h-full"
+                        >
+                            <TabsTrigger value="associate">Associações</TabsTrigger>
+                            <TabsTrigger
+                                value="companyRegiter"
+                            >
+                                Cadastro de institução
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="legalResponsibleUser"
+                            >
+                                Cadastro de responsáveis legais
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+                    <TabsContent value="associate">
+                        <p className="flex justify-center">
+                            Associações
+                        </p>
+                    </TabsContent>
+                    <TabsContent value="companyRegiter">
+                        {companyRegisterStep === 0 && (
+                            <>
+                                <div className="flex justify-end px-6">
+                                    <Button
+                                        className="text-orangeDark hover:text-grayLight border-orangeLight hover:bg-yellowDark truncate"
+                                        variant={"outline"}
+                                        onClick={() => setCompanyRegisterStep(1)}
+                                    >
+                                        <SquarePen />
+                                        Cadastrar instituição
+                                    </Button>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2">
+                                    <CompanyRegisterRequestCard />
+                                    <CompanyRegisterRequestCard />
+                                </div>
+                            </>
+                        )}
+                        {companyRegisterStep === 1 && (
+                            <CompanyRegisterForm
+                                onBack={() => setCompanyRegisterStep(0)}
+                                onNext={() => setCompanyRegisterStep(2)}
+                            />
+                        )}
+                        {companyRegisterStep === 2 && (
+                            <LegalResponsibleUserForm
+                                onBack={() => setCompanyRegisterStep(0)}
+                            />
+                        )}
+                    </TabsContent>
+                    <TabsContent value="legalResponsibleUser">
+                        <p className="flex justify-center">
+                            Responsáveis legais
+                        </p>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        </>
+    )
+}
+
+export { RequestsHandler }

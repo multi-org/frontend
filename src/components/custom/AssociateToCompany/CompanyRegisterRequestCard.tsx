@@ -158,17 +158,17 @@ export default function CompanyRegisterRequestCard({
                     </div>
                 </CardContent>
 
-                <CardFooter className="grid grid-cols-2 gap-4">
+                <CardFooter className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Button
                         onClick={handleReject}
                         variant="outline"
-                        className="flex-1 text-orangeDark hover:text-orangeLight border-orangeLight bg-transparent hover:bg-orange-50"
+                        className="flex-1 text-orangeDark hover:text-orangeLight border-orangeLight bg-transparent hover:bg-orange-50 truncate"
                     >
                         Rejeitar
                     </Button>
                     <Button
                         onClick={handleProceed}
-                        className="flex-1 bg-success hover:bg-successLight"
+                        className="flex-1 bg-success hover:bg-successLight truncate"
                     >
                         Prosseguir
                     </Button>

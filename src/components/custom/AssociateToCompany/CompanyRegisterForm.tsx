@@ -20,14 +20,14 @@ import { toast } from "@/hooks/use-toast.ts"
 import { Textarea } from "@/components/ui/textarea.tsx"
 import { Switch } from "@/components/ui/switch.tsx"
 
-type companyRegisterRequestProps = {
+type companyRegisterFormProps = {
+    className?: string;
     onBack: () => void;
     onNext: () => void;
-    className?: string;
 }
 
-const companyRegisterRequestSchema = z.object({
-    popularName: z.string().min(1, 'Nome da instituição é obrigatório.'),
+const companyRegisterFormSchema = z.object({
+    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido"),
     legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido"),
     description: z.string().min(1, 'Descrição é obrigatória.'),
     cnpj: z.string().min(18, "CNPJ precisa ter 18 caracteres"),
@@ -42,15 +42,15 @@ const companyRegisterRequestSchema = z.object({
     isMicroenterprise: z.boolean(),
 })
 
-export default function CompanyRegisterRequest({
+export default function CompanyRegisterForm({
     onBack,
     onNext,
     className,
     ...props
-}: companyRegisterRequestProps) {
+}: companyRegisterFormProps) {
 
-    const form = useForm<z.infer<typeof companyRegisterRequestSchema>>({
-        resolver: zodResolver(companyRegisterRequestSchema),
+    const form = useForm<z.infer<typeof companyRegisterFormSchema>>({
+        resolver: zodResolver(companyRegisterFormSchema),
         defaultValues: {
             popularName: '',
             legalName: '',
@@ -87,14 +87,13 @@ export default function CompanyRegisterRequest({
             .catch((err) => console.error("Erro ao buscar CEP:", err))
     }, [cep, form])
 
-    function onSubmit(data: z.infer<typeof companyRegisterRequestSchema>) {
+    function onSubmit(data: z.infer<typeof companyRegisterFormSchema>) {
         console.log("Dados enviados:", data)
-        form.reset()
         toast({
             description: (
                 <div className="flex items-center gap-2">
                     <CircleCheck className="text-white" size={20} />
-                    Solicitação de cadasto de instituição enviada com sucesso
+                    Instituição cadastrada com sucesso
                 </div>
             ),
             variant: 'default',
@@ -103,6 +102,7 @@ export default function CompanyRegisterRequest({
                 color: "#FFFFFF",
             },
         })
+        form.reset()
     }
 
     return (
@@ -110,19 +110,19 @@ export default function CompanyRegisterRequest({
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
                     <h1 className="text-3xl text-center font-bold">
-                        Solicite o cadastro da sua instituição
+                        Cadastro de instituição
                     </h1>
                     <span className="text-center font-medium">
-                        Depois de estar devidamente cadastrada, você poderá associar-se à sua instituição
+                        Depois de registrada, a instiuição poderá cadastrar e disponibilizar reserva de espaços, equipamentos e serviços
                     </span>
                 </div>
             </header>
             <div className={cn("flex flex-col gap-6", className)} {...props}>
                 <Card className="m-6 bg-gray-100 overflow-hidden">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-xl">Dados da solicitação</CardTitle>
+                        <CardTitle className="text-xl">Dados da instituição</CardTitle>
                         <CardDescription>
-                            Inform corretamente os dados abaixo para solicitar o cadastro da sua instituição.
+                            Preencha os dados abaixo para cadstrar corretamente a instituição
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -423,7 +423,7 @@ export default function CompanyRegisterRequest({
                                         >
                                             aqui
                                         </Button>
-                                        {" "}caso deseje solicitar um responsável legal pela instituição.
+                                        {" "}para solicitar um responsável legal pela instituição.
                                     </div>
                                     <div className="flex justify-end text-center text-sm ">
                                         <Button
@@ -446,4 +446,4 @@ export default function CompanyRegisterRequest({
     )
 }
 
-export { CompanyRegisterRequest }
+export { CompanyRegisterForm }

@@ -2,7 +2,6 @@ import { useState } from "react";
 import AssociateToCompany from "./AssociateToCompany";
 import CompanyRegisterRequest from "./CompanyRegisterRequest";
 import LegalResponsibleUserRequest from "./LegalResponsibleUserRequest";
-import CompanyRegisterRequestCard from "./CompanyRegisterRequestCard";
 
 export default function AssociateHandler() {
 
@@ -20,7 +19,6 @@ export default function AssociateHandler() {
                         onBack={() => setAssociateOption(1)}
                         onNext={() => setAssociateOption(3)}
                     />
-                    <CompanyRegisterRequestCard />
                 </>
             )}
             {associateOption === 3 && (

@@ -4,6 +4,7 @@ import {
     PackagePlus,
     MessageCircleQuestion,
     House,
+    ClipboardPen,
 } from "lucide-react"
 import { NavUser } from "../NavUser"
 import {
@@ -61,6 +62,12 @@ export default function UserSidebar({
                 title: "Dúvidas",
                 // url: "#",
                 icon: MessageCircleQuestion,
+            },
+            {
+                id: 5,
+                title: "Solicitações",
+                // url: "#",
+                icon: ClipboardPen,
             },
         ],
     }
