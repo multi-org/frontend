@@ -1,6 +1,13 @@
-import { Building2, MapPin, Clock, ClipboardList } from "lucide-react"
+import { Clock, ClipboardList, UserCog, ArrowDownToLine } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { 
@@ -15,12 +22,12 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useState } from "react"
 
-type companyRegisterRequestCardProps = {
+type LegalResponsibleUserRequestCardProps = {
     className?: string;
     // company: CompanyType;
 }
 
-export default function CompanyRegisterRequestCard({
+export default function LegalResponsibleUserRequestCard({
     // company: {
     //     id,
     //     popularName,
@@ -39,16 +46,18 @@ export default function CompanyRegisterRequestCard({
     // },
     className,
     ...props
-}: companyRegisterRequestCardProps) {
+}: LegalResponsibleUserRequestCardProps) {
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
+    const documentUrl = "link-para-pdf.com"; // substitua pela variável real
+
     const handleProceed = () => {
-        console.log("Instituição aprovada!")
+        console.log("Responsável legal aprovado!")
     }
 
     const handleReject = () => {
-        console.log("Instituição rejeitada!")
+        console.log("Responsável legal rejeitado!")
         setIsDeleteDialogOpen(true)
     }
 
@@ -58,11 +67,11 @@ export default function CompanyRegisterRequestCard({
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between max-[315px]:flex-col">
                         <div className="flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-blueDark shrink-0" />
+                            <UserCog className="h-5 w-5 text-blueDark shrink-0" />
                             <CardTitle
                                 className="text-lg"
                             >
-                                Solicitação de Cadastro de Instituição
+                                Solicitação de usuário responsável legal por instituição
                             </CardTitle>
                         </div>
                         <div className="flex items-center gap-2">
@@ -95,132 +104,94 @@ export default function CompanyRegisterRequestCard({
                             <div className="space-y-1">
                                 <label
                                     className="text-sm font-medium text-gray-600">
-                                    Nome fantasia
+                                    Nome
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    UEPB - Campus Patos
-                                    {/* {popularName} */}
+                                    Jucelio Santos
+                                    {/* {name} */}
                                 </p>
                             </div>
                             <div className="space-y-1">
                                 <label
                                     className="text-sm font-medium text-gray-600">
-                                    Nome jurídico
+                                    CPF
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Universidade Estadual da Paraíba - UEPB
-                                    {/* {legalName} */}
+                                    123.123.123-23
+                                    {/* {cpf} */}
+                                </p>
+                            </div>
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
+                                    Email
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    jucelio@santos.com
+                                    {/* {email} */}
+                                </p>
+                            </div>
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
+                                    Telefone
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    (83) 99876-7654
+                                    {/* {phone} */}
                                 </p>
                             </div>
                         </div>
                         <div className="flex flex-col items-start gap-2 text-gray-700 px-6">
                             <label
                                 className="text-sm font-medium text-gray-600">
-                                Descrição
+                                Instituição
                             </label>
                             <p
                                 className="text-sm text-gray-900">
-                                Instituição voltada para o campo das ciências exatas
-                                {/* {description} */}
+                                Universidade Estadual da Paraíba - UEPB
+                                {/* {legalName} */}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
                             <div className="space-y-1">
                                 <label
                                     className="text-sm font-medium text-gray-600">
-                                    CNPJ
+                                    Cargo
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    00.000.000/0000-00
-                                    {/* {cnpj} */}
+                                    Assistente administrativo
+                                    {/* {position} */}
                                 </p>
                             </div>
                             <div className="space-y-1">
                                 <label
                                     className="text-sm font-medium text-gray-600">
-                                    Microempresa?
+                                    Comprovante de vínculo
                                 </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    não
-                                    {/* {isMicroenterprise} */}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <Separator />
-                    {/* Informações de Endereço */}
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-gray-700">
-                            <MapPin className="h-5 w-5 text-orangeLight" />
-                            <span className="font-medium">Endereço</span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    CEP
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    01234-567
-                                    {/* {companyAddress} */}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-sm font-medium text-gray-600">
-                                    Rua
-                                </label>
-                                <p className="text-sm text-gray-900">
-                                    Rua das Flores, 123
-                                    {/* {street} */}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    Complemento
-                                </label>
-                                <p className="text-sm text-gray-900">
-                                    Bloco A - Campus Principal
-                                    {/* {complement} */}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    Bairro
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    Centro
-                                    {/* {neighborhood} */}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    Cidade
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    São Paulo
-                                    {/* {city} */}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    Estado
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    São Paulo
-                                    {/* {state} */}
-                                </p>
+                                {documentUrl ? (
+                                    <p
+                                        className="text-sm text-gray-900">
+                                        <a
+                                            href={documentUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex justify-start text-sm text-blueLight underline hover:text-blueDark"
+                                            download
+                                        >
+                                            <ArrowDownToLine className="h-5 w-5" />
+                                            Baixar comprovante
+                                            {/* {document} */}
+                                        </a>
+                                    </p>
+                                ) : (
+                                    <p className="text-sm text-gray-900">Não disponível</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -229,7 +200,7 @@ export default function CompanyRegisterRequestCard({
                     <Button
                         onClick={handleReject}
                         variant="outline"
-                        className="flex-1 text-orangeDark hover:text-orangeLight border-orangeLight bg-transparent hover:bg-orange-50 truncate"
+                        className="flex-1 text-orangeDark hover:text-orangeLight border-orangeLight hover:bg-orange-50 truncate"
                     >
                         Rejeitar
                     </Button>
@@ -258,7 +229,7 @@ export default function CompanyRegisterRequestCard({
                             Cancelar
                         </AlertDialogCancel>
                         <AlertDialogAction
-                            className="bg-red-600 hover:bg-red-500 text-grayLight"
+                        className="bg-red-600 hover:bg-red-500 text-grayLight"
                         >
                             Confirmar
                         </AlertDialogAction>
@@ -269,4 +240,4 @@ export default function CompanyRegisterRequestCard({
     )
 }
 
-export { CompanyRegisterRequestCard }
+export { LegalResponsibleUserRequestCard }

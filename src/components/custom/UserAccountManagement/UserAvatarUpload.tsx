@@ -101,7 +101,10 @@ export default function UserAvatarUpload({
             <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
                 <CardHeader className="text-center">
                     <CardTitle>Alteração de avatar</CardTitle>
-                    <CardDescription>Carregue uma imagem para alterar</CardDescription>
+                    <CardDescription
+                    >
+                        Carregue uma imagem para alterar
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col justify-center items-center gap-6">
                     <FormProvider  {...form}>
@@ -112,7 +115,7 @@ export default function UserAvatarUpload({
                                     <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                                 </Avatar>
                                 <ImageUp
-                                    className="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 h-6 w-6 bg-white border rounded cursor-pointer hover:bg-gray-100 transition"
+                                    className="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 h-9 w-9 bg-white border rounded-full p-2 cursor-pointer hover:bg-gray-100 transition"
                                     onClick={handleImageClick}
                                 />
                             </div>
@@ -123,13 +126,13 @@ export default function UserAvatarUpload({
                                 className="hidden"
                                 onChange={handleImageChange}
                             />
-                            <div className="flex justify-center mt-6">
+                            <div className="flex justify-center mt-6 gap-6">
                                 <Button
                                     type="submit"
                                     variant={"outline"}
                                     className="hover:bg-yellowDark hover:text-grayLight"
                                 >
-                                    Salvar
+                                    Alterar
                                 </Button>
                             </div>
                         </form>

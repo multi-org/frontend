@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
 import { useState } from "react";
 import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
+import AssociateToCompanyCard from "./AssociateToCompanyCard";
+import LegalResponsibleUserRequestCard from "./LegalResponsibleUserRequestCard";
 
 type requestsHandlerProps = {
     className?: string;
@@ -52,9 +54,10 @@ export default function RequestsHandler({
                         </TabsList>
                     </div>
                     <TabsContent value="associate">
-                        <p className="flex justify-center">
-                            Associações
-                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2">
+                            <AssociateToCompanyCard />
+                            <AssociateToCompanyCard />
+                        </div>
                     </TabsContent>
                     <TabsContent value="companyRegiter">
                         {companyRegisterStep === 0 && (
@@ -88,9 +91,10 @@ export default function RequestsHandler({
                         )}
                     </TabsContent>
                     <TabsContent value="legalResponsibleUser">
-                        <p className="flex justify-center">
-                            Responsáveis legais
-                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2">
+                            <LegalResponsibleUserRequestCard />
+                            <LegalResponsibleUserRequestCard />
+                        </div>
                     </TabsContent>
                 </Tabs>
             </div>
