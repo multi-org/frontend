@@ -136,7 +136,7 @@ export default function AddAskedQuestion({
                                                                         >
                                                                             <Textarea
                                                                                 placeholder="Ex.: Como faço uma reserva?"
-                                                                                className="resize-none text-black focus-visible:ring-yellowLight pr-16"
+                                                                                className="resize-none text-black focus-visible:ring-yellowLight"
                                                                                 maxLength={400}
                                                                                 {...field}
                                                                             />

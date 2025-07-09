@@ -1,0 +1,17 @@
+export interface CompanyType {
+    id: string,
+    popularName: string,
+    legalName: string,
+    description: string,
+    cnpj: string,
+    companyAddress: string,
+    street: string,
+    complement: string,
+    neighborhood: string,
+    city: string,
+    state: string,
+    email: string,
+    phone: string,
+    isMicroenterprise: boolean,
+    legalResponsiblePerson: string,
+}

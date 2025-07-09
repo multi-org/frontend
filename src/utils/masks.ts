@@ -34,3 +34,13 @@ export const maskCPF = (value: string) => {
     .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4") // Traço
     .slice(0, 14); // Limita a 14 caracteres (incluindo pontos e traço)
 }
+
+export const maskCNPJ = (value: string) => {
+  return value
+    .replace(/\D/g, "") // Remove tudo que não for número
+    .replace(/^(\d{2})(\d)/, "$1.$2") // Primeiro ponto
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3") // Segundo ponto
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4") // Barra
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5") // Traço
+    .slice(0, 18); // Limita a 18 caracteres (com pontos, barra e traço)
+}

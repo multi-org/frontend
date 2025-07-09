@@ -58,7 +58,7 @@ const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ va
         accept=".jpg,.jpeg,.png"
         multiple
         onChange={handleFileChange}
-        className="text-gray-500 hover:cursor-pointer"
+        className="text-gray-500 hover:cursor-pointer hover:text-gray-900"
       />
       {errors.length > 0 && (
         <ul className="text-red-500 text-sm space-y-1">
