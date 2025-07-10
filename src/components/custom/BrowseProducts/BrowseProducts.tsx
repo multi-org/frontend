@@ -8,7 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { ProductCard } from '@/components/custom/ProductCard'
+import { ExtendedProductCard, ProductCard, ReducedProductCard } from '@/components/custom/ProductCard'
 import {
     Pagination,
     PaginationContent,
@@ -73,13 +73,48 @@ export default function BrowseProducts() {
                     </SelectContent>
                 </Select>
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-6">
+            {/* <div className="mt-8 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2"></div> */}
+            <div className="mt-8">
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                         <ProductCard key={product._id} product={product} />
                     ))
                 ) : (
-                    <p>Nenhum produto encontrado.</p>
+                    <>
+                        {/* <p>Nenhum produto encontrado.</p> */}
+                        {/* <ReducedProductCard
+                            id="ESP-001"
+                            nome="Sala de Reunião Executiva"
+                            descricacao="Sala moderna e equipada com projetor, ar-condicionado, mesa para 12 pessoas e acesso à internet de alta velocidade. Ideal para reuniões corporativas e apresentações."
+                            precoHora={45.0}
+                            precoDia={320.0}
+                            imagem="/placeholder.svg?height=200&width=400"
+                            tipo="espaco"
+                            localizacao="Centro - São Paulo"
+                        /> */}
+                        <ExtendedProductCard
+                            id="PROD-001"
+                            nome="Auditório Premium"
+                            descricacao="Auditório moderno e totalmente equipado com sistema de som profissional, projetor 4K, ar-condicionado, iluminação cênica e poltronas confortáveis. Ideal para palestras, seminários, apresentações corporativas e eventos acadêmicos."
+                            categoria="Auditório"
+                            capacidade={150}
+                            area={200}
+                            imagens={[
+                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
+                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
+                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
+                            ]}
+                            precoHora={180.0}
+                            precoDia={1200.0}
+                            tipo="espaco"
+                            localizacao="Campus Central - São Paulo"
+                            disponibilidade={{
+                                segSex: { inicio: "08:00", fim: "22:00" },
+                                sabado: { inicio: "09:00", fim: "18:00" },
+                                domingo: { inicio: "14:00", fim: "20:00" },
+                            }}
+                        />
+                    </>
                 )}
             </div>
             <Pagination className="mt-8">
