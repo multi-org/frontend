@@ -27,7 +27,7 @@ export function UserProtectedRoute({ children }: UserProtectedRouteProps) {
   }, [])
 
   if (isLoading) {
-    return <div className="text-center p-4"><Loader className="animate-spin" /></div>
+    return <div className="text-center p-4 h-screen w-full flex justify-center items-center"><Loader className="h-20 w-20 text-gray-400 animate-spin" /></div>
   }
 
   if (!isAuthenticated) {

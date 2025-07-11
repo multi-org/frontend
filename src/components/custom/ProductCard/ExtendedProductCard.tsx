@@ -66,9 +66,9 @@ export default function ExtendedProductCard({
     capacidade = 150,
     area = 200,
     imagens = [
-        "/src/assets/unsplash-lab.jpg?height=300&width=500",
-        "/src/assets/unsplash-lab.jpg?height=300&width=500",
-        "/src/assets/unsplash-lab.jpg?height=300&width=500",
+        "/src/assets/unsplash-lab.jpg",
+        "/src/assets/unsplash-lab.jpg",
+        "/src/assets/unsplash-lab.jpg",
     ],
     precoHora = 180.0,
     precoDia = 1200.0,
@@ -109,7 +109,7 @@ export default function ExtendedProductCard({
             <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                     <div className="space-y-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 max-[300px]:flex-col max-[300px]:items-start">
                             <div className={`${config.color} flex items-center gap-1 p-1 rounded-full`}>
                                 <IconComponent className="h-3 w-3" />
                                 {config.label}
@@ -130,11 +130,11 @@ export default function ExtendedProductCard({
             <CardContent className="space-y-6">
                 {/* Carrossel de Imagens */}
                 <div className="relative">
-                    <div className="relative h-64 w-full rounded-lg overflow-hidden">
+                    <div className="relative h-[500px] w-full rounded-lg overflow-hidden">
                         <img
-                            src={imagens[currentImageIndex] || "/src/assets/unsplash-lab.jpg"}
+                            src={imagens[currentImageIndex] || "/src/assets/multi-prod-esp.png"}
                             alt={`${nome} - Imagem ${currentImageIndex + 1}`}
-                            className="object-cover"
+                            className="object-cover h-[500px] w-full"
                         />
                         {imagens.length > 1 && (
                             <>
@@ -213,7 +213,7 @@ export default function ExtendedProductCard({
                         <div className="space-y-3">
                             <h3 className="font-semibold text-lg">Preços</h3>
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
                                     <div className="flex items-center gap-2 text-gray-600">
                                         <Clock className="h-4 w-4" />
                                         <span className="font-medium">Por hora</span>
@@ -221,7 +221,7 @@ export default function ExtendedProductCard({
                                     <span className="font-semibold text-lg text-gray-900">{formatPrice(precoHora)}</span>
                                 </div>
 
-                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
                                     <div className="flex items-center gap-2 text-gray-600">
                                         <Calendar className="h-4 w-4" />
                                         <span className="font-medium">Por dia</span>
@@ -237,19 +237,19 @@ export default function ExtendedProductCard({
                         <div className="space-y-3">
                             <h3 className="font-semibold text-lg">Disponibilidade</h3>
                             <div className="space-y-2">
-                                <div className="flex justify-between items-center p-2 rounded">
+                                <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
                                     <span className="text-sm font-medium text-gray-700">Segunda à Sexta</span>
                                     <span className="text-sm text-gray-600">
                                         {disponibilidade.segSex.inicio} - {disponibilidade.segSex.fim}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center p-2 rounded">
+                                <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
                                     <span className="text-sm font-medium text-gray-700">Sábado</span>
                                     <span className="text-sm text-gray-600">
                                         {disponibilidade.sabado.inicio} - {disponibilidade.sabado.fim}
                                     </span>
                                 </div>
-                                <div className="flex justify-between items-center p-2 rounded">
+                                <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
                                     <span className="text-sm font-medium text-gray-700">Domingo</span>
                                     <span className="text-sm text-gray-600">
                                         {disponibilidade.domingo.inicio} - {disponibilidade.domingo.fim}
@@ -261,7 +261,7 @@ export default function ExtendedProductCard({
                 </div>
             </CardContent>
 
-            <CardFooter className="pt-6 grid grid-cols-2 gap-2">
+            <CardFooter className="pt-6 grid grid-cols-2 gap-6 max-[300px]:grid-cols-1">
                 <Button 
                 variant={"outline"}
                 onClick={handleRent} 

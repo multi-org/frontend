@@ -21,6 +21,7 @@ import {
 import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
 import { Search } from 'lucide-react'
+import { RentalBookingCard } from '../RentalBooking'
 
 export default function BrowseProducts() {
 
@@ -92,7 +93,7 @@ export default function BrowseProducts() {
                             tipo="espaco"
                             localizacao="Centro - São Paulo"
                         /> */}
-                        <ExtendedProductCard
+                        {/* <ExtendedProductCard
                             id="PROD-001"
                             nome="Auditório Premium"
                             descricacao="Auditório moderno e totalmente equipado com sistema de som profissional, projetor 4K, ar-condicionado, iluminação cênica e poltronas confortáveis. Ideal para palestras, seminários, apresentações corporativas e eventos acadêmicos."
@@ -100,9 +101,9 @@ export default function BrowseProducts() {
                             capacidade={150}
                             area={200}
                             imagens={[
-                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
-                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
-                                "/src/assets/unsplash-lab.jpg?height=300&width=500",
+                                "/src/assets/multi-prod-esp.png",
+                                "/src/assets/multi-prod-serv.png",
+                                "/src/assets/multi-prod-equip.png",
                             ]}
                             precoHora={180.0}
                             precoDia={1200.0}
@@ -113,6 +114,21 @@ export default function BrowseProducts() {
                                 sabado: { inicio: "09:00", fim: "18:00" },
                                 domingo: { inicio: "14:00", fim: "20:00" },
                             }}
+                        /> */}
+                        <RentalBookingCard
+                            product={{
+                                id: "ESP-001",
+                                nome: "Auditório Premium",
+                                categoria: "Auditório",
+                                capacidade: 150,
+                                area: 200,
+                                imagem: "/src/assets/multi-prod-serv.png",
+                                precoHora: 180.0,
+                                precoDia: 1200.0,
+                                tipo: "espaco",
+                                localizacao: "Campus Central - São Paulo"
+                            }}
+                            onPayment={(data: any) => console.log("Dados do pagamento:", data)}
                         />
                     </>
                 )}
