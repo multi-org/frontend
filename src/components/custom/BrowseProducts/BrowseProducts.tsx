@@ -21,9 +21,17 @@ import {
 import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
 import { Search } from 'lucide-react'
-import { RentalBookingCard } from '../RentalBooking'
+import { BookingConfirmationCard, PaymentCard, RentalBookingCard } from '../RentalBooking'
+import { cn } from '@/lib/utils'
 
-export default function BrowseProducts() {
+type BrowseProductsProps = {
+    className?: string
+}
+
+export default function BrowseProducts({
+    className,
+    ...props
+}: BrowseProductsProps) {
 
     const { products, getProducts } = useProducts()
     const [searchTerm, setSearchTerm] = useState<string>('')
@@ -47,7 +55,7 @@ export default function BrowseProducts() {
     })
 
     return (
-        <div className="border-black flex flex-1 flex-col gap-4 p-4 mt-4">
+        <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
             <div className="flex gap-2 border-black">
                 <div className="relative w-full">
                     <Input
@@ -62,7 +70,7 @@ export default function BrowseProducts() {
                     />
                 </div>
                 <Select onValueChange={(value) => setCategory(value)}>
-                    <SelectTrigger className="w-[180px] focus-visible:ring-blueLight">
+                    <SelectTrigger className="w-[180px] ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -75,7 +83,7 @@ export default function BrowseProducts() {
                 </Select>
             </div>
             {/* <div className="mt-8 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2"></div> */}
-            <div className="mt-8">
+            <div>
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                         <ProductCard key={product._id} product={product} />
@@ -115,7 +123,7 @@ export default function BrowseProducts() {
                                 domingo: { inicio: "14:00", fim: "20:00" },
                             }}
                         /> */}
-                        <RentalBookingCard
+                        {/* <RentalBookingCard
                             product={{
                                 id: "ESP-001",
                                 nome: "Auditório Premium",
@@ -129,6 +137,48 @@ export default function BrowseProducts() {
                                 localizacao: "Campus Central - São Paulo"
                             }}
                             onPayment={(data: any) => console.log("Dados do pagamento:", data)}
+                        /> */}
+                        {/* <PaymentCard
+                            bookingData={{
+                                productId: "ESP-001",
+                                productName: "Auditório Premium",
+                                productType: "espaco",
+                                productCategory: "Auditório",
+                                productImage: "/src/assets/multi-prod-serv.png",
+                                productLocation: "Campus Central - São Paulo",
+                                startDate: new Date(2024, 11, 20),
+                                endDate: new Date(2024, 11, 22),
+                                rentalType: "dia",
+                                activityTitle: "Palestra sobre Inovação Tecnológica",
+                                activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
+                                totalPrice: 3600.0,
+                            }}
+                            onPaymentConfirmed={() => console.log("Pagamento confirmado")}
+                            onCancel={() => console.log("Pagamento cancelado")}
+                        /> */}
+                        <BookingConfirmationCard
+                            bookingData={{
+                                confirmationNumber: "RES-2024-001234",
+                                productId: "ESP-001",
+                                productName: "Auditório Premium",
+                                productType: "espaco",
+                                productCategory: "Auditório",
+                                productImage: "/src/assets/multi-prod-serv.png",
+                                productLocation: "Campus Central - São Paulo",
+                                capacidade: 150,
+                                area: 200,
+                                startDate: new Date(2024, 11, 20),
+                                endDate: new Date(2024, 11, 22),
+                                rentalType: "dia",
+                                activityTitle: "Palestra sobre Inovação Tecnológica",
+                                activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
+                                totalPrice: 3600.0,
+                                paymentDate: new Date(),
+                                customerName: "João Silva",
+                                customerEmail: "joao.silva@email.com",
+                                customerPhone: "(11) 99999-9999",
+                            }}
+                            onBackToHome={() => console.log("Voltando ao início")}
                         />
                     </>
                 )}

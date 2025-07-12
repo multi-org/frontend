@@ -69,7 +69,7 @@ export default function UserPasswordUpdate({
 
     return (
         <div className={cn("flex flex-col gap-6 justify-center items-center", className)} {...props}>
-            <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
+            <Card className="m-6 w-1/2 min-w-72 overflow-hidden">
                 <CardHeader className="text-center">
                     <CardTitle>Alteração de senha</CardTitle>
                     {wantsToUpdatePassword ? (
