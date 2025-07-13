@@ -347,7 +347,7 @@ export default function RentalBookingCard({
                 </div>
             </CardContent>
 
-            <CardFooter className="grid grid-cols-2 gap-6 max-[300px]:grid-cols-1">
+            <CardFooter className="grid grid-cols-2 gap-6 max-[500px]:grid-cols-1">
                 <Button
                     variant={"outline"}
                     size="lg"

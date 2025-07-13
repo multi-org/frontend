@@ -3,6 +3,7 @@ import {
     AssociateHandler, 
     RequestsHandler 
 } from "@/components/custom/AssociateToCompany";
+import { BrowseBookings } from "@/components/custom/BrowseBookings";
 import { BrowseProducts } from "@/components/custom/BrowseProducts";
 import { NewProduct } from "@/components/custom/NewProduct";
 import { UserAccountManagement } from "@/components/custom/UserAccountManagement";
@@ -32,10 +33,11 @@ export default function User() {
             <SidebarInset>
                 {sidebarOption === 0 && (<UserAccountManagement />)}
                 {sidebarOption === 1 && (<BrowseProducts />)}
-                {sidebarOption === 2 && (<NewProduct />)}
-                {sidebarOption === 3 && (<AssociateHandler />)}
-                {sidebarOption === 4 && (<AskedQuestionsHandler />)}
-                {sidebarOption === 5 && (<RequestsHandler />)}
+                {sidebarOption === 2 && (<BrowseBookings />)}
+                {sidebarOption === 3 && (<NewProduct />)}
+                {sidebarOption === 4 && (<AssociateHandler />)}
+                {sidebarOption === 5 && (<AskedQuestionsHandler />)}
+                {sidebarOption === 6 && (<RequestsHandler />)}
             </SidebarInset>
         </SidebarProvider>
     )

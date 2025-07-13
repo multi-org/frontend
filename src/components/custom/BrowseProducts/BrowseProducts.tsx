@@ -22,16 +22,8 @@ import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
 import { Search } from 'lucide-react'
 import { BookingConfirmationCard, PaymentCard, RentalBookingCard } from '../RentalBooking'
-import { cn } from '@/lib/utils'
 
-type BrowseProductsProps = {
-    className?: string
-}
-
-export default function BrowseProducts({
-    className,
-    ...props
-}: BrowseProductsProps) {
+export default function BrowseProducts() {
 
     const { products, getProducts } = useProducts()
     const [searchTerm, setSearchTerm] = useState<string>('')
@@ -55,8 +47,8 @@ export default function BrowseProducts({
     })
 
     return (
-        <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
-            <div className="flex gap-2 border-black">
+        <>
+            <header className="flex max-[350px]:flex-col gap-2 p-6">
                 <div className="relative w-full">
                     <Input
                         type="search"
@@ -70,7 +62,7 @@ export default function BrowseProducts({
                     />
                 </div>
                 <Select onValueChange={(value) => setCategory(value)}>
-                    <SelectTrigger className="w-[180px] ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
+                    <SelectTrigger className="w-[180px] max-[350px]:w-full truncate ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
                         <SelectValue placeholder="Categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -81,9 +73,9 @@ export default function BrowseProducts({
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-            </div>
+            </header>
             {/* <div className="mt-8 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2"></div> */}
-            <div>
+            <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => (
                         <ProductCard key={product._id} product={product} />
@@ -101,7 +93,7 @@ export default function BrowseProducts({
                             tipo="espaco"
                             localizacao="Centro - São Paulo"
                         /> */}
-                        {/* <ExtendedProductCard
+                        <ExtendedProductCard
                             id="PROD-001"
                             nome="Auditório Premium"
                             descricacao="Auditório moderno e totalmente equipado com sistema de som profissional, projetor 4K, ar-condicionado, iluminação cênica e poltronas confortáveis. Ideal para palestras, seminários, apresentações corporativas e eventos acadêmicos."
@@ -122,7 +114,7 @@ export default function BrowseProducts({
                                 sabado: { inicio: "09:00", fim: "18:00" },
                                 domingo: { inicio: "14:00", fim: "20:00" },
                             }}
-                        /> */}
+                        />
                         {/* <RentalBookingCard
                             product={{
                                 id: "ESP-001",
@@ -156,7 +148,7 @@ export default function BrowseProducts({
                             onPaymentConfirmed={() => console.log("Pagamento confirmado")}
                             onCancel={() => console.log("Pagamento cancelado")}
                         /> */}
-                        <BookingConfirmationCard
+                        {/* <BookingConfirmationCard
                             bookingData={{
                                 confirmationNumber: "RES-2024-001234",
                                 productId: "ESP-001",
@@ -179,33 +171,35 @@ export default function BrowseProducts({
                                 customerPhone: "(11) 99999-9999",
                             }}
                             onBackToHome={() => console.log("Voltando ao início")}
-                        />
+                        /> */}
                     </>
                 )}
             </div>
-            <Pagination className="mt-8">
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">2</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#">3</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext href="#" />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
-        </div>
+            <div className="flex justify-center items-center p-6 max-[350px]:w-80 truncate">
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious href="#" />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink href="#">1</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink href="#">2</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationLink href="#">3</PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationEllipsis />
+                        </PaginationItem>
+                        <PaginationItem>
+                            <PaginationNext href="#" />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </div>
+        </>
     )
 }
 

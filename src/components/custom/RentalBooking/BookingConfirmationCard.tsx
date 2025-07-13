@@ -135,7 +135,7 @@ export default function BookingConfirmationCard({
     }
 
     return (
-        <Card className="w-full max-w-4xl mx-auto overflow-hidden">
+        <Card className="w-full max-w-4xl overflow-hidden">
             <CardHeader className="text-center pb-6">
                 <div className="flex flex-col items-center space-y-4">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
