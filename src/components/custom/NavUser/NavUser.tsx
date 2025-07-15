@@ -28,17 +28,20 @@ import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
 import { useEffect, useState } from "react"
 
 type NavUserProps = {
-  onOption: () => void;
+  onNavUserOption: (navUserOption: number) => void;
+  unreadNotifications?: number
 }
 
 export default function NavUser({
-  onOption,
+  onNavUserOption,
+  unreadNotifications = 3,
 }: NavUserProps) {
 
   const navigate = useNavigate()
   const { toast } = useToast()
   const [userName, setUserName] = useState("")
   const [userAvatar, setUserAvatar] = useState("")
+  const [unreadNotificationsNumber, setUnreadNotificationsNumber] = useState<number>(unreadNotifications)
 
   const handleLogout = () => {
     localStorage.removeItem('userName')
@@ -48,6 +51,11 @@ export default function NavUser({
       description: "Até logo!",
     })
     navigate('/login')
+  }
+
+  const handleUnreadNotifications = () => {
+    setUnreadNotificationsNumber(0)
+    onNavUserOption(1)
   }
 
   useEffect(() => {
@@ -88,14 +96,26 @@ export default function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={onOption}
+                onClick={() => onNavUserOption(0)}
               >
                 <BadgeCheck />
                 Minha conta
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Bell />
-                Notificações
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleUnreadNotifications}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center justify-between gap-2">
+                    <Bell />
+                    Notificações
+                  </div>
+                  {unreadNotificationsNumber > 0 && (
+                    <div className="text-xs px-1.5 py-0.5 min-w-[18px] h-5 bg-yellowDark rounded-full text-grayLight">
+                      {unreadNotificationsNumber}
+                    </div>
+                  )}
+                </div>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

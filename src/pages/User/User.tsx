@@ -3,9 +3,11 @@ import {
     AssociateHandler, 
     RequestsHandler 
 } from "@/components/custom/AssociateToCompany";
+import { BrowseBookings } from "@/components/custom/BrowseBookings";
 import { BrowseProducts } from "@/components/custom/BrowseProducts";
 import { NewProduct } from "@/components/custom/NewProduct";
 import { UserAccountManagement } from "@/components/custom/UserAccountManagement";
+import { BrowseNotifications } from "@/components/custom/UserNotifications";
 import { UserSidebar } from "@/components/custom/UserSidebar";
 import { 
     SidebarInset, 
@@ -16,7 +18,7 @@ import { useState } from "react";
 
 export default function User() {
 
-    const [sidebarOption, setSidebarOption] = useState(1);
+    const [sidebarOption, setSidebarOption] = useState<number>(2);
 
     function handleMenuClick(option: number) {
         setSidebarOption(option);
@@ -29,13 +31,15 @@ export default function User() {
                 activeOption={sidebarOption}
             />
             <SidebarTrigger className="hover:cursor-pointer" />
-            <SidebarInset>
+            <SidebarInset className="flex flex-col flex-1 overflow-x-hidden">
                 {sidebarOption === 0 && (<UserAccountManagement />)}
-                {sidebarOption === 1 && (<BrowseProducts />)}
-                {sidebarOption === 2 && (<NewProduct />)}
-                {sidebarOption === 3 && (<AssociateHandler />)}
-                {sidebarOption === 4 && (<AskedQuestionsHandler />)}
-                {sidebarOption === 5 && (<RequestsHandler />)}
+                {sidebarOption === 1 && (<BrowseNotifications />)}
+                {sidebarOption === 2 && (<BrowseProducts />)}
+                {sidebarOption === 3 && (<BrowseBookings />)}
+                {sidebarOption === 4 && (<NewProduct />)}
+                {sidebarOption === 5 && (<AssociateHandler />)}
+                {sidebarOption === 6 && (<AskedQuestionsHandler />)}
+                {sidebarOption === 7 && (<RequestsHandler />)}
             </SidebarInset>
         </SidebarProvider>
     )

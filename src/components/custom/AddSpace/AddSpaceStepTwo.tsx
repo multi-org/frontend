@@ -98,15 +98,6 @@ const addSpaceStepTwoSchema = z.object({
       })
     }
   })
-// .refine((data) => {
-//     if (data.chargingModel === 'por_hora') return data.pricePerHour !== undefined
-//     if (data.chargingModel === 'por_dia') return data.pricePerDay !== undefined
-//     if (data.chargingModel === 'ambos') return data.pricePerHour && data.pricePerDay
-//     return true
-// }, {
-//     message: 'Informe os preços corretos para o modelo de cobrança.',
-//     path: ['pricePerHour']
-// })
 
 export default function AddSpaceStepTwo({
     onNext,

@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getUserInitials } from "@/utils/manipulateNames";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleCheck, ImageUp } from "lucide-react";
+import { CircleCheck, Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
@@ -98,7 +98,7 @@ export default function UserAvatarUpload({
 
     return (
         <div className={cn("flex flex-col gap-6 justify-center items-center", className)} {...props}>
-            <Card className="m-6 w-1/2 min-w-56 overflow-hidden">
+            <Card className="m-6 w-1/2 min-w-72 overflow-hidden">
                 <CardHeader className="text-center">
                     <CardTitle>Alteração de avatar</CardTitle>
                     <CardDescription
@@ -114,10 +114,12 @@ export default function UserAvatarUpload({
                                     <AvatarImage src={previewAvatar || userAvatar} alt={userName} />
                                     <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                                 </Avatar>
-                                <ImageUp
-                                    className="absolute bottom-[-12px] left-1/2 transform -translate-x-1/2 h-9 w-9 bg-white border rounded-full p-2 cursor-pointer hover:bg-gray-100 transition"
-                                    onClick={handleImageClick}
-                                />
+                                <div className="absolute flex justify-center items-center bg-white bottom-[-12px] left-1/2 transform -translate-x-1/2 h-9 w-9 border border-gray-300 rounded-full hover:bg-gray-100 transition">
+                                    <Pencil
+                                        className="h-6 w-6 p-1 cursor-pointer"
+                                        onClick={handleImageClick}
+                                    />
+                                </div>
                             </div>
                             <input
                                 type="file"

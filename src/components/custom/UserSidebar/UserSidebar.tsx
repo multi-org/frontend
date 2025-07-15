@@ -5,6 +5,7 @@ import {
     MessageCircleQuestion,
     House,
     ClipboardPen,
+    NotebookPen,
 } from "lucide-react"
 import { NavUser } from "../NavUser"
 import {
@@ -40,31 +41,37 @@ export default function UserSidebar({
         },
         items: [
             {
-                id: 1,
+                id: 2,
                 title: "Página inicial",
                 // url: "#",
                 icon: House,
             },
             {
-                id: 2,
+                id: 3,
+                title: "Minhas reservas",
+                // url: "#",
+                icon: NotebookPen,
+            },
+            {
+                id: 4,
                 title: "Cadastrar produtos",
                 // url: "#",
                 icon: PackagePlus,
             },
             {
-                id: 3,
+                id: 5,
                 title: "Associar-se",
                 // url: "#",
                 icon: Contact,
             },
             {
-                id: 4,
+                id: 6,
                 title: "Dúvidas",
                 // url: "#",
                 icon: MessageCircleQuestion,
             },
             {
-                id: 5,
+                id: 7,
                 title: "Solicitações",
                 // url: "#",
                 icon: ClipboardPen,
@@ -75,7 +82,7 @@ export default function UserSidebar({
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <NavUser onOption={() => onMenuClick(0)}/>
+                <NavUser onNavUserOption={(navUserOption) => onMenuClick(navUserOption)}/>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
