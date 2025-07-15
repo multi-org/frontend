@@ -56,7 +56,7 @@ interface BookingConfirmationData {
 
 interface BookingConfirmationCardProps {
     bookingData: BookingConfirmationData
-    onBackToHome: () => void
+    onBack: () => void;
 }
 
 const tipoConfig = {
@@ -99,7 +99,7 @@ export default function BookingConfirmationCard({
         customerEmail: "joao.silva@email.com",
         customerPhone: "(11) 99999-9999",
     },
-    onBackToHome = () => console.log("Voltando ao início"),
+    onBack,
 }: BookingConfirmationCardProps) {
 
     const [confirmationCopied, setConfirmationCopied] = useState(false)
@@ -134,8 +134,13 @@ export default function BookingConfirmationCard({
         alert("Comprovante baixado com sucesso!")
     }
 
+    const onBackToHome = () => {
+        console.log("Voltando ao início");
+        onBack();
+    }
+
     return (
-        <Card className="w-full max-w-4xl overflow-hidden">
+        <Card className="w-full max-w-4xl overflow-hidden mx-auto">
             <CardHeader className="text-center pb-6">
                 <div className="flex flex-col items-center space-y-4">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">

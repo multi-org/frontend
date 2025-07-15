@@ -11,6 +11,7 @@ interface ReducedProductCardProps {
     imagem: string
     tipo: "espaco" | "equipamento" | "servico"
     localizacao?: string
+    onNext: () => void;
 }
 
 const tipoConfig = {
@@ -40,6 +41,7 @@ export default function ReducedProductCard({
     // imagem = "/placeholder.svg?height=200&width=400",
     tipo = "espaco",
     localizacao = "Centro - São Paulo",
+    onNext,
 }: ReducedProductCardProps) {
 
     const config = tipoConfig[tipo]
@@ -48,6 +50,7 @@ export default function ReducedProductCard({
     const handleRent = () => {
         console.log("Solicitar aluguel do produto:", id)
         // implementari lógica de aluguel
+        onNext();
     }
 
     const formatPrice = (price: number) => {

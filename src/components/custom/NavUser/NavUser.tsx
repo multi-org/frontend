@@ -28,11 +28,11 @@ import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
 import { useEffect, useState } from "react"
 
 type NavUserProps = {
-  onOption: () => void;
+  onNavUserOption: (navUserOption: number) => void;
 }
 
 export default function NavUser({
-  onOption,
+  onNavUserOption,
 }: NavUserProps) {
 
   const navigate = useNavigate()
@@ -88,12 +88,15 @@ export default function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={onOption}
+                onClick={() => onNavUserOption(0)}
               >
                 <BadgeCheck />
                 Minha conta
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => onNavUserOption(1)}
+              >
                 <Bell />
                 Notificações
               </DropdownMenuItem>

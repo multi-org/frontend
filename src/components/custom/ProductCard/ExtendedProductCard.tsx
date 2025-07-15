@@ -38,6 +38,8 @@ interface ExtendedProductCardProps {
     tipo: "espaco" | "equipamento" | "servico"
     localizacao?: string
     disponibilidade: Disponibilility
+    onBack: () => void;
+    onNext: () => void;
 }
 
 const tipoConfig = {
@@ -79,6 +81,8 @@ export default function ExtendedProductCard({
         sabado: { inicio: "09:00", fim: "18:00" },
         domingo: { inicio: "14:00", fim: "20:00" },
     },
+    onBack,
+    onNext,
 }: ExtendedProductCardProps) {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -87,6 +91,7 @@ export default function ExtendedProductCard({
 
     const handleRent = () => {
         console.log("Solicitar aluguel do produto:", id)
+        onNext();
     }
 
     const formatPrice = (price: number) => {
@@ -264,7 +269,7 @@ export default function ExtendedProductCard({
             <CardFooter className="pt-6 grid grid-cols-2 gap-6 max-[300px]:grid-cols-1">
                 <Button 
                 variant={"outline"}
-                onClick={handleRent} 
+                onClick={onBack} 
                 size="lg" 
                 className="w-full border-yellowDark text-yellowDark hover:bg-yellow-100 hover:text-yellowDark">
                     Voltar

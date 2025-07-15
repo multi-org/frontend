@@ -2,7 +2,7 @@ import { ReducedBookingConfirmationCard } from "../RentalBooking"
 
 export default function BrowseBookings() {
     return (
-        <>
+        <div className="max-[550px]:mx-auto">
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
                     <h1 className="text-3xl text-center font-bold">
@@ -30,7 +30,7 @@ export default function BrowseBookings() {
                     onModify={(id: string) => console.log("Modificar:", id)}
                 />
             </div>
-        </>
+        </div>
     )
 }
 

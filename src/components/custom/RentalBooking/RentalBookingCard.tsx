@@ -28,6 +28,8 @@ interface ProductInfo {
 interface RentalBookingCardProps {
     product: ProductInfo
     onPayment: (bookingData: any) => void
+    onBack: () => void;
+    onNext: () => void;
 }
 
 const tipoConfig = {
@@ -71,6 +73,8 @@ export default function RentalBookingCard({
         localizacao: "Campus Central - São Paulo",
     },
     onPayment = (data: any) => console.log("Dados do pagamento:", data),
+    onBack,
+    onNext,
 }: RentalBookingCardProps) {
 
     const [startDate, setStartDate] = useState<Date>()
@@ -120,7 +124,8 @@ export default function RentalBookingCard({
             activityDescription,
             totalPrice: calculateTotal(),
         }
-        onPayment(bookingData)
+        onPayment(bookingData);
+        onNext();
     }
 
     const isFormValid = () => {
@@ -350,6 +355,7 @@ export default function RentalBookingCard({
             <CardFooter className="grid grid-cols-2 gap-6 max-[500px]:grid-cols-1">
                 <Button
                     variant={"outline"}
+                    onClick={onBack}
                     size="lg"
                     className="w-full border-yellowDark text-yellowDark hover:text-yellowDark hover:bg-yellow-100"
                 >

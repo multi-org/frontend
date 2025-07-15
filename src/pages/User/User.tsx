@@ -7,6 +7,7 @@ import { BrowseBookings } from "@/components/custom/BrowseBookings";
 import { BrowseProducts } from "@/components/custom/BrowseProducts";
 import { NewProduct } from "@/components/custom/NewProduct";
 import { UserAccountManagement } from "@/components/custom/UserAccountManagement";
+import { BrowseNotifications } from "@/components/custom/UserNotifications";
 import { UserSidebar } from "@/components/custom/UserSidebar";
 import { 
     SidebarInset, 
@@ -17,7 +18,7 @@ import { useState } from "react";
 
 export default function User() {
 
-    const [sidebarOption, setSidebarOption] = useState(1);
+    const [sidebarOption, setSidebarOption] = useState<number>(2);
 
     function handleMenuClick(option: number) {
         setSidebarOption(option);
@@ -32,12 +33,13 @@ export default function User() {
             <SidebarTrigger className="hover:cursor-pointer" />
             <SidebarInset>
                 {sidebarOption === 0 && (<UserAccountManagement />)}
-                {sidebarOption === 1 && (<BrowseProducts />)}
-                {sidebarOption === 2 && (<BrowseBookings />)}
-                {sidebarOption === 3 && (<NewProduct />)}
-                {sidebarOption === 4 && (<AssociateHandler />)}
-                {sidebarOption === 5 && (<AskedQuestionsHandler />)}
-                {sidebarOption === 6 && (<RequestsHandler />)}
+                {sidebarOption === 1 && (<BrowseNotifications />)}
+                {sidebarOption === 2 && (<BrowseProducts />)}
+                {sidebarOption === 3 && (<BrowseBookings />)}
+                {sidebarOption === 4 && (<NewProduct />)}
+                {sidebarOption === 5 && (<AssociateHandler />)}
+                {sidebarOption === 6 && (<AskedQuestionsHandler />)}
+                {sidebarOption === 7 && (<RequestsHandler />)}
             </SidebarInset>
         </SidebarProvider>
     )

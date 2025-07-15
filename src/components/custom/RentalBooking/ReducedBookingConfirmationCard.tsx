@@ -125,7 +125,7 @@ export default function ReducedBookingConfirmationCard({
                     {/* Informações Principais */}
                     <div className="flex-1 min-w-0 space-y-2">
                         {/* Linha 1: Badges e Status */}
-                        <div className="flex max-[550px]:flex-col items-center max-[550px]:items-start justify-between">
+                        <div className="flex max-[590px]:flex-col items-center max-[550px]:items-start justify-between max-[550px]:absolute max-[550px]:top-32 max-[550px]:left-52 max-[350px]:left-36">
                             <div className="flex max-[550px]:flex-col items-center gap-2">
                                 <div className={`${config.color} flex items-center gap-1 text-xs p-1 rounded-full`}>
                                     <IconComponent className="h-3 w-3" />
@@ -142,8 +142,12 @@ export default function ReducedBookingConfirmationCard({
 
                         {/* Linha 2: Nome do Produto */}
                         <div>
-                            <h3 className="font-semibold text-base text-gray-900 truncate">{booking.productName}</h3>
-                            <p className="text-sm text-gray-600 truncate">{booking.activityTitle}</p>
+                            <h3 className="font-semibold text-base text-gray-900 truncate">
+                                {booking.productName}
+                            </h3>
+                            <p className="text-sm text-gray-600 truncate">
+                                {booking.activityTitle}
+                            </p>
                         </div>
 
                         {/* Linha 3: Data e Horário */}
@@ -170,13 +174,14 @@ export default function ReducedBookingConfirmationCard({
                     </div>
 
                     {/* Menu de Ações */}
-                    <div className="flex items-start gap-2">
+                    <div className="flex max-[550px]:justify-between items-start gap-2">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => onViewDetails(booking.confirmationNumber)}
-                            className="bg-transparent"
+                            className="bg-transparent truncate"
                         >
+                            Ver reserva
                             <Eye className="h-4 w-4" />
                         </Button>
 

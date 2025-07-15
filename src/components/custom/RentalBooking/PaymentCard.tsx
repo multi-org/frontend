@@ -26,8 +26,8 @@ interface BookingData {
 
 interface PaymentCardProps {
     bookingData: BookingData
-    onPaymentConfirmed: () => void
-    onCancel: () => void
+    onNext: () => void
+    onBack: () => void
 }
 
 const tipoConfig = {
@@ -63,8 +63,8 @@ export default function PaymentCard({
         activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
         totalPrice: 3600.0,
     },
-    onPaymentConfirmed = () => console.log("Pagamento confirmado"),
-    onCancel = () => console.log("Pagamento cancelado"),
+    onNext,
+    onBack,
 }: PaymentCardProps) {
 
     const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 minutos em segundos
@@ -99,6 +99,11 @@ export default function PaymentCard({
         }
     }, [timeLeft, paymentStatus])
 
+    const onPaymentConfirmed = () => {
+        console.log("Pagamento confirmado");
+        onNext();
+    }
+
     const copyPixCode = async () => {
         try {
             await navigator.clipboard.writeText(pixCode)
@@ -119,6 +124,11 @@ export default function PaymentCard({
                 onPaymentConfirmed()
             }, 2000)
         }, 3000)
+    }
+
+    const onCancel = () => {
+        console.log("Pagamento cancelado");
+        onBack();
     }
 
     return (
