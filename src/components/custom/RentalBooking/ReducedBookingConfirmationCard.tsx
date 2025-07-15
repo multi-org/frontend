@@ -110,8 +110,8 @@ export default function ReducedBookingConfirmationCard({
     const canModify = booking.status === "confirmado"
 
     return (
-        <Card className="w-full hover:shadow-md transition-shadow duration-200">
-            <CardContent className="p-6 overflow-hidden">
+        <Card className="flex flex-col flex-1 min-w-0 w-full hover:shadow-md transition-shadow duration-200">
+            <CardContent className="p-4 sm:p-6 overflow-hidden">
                 <div className="flex max-[550px]:flex-col gap-4">
                     {/* Imagem do Produto */}
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
@@ -125,8 +125,8 @@ export default function ReducedBookingConfirmationCard({
                     {/* Informações Principais */}
                     <div className="flex-1 min-w-0 space-y-2">
                         {/* Linha 1: Badges e Status */}
-                        <div className="flex max-[590px]:flex-col items-center max-[550px]:items-start justify-between max-[550px]:absolute max-[550px]:top-32 max-[550px]:left-52 max-[350px]:left-36">
-                            <div className="flex max-[550px]:flex-col items-center gap-2">
+                        <div className="flex max-[865px]:flex-col items-center max-[550px]:items-start justify-between max-[550px]:absolute max-[550px]:top-32 max-[550px]:left-52 max-[350px]:left-36">
+                            <div className="flex max-[865px]:flex-col items-center gap-2">
                                 <div className={`${config.color} flex items-center gap-1 text-xs p-1 rounded-full`}>
                                     <IconComponent className="h-3 w-3" />
                                     {config.label}
@@ -135,7 +135,7 @@ export default function ReducedBookingConfirmationCard({
                                     {booking.productCategory}
                                 </div>
                             </div>
-                            <div className={`${statusInfo.color} text-xs p-1 rounded-full max-[550px]:mt-2`}>
+                            <div className={`${statusInfo.color} text-xs p-1 rounded-full max-[865px]:mt-2`}>
                                 {statusInfo.label}
                             </div>
                         </div>

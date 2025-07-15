@@ -1,5 +1,3 @@
-import { ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import UserNotificationsList from "./UserNotificationsList"
 
@@ -11,13 +9,7 @@ interface UserNotification {
     isRead: boolean
 }
 
-interface BrowseNotificationsProps {
-    onBack?: () => void
-}
-
-export default function BrowseNotifications({
-    onBack = () => console.log("Voltar clicado")
-}: BrowseNotificationsProps) {
+export default function BrowseNotifications() {
 
     const [notifications] = useState<UserNotification[]>([
         {
@@ -80,17 +72,8 @@ export default function BrowseNotifications({
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-4xl mx-auto px-4">
-                {/* Cabeçalho */}
-                <div className="mb-6">
-                    <Button variant="ghost" onClick={onBack} className="mb-4 text-gray-600 hover:text-gray-800 bg-transparent">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Voltar
-                    </Button>
-                </div>
-
-                {/* Lista de Notificações */}
+        <div className="flex flex-col flex-1 min-w-0 w-full">
+            <div className="p-4 sm:p-6">
                 <UserNotificationsList
                     notifications={notifications}
                     onDeleteNotification={handleDeleteNotification}

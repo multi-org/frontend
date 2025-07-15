@@ -38,7 +38,7 @@ export default function RequestsHandler({
                 <Tabs defaultValue="associate">
                     <div className="flex justify-center max-[620px]:flex-col">
                         <TabsList
-                            className="bg-orange-100 text-orangeLight max-[620px]:flex-col truncate h-full"
+                            className="bg-orange-100 text-orangeLight max-[880px]:flex-col truncate h-full"
                         >
                             <TabsTrigger value="associate">Associações</TabsTrigger>
                             <TabsTrigger
@@ -62,7 +62,7 @@ export default function RequestsHandler({
                     <TabsContent value="companyRegiter">
                         {companyRegisterStep === 0 && (
                             <>
-                                <div className="flex justify-end px-6">
+                                <div className="flex justify-end max-[640px]:justify-center px-6 pt-4">
                                     <Button
                                         className="text-orangeDark hover:text-grayLight border-orangeLight hover:bg-yellowDark truncate"
                                         variant={"outline"}

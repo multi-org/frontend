@@ -1,7 +1,6 @@
 import { Bell, BellOff, Check, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 import UserNotification from "./UserNotification"
 
@@ -57,45 +56,47 @@ export default function UserNotificationsList({
     const hasNotifications = localNotifications.length > 0
 
     return (
-        <Card className="w-full max-w-2xl mx-auto">
+        <Card className="w-full overflow-hidden">
             <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between w-full gap-2 max-[950px]:flex-col">
+                    <div className="flex items-center gap-2 w-full max-[950px]:justify-center">
                         <Bell className="h-5 w-5 text-gray-600" />
                         <CardTitle className="text-xl">Notificações</CardTitle>
                         {unreadCount > 0 && (
-                            <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                            <span className="bg-yellowDark text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
                                 {unreadCount}
                             </span>
                         )}
                     </div>
 
                     {hasNotifications && (
-                        <div className="flex gap-2">
+                        <div className="flex justify-end gap-2 max-[470px]:flex-col w-full max-[950px]:justify-center">
                             {unreadCount > 0 && (
-                                <Button variant="outline" size="sm" onClick={handleMarkAllAsRead} className="text-xs bg-transparent">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-xs bg-transparent truncate">
                                     <Check className="h-3 w-3 mr-1" />
                                     Marcar todas como lidas
                                 </Button>
                             )}
                             <Button
                                 variant="outline"
-                                size="sm"
                                 onClick={handleClearAll}
-                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
+                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent truncate"
                             >
                                 <Trash2 className="h-3 w-3 mr-1" />
-                                Limpar todas
+                                Deletar todas
                             </Button>
                         </div>
                     )}
                 </div>
             </CardHeader>
 
-            <CardContent className="p-0">
+            <CardContent className="py-2 px-0">
                 {hasNotifications ? (
                     <div className="space-y-0">
-                        {localNotifications.map((notification, index) => (
+                        {localNotifications.map((notification) => (
                             <div key={notification.id}>
                                 <div className="px-6 py-2">
                                     <UserNotification
@@ -108,7 +109,6 @@ export default function UserNotificationsList({
                                         onMarkAsRead={handleMarkAsRead}
                                     />
                                 </div>
-                                {index < localNotifications.length - 1 && <Separator className="mx-6" />}
                             </div>
                         ))}
                     </div>

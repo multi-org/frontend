@@ -31,7 +31,7 @@ export default function User() {
                 activeOption={sidebarOption}
             />
             <SidebarTrigger className="hover:cursor-pointer" />
-            <SidebarInset>
+            <SidebarInset className="flex flex-col flex-1 overflow-x-hidden">
                 {sidebarOption === 0 && (<UserAccountManagement />)}
                 {sidebarOption === 1 && (<BrowseNotifications />)}
                 {sidebarOption === 2 && (<BrowseProducts />)}

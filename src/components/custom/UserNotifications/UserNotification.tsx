@@ -52,7 +52,7 @@ export default function UserNotification({
 
     return (
         <Card
-            className={`w-full transition-all duration-200 hover:shadow-md cursor-pointer ${!isRead ? "border-blue-200 bg-blue-50/30" : "bg-white"
+            className={`w-full transition-all duration-200 hover:shadow-md overflow-hidden cursor-pointer ${!isRead ? "border-blue-200 bg-blue-50/30" : "bg-white"
                 }`}
             onClick={handleClick}
         >
@@ -61,7 +61,9 @@ export default function UserNotification({
                     <div className="flex-1 min-w-0 space-y-2">
                         {/* Cabeçalho com título e badge */}
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className={`font-semibold text-sm ${!isRead ? "text-gray-900" : "text-gray-700"}`}>{title}</h3>
+                            <h3 className={`font-semibold text-sm ${!isRead ? "text-gray-900" : "text-gray-700"}`}>
+                                {title}
+                            </h3>
                             {!isRead && (
                                 <div className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">
                                     Nova
@@ -70,7 +72,9 @@ export default function UserNotification({
                         </div>
 
                         {/* Descrição */}
-                        <p className={`text-sm leading-relaxed ${!isRead ? "text-gray-700" : "text-gray-600"}`}>{description}</p>
+                        <p className={`text-sm leading-relaxed ${!isRead ? "text-gray-700" : "text-gray-600"}`}>
+                            {description}
+                        </p>
 
                         {/* Data */}
                         <div className="flex items-center gap-1 text-xs text-gray-500">
