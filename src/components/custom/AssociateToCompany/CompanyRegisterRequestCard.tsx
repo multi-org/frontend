@@ -3,40 +3,43 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { 
-    AlertDialog, 
-    AlertDialogAction, 
-    AlertDialogCancel, 
-    AlertDialogContent, 
-    AlertDialogDescription, 
-    AlertDialogFooter, 
-    AlertDialogHeader, 
-    AlertDialogTitle 
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 import { useState } from "react"
+import { CompanyType } from "@/types/Company"
 
 type companyRegisterRequestCardProps = {
     className?: string;
-    // company: CompanyType;
+    company: CompanyType;
 }
 
 export default function CompanyRegisterRequestCard({
-    // company: {
-    //     id,
-    //     popularName,
-    //     legalName,
-    //     description,
-    //     cnpj,
-    //     companyAddress,
-    //     street,
-    //     complement,
-    //     neighborhood,
-    //     city,
-    //     state,
-    //     email,
-    //     phone,
-    //     isMicroenterprise,
-    // },
+    company: {
+        id,
+        popularName,
+        legalName,
+        description,
+        cnpj,
+        zipCode,
+        street,
+        number,
+        complement,
+        neighborhood,
+        city,
+        state,
+        country,
+        email,
+        phone,
+        isMicroenterprise,
+    },
     className,
     ...props
 }: companyRegisterRequestCardProps) {
@@ -74,8 +77,8 @@ export default function CompanyRegisterRequestCard({
                     </div>
                     <CardDescription className="flex items-center gap-2">
                         <span>
-                            ID: REQ-001
-                            {/* ID: {id} */}
+                            {/* ID: REQ-001 */}
+                            ID: {id}
                         </span>
                         <span>•</span>
                         <span>
@@ -99,8 +102,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    UEPB - Campus Patos
-                                    {/* {popularName} */}
+                                    {/* UEPB - Campus Patos */}
+                                    {popularName}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -110,8 +113,32 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Universidade Estadual da Paraíba - UEPB
-                                    {/* {legalName} */}
+                                    {/* Universidade Estadual da Paraíba - UEPB */}
+                                    {legalName}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
+                                    E-mail
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    {/* uepb@email.com */}
+                                    {email}
+                                </p>
+                            </div>
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
+                                    Telefone
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    {/* 83 9 3421-1560 */}
+                                    {phone}
                                 </p>
                             </div>
                         </div>
@@ -122,8 +149,8 @@ export default function CompanyRegisterRequestCard({
                             </label>
                             <p
                                 className="text-sm text-gray-900">
-                                Instituição voltada para o campo das ciências exatas
-                                {/* {description} */}
+                                {/* Instituição voltada para o campo das ciências exatas */}
+                                {description}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
@@ -134,8 +161,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    00.000.000/0000-00
-                                    {/* {cnpj} */}
+                                    {/* 00.000.000/0000-00 */}
+                                    {cnpj}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -145,8 +172,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    não
-                                    {/* {isMicroenterprise} */}
+                                    {/* não */}
+                                    {isMicroenterprise}
                                 </p>
                             </div>
                         </div>
@@ -166,8 +193,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    01234-567
-                                    {/* {companyAddress} */}
+                                    {/* 01234-567 */}
+                                    {zipCode}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -175,8 +202,8 @@ export default function CompanyRegisterRequestCard({
                                     Rua
                                 </label>
                                 <p className="text-sm text-gray-900">
-                                    Rua das Flores, 123
-                                    {/* {street} */}
+                                    {/* Rua das Flores, 123 */}
+                                    {street}, {number}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -185,8 +212,8 @@ export default function CompanyRegisterRequestCard({
                                     Complemento
                                 </label>
                                 <p className="text-sm text-gray-900">
-                                    Bloco A - Campus Principal
-                                    {/* {complement} */}
+                                    {/* Bloco A - Campus Principal */}
+                                    {complement}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -196,8 +223,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Centro
-                                    {/* {neighborhood} */}
+                                    {/* Centro */}
+                                    {neighborhood}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -207,8 +234,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    São Paulo
-                                    {/* {city} */}
+                                    {/* São Paulo */}
+                                    {city}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -218,8 +245,8 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    São Paulo
-                                    {/* {state} */}
+                                    {/* São Paulo */}
+                                    {state}, {country}
                                 </p>
                             </div>
                         </div>

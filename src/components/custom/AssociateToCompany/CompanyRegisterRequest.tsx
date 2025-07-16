@@ -12,13 +12,14 @@ import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft, CircleCheck } from "lucide-react"
+import { ArrowLeft, CircleCheck, Loader } from "lucide-react"
 import { maskCEP, maskCNPJ, maskPhone } from "@/utils/masks"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { useEffect } from "react"
 import { toast } from "@/hooks/use-toast.ts"
 import { Textarea } from "@/components/ui/textarea.tsx"
 import { Switch } from "@/components/ui/switch.tsx"
+import { useCompanies } from "@/hooks/companies-hooks.ts"
 
 type companyRegisterRequestProps = {
     onBack: () => void;
@@ -31,12 +32,14 @@ const companyRegisterRequestSchema = z.object({
     legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido"),
     description: z.string().min(1, 'Descrição é obrigatória.'),
     cnpj: z.string().min(18, "CNPJ precisa ter 18 caracteres"),
-    companyAddress: z.string().min(1, 'CEP é obrigatório.'),
-    street: z.string().optional(),
+    zipCode: z.string().min(8, 'CEP precisa ter 8 números'),
+    street: z.string().min(1, "Rua é pbrigatória"),
+    number: z.string().regex(/^[0-9]*$/, "Número é obrigatóriio"),
     complement: z.string().optional(),
-    neighborhood: z.string().optional(),
-    city: z.string().optional(),
-    state: z.string().optional(),
+    neighborhood: z.string().min(1, "Bairro é obrigatório"),
+    city: z.string().min(1, "Cidade é obrigatório"),
+    state: z.string().min(1, "Estado é obrigatório"),
+    country: z.string().min(1, "País é obrigatório"),
     email: z.string().regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email inválido"),
     phone: z.string().regex(/^\(\d{2}\) \d \d{4}-\d{4}$/, "Telefone inválido"),
     isMicroenterprise: z.boolean(),
@@ -49,6 +52,8 @@ export default function CompanyRegisterRequest({
     ...props
 }: companyRegisterRequestProps) {
 
+    const { createCompanyRegisterRequest, loading } = useCompanies();
+
     const form = useForm<z.infer<typeof companyRegisterRequestSchema>>({
         resolver: zodResolver(companyRegisterRequestSchema),
         defaultValues: {
@@ -56,19 +61,21 @@ export default function CompanyRegisterRequest({
             legalName: '',
             description: '',
             cnpj: '',
-            companyAddress: '',
+            zipCode: '',
             street: '',
+            number: '',
             complement: '',
             neighborhood: '',
             city: '',
             state: '',
+            country: '',
             email: '',
             phone: '',
             isMicroenterprise: false,
         },
     })
 
-    const cep = useWatch({ control: form.control, name: 'companyAddress' })
+    const cep = useWatch({ control: form.control, name: 'zipCode' })
 
     useEffect(() => {
         const cleanCep = cep?.replace(/\D/g, '')
@@ -87,22 +94,28 @@ export default function CompanyRegisterRequest({
             .catch((err) => console.error("Erro ao buscar CEP:", err))
     }, [cep, form])
 
-    function onSubmit(data: z.infer<typeof companyRegisterRequestSchema>) {
-        console.log("Dados enviados:", data)
-        form.reset()
-        toast({
-            description: (
-                <div className="flex items-center gap-2">
-                    <CircleCheck className="text-white" size={20} />
-                    Solicitação de cadasto de instituição enviada com sucesso
-                </div>
-            ),
-            variant: 'default',
-            style: {
-                backgroundColor: "#4E995E",
-                color: "#FFFFFF",
-            },
-        })
+    const onSubmit = async (data: z.infer<typeof companyRegisterRequestSchema>) => {
+        try {
+            const result = await createCompanyRegisterRequest(data)
+            if (result) {
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Solicitação de cadasto de instituição enviada com sucesso
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                })
+                form.reset()
+            }
+        } catch (error: any) {
+            toast({ title: 'error', variant: 'destructive' })
+        }
     }
 
     return (
@@ -210,7 +223,7 @@ export default function CompanyRegisterRequest({
                                                                     </div>
                                                                 </div>
                                                             </FormControl>
-                                                            <FormMessage className="text-grayLight" />
+                                                            <FormMessage className="text-red-500" />
                                                         </FormItem>
                                                     )
                                                 }}
@@ -266,7 +279,7 @@ export default function CompanyRegisterRequest({
                                             <div>
                                                 <FormField
                                                     control={form.control}
-                                                    name="companyAddress"
+                                                    name="zipCode"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel
@@ -305,6 +318,25 @@ export default function CompanyRegisterRequest({
                                             <div>
                                                 <FormField
                                                     control={form.control}
+                                                    name="number"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-black">
+                                                                Número
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    className="text-black focus-visible:ring-blueLight"
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <div>
+                                                <FormField
+                                                    control={form.control}
                                                     name="complement"
                                                     render={({ field }) => (
                                                         <FormItem>
@@ -318,6 +350,8 @@ export default function CompanyRegisterRequest({
                                                     )}
                                                 />
                                             </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <FormField
                                                     control={form.control}
@@ -334,8 +368,6 @@ export default function CompanyRegisterRequest({
                                                     )}
                                                 />
                                             </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <FormField
                                                     control={form.control}
@@ -352,6 +384,8 @@ export default function CompanyRegisterRequest({
                                                     )}
                                                 />
                                             </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <FormField
                                                     control={form.control}
@@ -359,6 +393,22 @@ export default function CompanyRegisterRequest({
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="text-black">Estado</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    className="text-black focus-visible:ring-blueLight"
+                                                                    {...field} />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="country"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-black">País</FormLabel>
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
@@ -410,7 +460,10 @@ export default function CompanyRegisterRequest({
                                             </div>
                                         </div>
                                         <Button type="submit" className="w-full bg-yellowDark hover:bg-yellowNormal">
-                                            Prosseguir
+                                            {loading ?
+                                                <Loader className="animate-spin" />
+                                                : 'Prosseguir'
+                                            }
                                         </Button>
                                     </div>
                                     <div className="text-center text-sm">

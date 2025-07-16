@@ -9,10 +9,11 @@ import CompanyRegisterRequestCard from "./CompanyRegisterRequestCard";
 import CompanyRegisterForm from "./CompanyRegisterForm";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
 import AssociateToCompanyCard from "./AssociateToCompanyCard";
 import LegalResponsibleUserRequestCard from "./LegalResponsibleUserRequestCard";
+import { useCompanies } from "@/hooks/companies-hooks";
 
 type requestsHandlerProps = {
     className?: string;
@@ -24,6 +25,11 @@ export default function RequestsHandler({
 }: requestsHandlerProps) {
 
     const [companyRegisterStep, setCompanyRegisterStep] = useState(0)
+    const { companies, getCompanyRegisterRequests } = useCompanies()
+
+    useEffect(() => {
+        getCompanyRegisterRequests()
+    }, [])
 
     return (
         <>
@@ -72,10 +78,22 @@ export default function RequestsHandler({
                                         Cadastrar instituição
                                     </Button>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2">
-                                    <CompanyRegisterRequestCard />
-                                    <CompanyRegisterRequestCard />
-                                </div>
+                                {companies.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2">
+                                    {companies.map((company) => (
+                                        <CompanyRegisterRequestCard
+                                        key={company.id}
+                                        company={company}
+                                        />
+                                    ))}
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-center w-full text-center py-4">
+                                        <p>
+                                            Nenhuma solicitação no momemnto
+                                        </p>
+                                    </div>
+                                )}
                             </>
                         )}
                         {companyRegisterStep === 1 && (
