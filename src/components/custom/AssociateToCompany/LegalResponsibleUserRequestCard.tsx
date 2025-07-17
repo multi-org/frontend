@@ -108,7 +108,7 @@ export default function LegalResponsibleUserRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Jucelio Santos
+                                    João Silva
                                     {/* {name} */}
                                 </p>
                             </div>
@@ -130,7 +130,7 @@ export default function LegalResponsibleUserRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    jucelio@santos.com
+                                    joao@silva.com
                                     {/* {email} */}
                                 </p>
                             </div>

@@ -6,7 +6,7 @@ export interface CompanyType {
     cnpj: string,
     zipCode: string,
     street: string,
-    number: number,
+    number: string,
     complement: string,
     neighborhood: string,
     city: string,
@@ -16,4 +16,13 @@ export interface CompanyType {
     phone: string,
     isMicroenterprise: boolean,
     legalResponsiblePerson: string,
+}
+
+export type CompanyRegisterRequestType = CompanyType & {
+  requiredAt: string;
+  requestedByUser: {
+    name: string;
+    userId: string;
+    email: string;
+  };
 }

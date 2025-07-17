@@ -1,4 +1,4 @@
-import { Building2, MapPin, Clock, ClipboardList } from "lucide-react"
+import { Building2, MapPin, Clock, ClipboardList, CircleCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -14,45 +14,71 @@ import {
     AlertDialogTitle
 } from "@/components/ui/alert-dialog"
 import { useState } from "react"
-import { CompanyType } from "@/types/Company"
+import { CompanyRegisterRequestType } from "@/types/Company"
+import { useCompanies } from "@/hooks/companies-hooks"
+import { toast } from "@/hooks/use-toast"
 
 type companyRegisterRequestCardProps = {
     className?: string;
-    company: CompanyType;
+    company: CompanyRegisterRequestType;
 }
 
 export default function CompanyRegisterRequestCard({
-    company: {
-        id,
-        popularName,
-        legalName,
-        description,
-        cnpj,
-        zipCode,
-        street,
-        number,
-        complement,
-        neighborhood,
-        city,
-        state,
-        country,
-        email,
-        phone,
-        isMicroenterprise,
-    },
+    company,
     className,
     ...props
 }: companyRegisterRequestCardProps) {
 
+    const { createCompany, deleteCompanyRegisterRequestById } = useCompanies()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-    const handleProceed = () => {
-        console.log("Instituição aprovada!")
+    const handleProceed = async () => {
+        try {
+            const {
+                id,
+                requestedByUser,
+                requiredAt,
+                legalResponsiblePerson,
+                ...companyData
+            } = company
+            const result = await createCompany(companyData)
+            if (result) {
+                console.log("Dados enviados:", companyData)
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Instituição cadastrada com sucesso
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                })
+            }
+            console.log("Instituição aprovada!")
+        } catch {
+            toast({ title: 'error', variant: 'destructive' })
+        }
     }
 
     const handleReject = () => {
         console.log("Instituição rejeitada!")
         setIsDeleteDialogOpen(true)
+    }
+
+    const handleDeletion = async () => {
+        try {
+            const {
+                id,
+            } = company
+            await deleteCompanyRegisterRequestById(id)
+            // continuar aqui..
+        } catch {
+            toast({ title: 'error', variant: 'destructive' })
+        }
     }
 
     return (
@@ -69,7 +95,7 @@ export default function CompanyRegisterRequestCard({
                             </CardTitle>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 text-orangeLight">
                                 <Clock className="h-3 w-3" />
                                 Pendente
                             </div>
@@ -77,12 +103,7 @@ export default function CompanyRegisterRequestCard({
                     </div>
                     <CardDescription className="flex items-center gap-2">
                         <span>
-                            {/* ID: REQ-001 */}
-                            ID: {id}
-                        </span>
-                        <span>•</span>
-                        <span>
-                            Solicitado em 15/12/2024
+                            Solicitado em {company.requiredAt}
                         </span>
                     </CardDescription>
                 </CardHeader>
@@ -98,12 +119,36 @@ export default function CompanyRegisterRequestCard({
                             <div className="space-y-1">
                                 <label
                                     className="text-sm font-medium text-gray-600">
+                                    Nome do solicitante
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    {/* UEPB - Campus Patos */}
+                                    {company.requestedByUser.name}
+                                </p>
+                            </div>
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
+                                    E-mail do solicitante
+                                </label>
+                                <p
+                                    className="text-sm text-gray-900">
+                                    {/* Universidade Estadual da Paraíba - UEPB */}
+                                    {company.requestedByUser.email}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
+                            <div className="space-y-1">
+                                <label
+                                    className="text-sm font-medium text-gray-600">
                                     Nome fantasia
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* UEPB - Campus Patos */}
-                                    {popularName}
+                                    {company.popularName}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -114,7 +159,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* Universidade Estadual da Paraíba - UEPB */}
-                                    {legalName}
+                                    {company.legalName}
                                 </p>
                             </div>
                         </div>
@@ -127,7 +172,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* uepb@email.com */}
-                                    {email}
+                                    {company.email}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -138,7 +183,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* 83 9 3421-1560 */}
-                                    {phone}
+                                    {company.phone}
                                 </p>
                             </div>
                         </div>
@@ -150,7 +195,7 @@ export default function CompanyRegisterRequestCard({
                             <p
                                 className="text-sm text-gray-900">
                                 {/* Instituição voltada para o campo das ciências exatas */}
-                                {description}
+                                {company.description}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
@@ -162,7 +207,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* 00.000.000/0000-00 */}
-                                    {cnpj}
+                                    {company.cnpj}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -173,7 +218,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* não */}
-                                    {isMicroenterprise}
+                                    {company.isMicroenterprise ? "sim" : "não"}
                                 </p>
                             </div>
                         </div>
@@ -194,7 +239,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* 01234-567 */}
-                                    {zipCode}
+                                    {company.zipCode}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -203,7 +248,7 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p className="text-sm text-gray-900">
                                     {/* Rua das Flores, 123 */}
-                                    {street}, {number}
+                                    {company.street}, {company.number}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -213,7 +258,7 @@ export default function CompanyRegisterRequestCard({
                                 </label>
                                 <p className="text-sm text-gray-900">
                                     {/* Bloco A - Campus Principal */}
-                                    {complement}
+                                    {company.complement}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -224,7 +269,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* Centro */}
-                                    {neighborhood}
+                                    {company.neighborhood}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -235,7 +280,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* São Paulo */}
-                                    {city}
+                                    {company.city}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -246,7 +291,7 @@ export default function CompanyRegisterRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* São Paulo */}
-                                    {state}, {country}
+                                    {company.state}, {company.country}
                                 </p>
                             </div>
                         </div>

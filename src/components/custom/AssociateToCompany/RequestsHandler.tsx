@@ -25,7 +25,7 @@ export default function RequestsHandler({
 }: requestsHandlerProps) {
 
     const [companyRegisterStep, setCompanyRegisterStep] = useState(0)
-    const { companies, getCompanyRegisterRequests } = useCompanies()
+    const { companyRegisterRequests, getCompanyRegisterRequests } = useCompanies()
 
     useEffect(() => {
         getCompanyRegisterRequests()
@@ -78,14 +78,17 @@ export default function RequestsHandler({
                                         Cadastrar instituição
                                     </Button>
                                 </div>
-                                {companies.length > 0 ? (
+                                {companyRegisterRequests.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2">
-                                    {companies.map((company) => (
-                                        <CompanyRegisterRequestCard
-                                        key={company.id}
-                                        company={company}
-                                        />
-                                    ))}
+                                        {companyRegisterRequests.map((request) => {
+                                            const uniqueKey = `${request.cnpj}-${request.email}`;
+                                            return (
+                                                <CompanyRegisterRequestCard
+                                                    key={uniqueKey}
+                                                    company={request}
+                                                />
+                                            )
+                                        })}
                                     </div>
                                 ) : (
                                     <div className="flex justify-center w-full text-center py-4">

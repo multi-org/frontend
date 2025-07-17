@@ -97,6 +97,7 @@ export default function CompanyRegisterRequest({
     const onSubmit = async (data: z.infer<typeof companyRegisterRequestSchema>) => {
         try {
             const result = await createCompanyRegisterRequest(data)
+            console.log("resposta:", result)
             if (result) {
                 toast({
                     description: (

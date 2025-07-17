@@ -1,6 +1,6 @@
 import api from "@/apis/api"
 import { useCompanyStore } from "@/store/useCompanyStore"
-import { CompanyType } from "@/types/Company"
+import { CompanyType, CompanyRegisterRequestType } from "@/types/Company"
 import { useState } from "react"
 
 export const useCompanies = () => {
@@ -11,6 +11,9 @@ export const useCompanies = () => {
         delete: deleteCompany,
         setCompanies,
         getCompanyById,
+        companyRegisterRequests,
+        setCompanyRegisterRequests,
+        deleteCompanyRegisterRequest,
     } = useCompanyStore()
 
     const [loading, setLoading] = useState(false)
@@ -97,8 +100,8 @@ export const useCompanies = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<CompanyType[]>("/companies/all/requests")
-            setCompanies(response.data)
+            const response = await api.get<CompanyRegisterRequestType[]>("/companies/all/requests")
+            setCompanyRegisterRequests(response.data)
         } catch (err) {
             setError("Erro na busca por instituições")
         } finally {
@@ -160,9 +163,11 @@ export const useCompanies = () => {
         updateCompany,
         deleteCompanyById,
         getCompanyById,
+        companyRegisterRequests,
         getCompanyRegisterRequests,
         createCompanyRegisterRequest,
-        deleteCompanyRegisterRequestById
+        deleteCompanyRegisterRequestById,
+        deleteCompanyRegisterRequest,
     }
 
 }

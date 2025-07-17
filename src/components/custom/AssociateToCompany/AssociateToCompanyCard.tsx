@@ -85,7 +85,7 @@ export default function AssociateToCompanyCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Jucelio Santos
+                                    João Silva
                                     {/* {name} */}
                                 </p>
                             </div>
