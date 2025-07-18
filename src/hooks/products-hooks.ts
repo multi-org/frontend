@@ -40,9 +40,9 @@ export const useProducts = () => {
     try {
       const response = await api.post('/produtos', {
         ...product,
-        disponibilidade: [
-          { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
-        ],
+        // disponibilidade: [
+        //   { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
+        // ],
       })
       create(response.data)
       return response.data
