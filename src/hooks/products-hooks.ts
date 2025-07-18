@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
 import api from '@/apis/api'
-import { CategoriaType } from '@/types/Categoria'
+// import { CategoriaType } from '@/types/Categoria'
 
 export const useProducts = () => {
   const {
@@ -30,10 +30,50 @@ export const useProducts = () => {
   }
 
   const createProduct = async (product: {
-    nome: string
-    descricao: string
-    categoria: CategoriaType
-    preco: number
+    // nome: string
+    // descricao: string
+    // categoria: CategoriaType
+    // preco: number
+    type: string,
+    title: string,
+    description: string,
+    capacity: number,
+    area: number,
+    category: string,
+    image: File,
+    chargingModel: string,
+    pricePerHour: number,
+    pricePerDay: number,
+    weeklyAvailability: {
+      monday: {
+        start: string,
+        end: string,
+      },
+      tuesday: {
+        start: string,
+        end: string,
+      },
+      wednesday: {
+        start: string,
+        end: string,
+      },
+      thursday: {
+        start: string,
+        end: string,
+      },
+      friday: {
+        start: string,
+        end: string,
+      },
+      saturday: {
+        start: string,
+        end: string,
+      },
+      sunday: {
+        start: string,
+        end: string,
+      },
+    }
   }) => {
     setLoading(true)
     setError(null)
