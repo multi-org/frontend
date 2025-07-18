@@ -52,7 +52,7 @@ export default function CompanyRegisterRequest({
     ...props
 }: companyRegisterRequestProps) {
 
-    const { createCompanyRegisterRequest, loading } = useCompanies();
+    const { createCompanyRegisterRequest, loading, error } = useCompanies();
 
     const form = useForm<z.infer<typeof companyRegisterRequestSchema>>({
         resolver: zodResolver(companyRegisterRequestSchema),
@@ -114,8 +114,11 @@ export default function CompanyRegisterRequest({
                 })
                 form.reset()
             }
-        } catch (error: any) {
-            toast({ title: 'error', variant: 'destructive' })
+        } catch (err) {
+            toast({ 
+                title: `${error}`, 
+                variant: 'destructive'
+            })
         }
     }
 

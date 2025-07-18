@@ -1,4 +1,4 @@
-import { Building2, MapPin, Clock, ClipboardList, CircleCheck } from "lucide-react"
+import { Building2, MapPin, Clock, ClipboardList, CircleCheck, Loader } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -29,7 +29,12 @@ export default function CompanyRegisterRequestCard({
     ...props
 }: companyRegisterRequestCardProps) {
 
-    const { createCompany, deleteCompanyRegisterRequestById } = useCompanies()
+    const {
+        loading,
+        error,
+        confirmCompanyRegisterRequest,
+        deleteCompanyRegisterRequestById
+    } = useCompanies()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
     const handleProceed = async () => {
@@ -41,8 +46,9 @@ export default function CompanyRegisterRequestCard({
                 legalResponsiblePerson,
                 ...companyData
             } = company
-            const result = await createCompany(companyData)
+            const result = await confirmCompanyRegisterRequest(companyData)
             if (result) {
+                console.log("Solicitação de cadastro de instituição aprovada!")
                 console.log("Dados enviados:", companyData)
                 toast({
                     description: (
@@ -58,9 +64,11 @@ export default function CompanyRegisterRequestCard({
                     },
                 })
             }
-            console.log("Instituição aprovada!")
         } catch {
-            toast({ title: 'error', variant: 'destructive' })
+            toast({
+                title: `${error}`,
+                variant: 'destructive'
+            })
         }
     }
 
@@ -103,7 +111,9 @@ export default function CompanyRegisterRequestCard({
                     </div>
                     <CardDescription className="flex items-center gap-2">
                         <span>
-                            Solicitado em {company.requiredAt}
+                            Solicitado em {company.requiredAt} <br />
+                            Solicitado por {company.requestedByUser.name} <br />
+                            E-mail do solicitante: {company.requestedByUser.email}
                         </span>
                     </CardDescription>
                 </CardHeader>
@@ -114,30 +124,6 @@ export default function CompanyRegisterRequestCard({
                         <div className="flex items-center gap-2 text-gray-700">
                             <ClipboardList className="h-5 w-5 text-orangeLight" />
                             <span className="font-medium">Dados</span>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    Nome do solicitante
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    {/* UEPB - Campus Patos */}
-                                    {company.requestedByUser.name}
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <label
-                                    className="text-sm font-medium text-gray-600">
-                                    E-mail do solicitante
-                                </label>
-                                <p
-                                    className="text-sm text-gray-900">
-                                    {/* Universidade Estadual da Paraíba - UEPB */}
-                                    {company.requestedByUser.email}
-                                </p>
-                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
                             <div className="space-y-1">
@@ -309,7 +295,7 @@ export default function CompanyRegisterRequestCard({
                         onClick={handleProceed}
                         className="flex-1 bg-success hover:bg-successLight truncate"
                     >
-                        Prosseguir
+                        {loading ? <Loader className="animate-spin" /> : "Confirmar"}
                     </Button>
                 </CardFooter>
             </Card>

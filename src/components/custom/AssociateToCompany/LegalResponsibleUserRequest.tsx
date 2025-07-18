@@ -23,6 +23,9 @@ import { ArrowLeft, CircleCheck, Search } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { maskCPF, maskPhone } from "@/utils/masks.ts"
+import { useEffect, useState } from "react"
+import { useCompanies } from "@/hooks/companies-hooks.ts"
+import { debounce } from "@/utils/debounce.ts"
 
 type legalResponsibleUserRequestProps = {
     onBack: () => void;
@@ -63,6 +66,35 @@ export default function LegalResponsibleUserRequest({
     className,
     ...props
 }: legalResponsibleUserRequestProps) {
+
+    const { getCompanies, companies } = useCompanies()
+    const [query, setQuery] = useState("")
+    const [filteredInstitutions, setFilteredInstitutions] = useState<string[]>([])
+
+    useEffect(() => {
+        const debouncedSearch = debounce(async () => {
+            if (!query) {
+                setFilteredInstitutions([])
+                return
+            }
+
+            try {
+                await getCompanies()
+                const filtered = companies
+                    .filter((company) =>
+                        company.popularName.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .map((company) => company.popularName)
+                setFilteredInstitutions(filtered)
+            } catch (err) {
+                console.error("Erro ao buscar instituições")
+            }
+        }, 300)
+
+        debouncedSearch()
+
+        return () => debouncedSearch.cancel()
+    }, [query])
 
     const form = useForm<z.infer<typeof legalResponsibleUserRequestSchema>>({
         resolver: zodResolver(legalResponsibleUserRequestSchema),
@@ -208,18 +240,39 @@ export default function LegalResponsibleUserRequest({
                                                 control={form.control}
                                                 name="companyName"
                                                 render={({ field }) => (
-                                                    <FormItem>
+                                                    <FormItem className="relative">
                                                         <FormLabel className="text-black">Instituição</FormLabel>
                                                         <FormControl>
                                                             <div className="relative">
                                                                 <Input
                                                                     type="search"
                                                                     placeholder="Buscar instituição..."
-                                                                    className="pl-10 text-black focus-visible:ring-yellowLight"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(e.target.value)}
+                                                                    className="pl-8 text-black focus-visible:ring-yellowLight"
+                                                                    value={field.value}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value
+                                                                        field.onChange(value)
+                                                                        setQuery(value)
+                                                                    }}
                                                                 />
                                                                 <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                                                {filteredInstitutions.length > 0 && (
+                                                                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-auto">
+                                                                        {filteredInstitutions.map((inst, index) => (
+                                                                            <div
+                                                                                key={index}
+                                                                                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                                                                onClick={() => {
+                                                                                    field.onChange(inst)
+                                                                                    setQuery("")
+                                                                                    setFilteredInstitutions([])
+                                                                                }}
+                                                                            >
+                                                                                {inst}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </FormControl>
                                                         <FormMessage className="text-red-500" />

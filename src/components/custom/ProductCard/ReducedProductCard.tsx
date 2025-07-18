@@ -1,15 +1,17 @@
 import { Clock, Calendar, MapPin, Wrench, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { ProductType } from "@/types/Product"
 
 interface ReducedProductCardProps {
-    id: string
-    nome: string
-    descricacao: string
-    precoHora: number
-    precoDia: number
-    imagem: string
+    // id: string
+    // nome: string
+    // descricacao: string
+    // precoHora: number
+    // precoDia: number
+    // imagem: string
     tipo: "espaco" | "equipamento" | "servico"
+    product: ProductType
     localizacao?: string
     onNext: () => void;
 }
@@ -33,13 +35,20 @@ const tipoConfig = {
 }
 
 export default function ReducedProductCard({
-    id = "PROD-001",
-    nome = "Sala de Reunião Executiva",
-    descricacao = "Sala moderna e equipada com projetor, ar-condicionado, mesa para 12 pessoas e acesso à internet de alta velocidade. Ideal para reuniões corporativas e apresentações.",
-    precoHora = 45.0,
-    precoDia = 320.0,
+    // id = "PROD-001",
+    // nome = "Sala de Reunião Executiva",
+    // descricacao = "Sala moderna e equipada com projetor, ar-condicionado, mesa para 12 pessoas e acesso à internet de alta velocidade. Ideal para reuniões corporativas e apresentações.",
+    // precoHora = 45.0,
+    // precoDia = 320.0,
     // imagem = "/placeholder.svg?height=200&width=400",
     tipo = "espaco",
+    product: {
+        id,
+        title,
+        description,
+        pricePerHour,
+        pricePerDay,
+    },
     localizacao = "Centro - São Paulo",
     onNext,
 }: ReducedProductCardProps) {
@@ -64,7 +73,7 @@ export default function ReducedProductCard({
         <Card className="w-full max-w-sm mx-auto overflow-hidden hover:shadow-lg transition-shadow duration-300">
             {/* Imagem do Produto */}
             <div className="relative h-48 w-full">
-                <img src={"/src/assets/unsplash-lab.jpg"} alt={nome} className="object-cover h-52 w-96" />
+                <img src={"/src/assets/unsplash-lab.jpg"} alt={title} className="object-cover h-52 w-96" />
                 <div className="absolute top-3 left-3">
                     <div className={`${config.color} flex items-center text-sm gap-1 p-1 rounded-full`}>
                         <IconComponent className="h-3 w-3" />
@@ -76,7 +85,9 @@ export default function ReducedProductCard({
             <CardContent className="p-4 space-y-3">
                 {/* Nome do Produto */}
                 <div className="space-y-1">
-                    <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">{nome}</h3>
+                    <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
+                        {title}
+                    </h3>
                     {localizacao && (
                         <p className="text-sm text-gray-500 flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
@@ -86,7 +97,9 @@ export default function ReducedProductCard({
                 </div>
 
                 {/* Descrição */}
-                <p className="text-sm text-gray-600 line-clamp-3">{descricacao}</p>
+                <p className="text-sm text-gray-600 line-clamp-3">
+                    {description}
+                </p>
 
                 {/* Preços */}
                 <div className="space-y-2">
@@ -95,7 +108,9 @@ export default function ReducedProductCard({
                             <Clock className="h-4 w-4" />
                             <span className="text-sm font-medium">Por hora</span>
                         </div>
-                        <span className="font-semibold text-gray-900">{formatPrice(precoHora)}</span>
+                        <span className="font-semibold text-gray-900">
+                            {formatPrice(pricePerHour)}
+                        </span>
                     </div>
 
                     <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -103,7 +118,9 @@ export default function ReducedProductCard({
                             <Calendar className="h-4 w-4" />
                             <span className="text-sm font-medium">Por dia</span>
                         </div>
-                        <span className="font-semibold text-gray-900">{formatPrice(precoDia)}</span>
+                        <span className="font-semibold text-gray-900">
+                            {formatPrice(pricePerDay)}
+                        </span>
                     </div>
                 </div>
             </CardContent>

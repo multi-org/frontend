@@ -147,7 +147,6 @@ const CardLogin: React.FC = () => {
                   placeholder="Seu E-mail"
                   autoComplete="email"
                   {...register('email')}
-                  className={errors.email ? 'border-red-500 focus:ring-red-500' : ''}
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs">
@@ -165,7 +164,6 @@ const CardLogin: React.FC = () => {
                     type={isVisible ? 'text' : 'password'}
                     autoComplete="current-password"
                     {...register('password')}
-                    className={errors.password ? 'border-red-500 focus:ring-red-500' : ''}
                   />
                   <button
                     onClick={handlePasswordVisibility}
@@ -187,7 +185,7 @@ const CardLogin: React.FC = () => {
               <div className="flex flex-col items-center py-7 space-y-0.5">
                 <Button
                   type="submit"
-                  className="w-full mt-4 bg-[#36858E] hover:bg-[#5fb7c1] text-white"
+                  className="w-full mt-4 bg-[#36858E] hover:bg-[#5fb7c1] text-grayLight"
                   disabled={loading}
                 >
                   {loading ? 'Entrando...' : 'Entrar'}
@@ -196,7 +194,7 @@ const CardLogin: React.FC = () => {
                 <Link to="/cadastro">
                   <Button
                     variant="link"
-                    className="text-blue-500 hover:underline"
+                    className="text-blueLight hover:text-yellowDark hover:no-underline"
                     type="button"
                   >
                     Não possui conta? clique aqui

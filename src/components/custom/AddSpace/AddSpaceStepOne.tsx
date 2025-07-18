@@ -38,6 +38,7 @@ type AddSpaceStepOneProps = {
 export type StepOneData = z.infer<typeof addSpaceStepOneSchema>
 
 const addSpaceStepOneSchema = z.object({
+    type: z.string(),
     title: z.string().min(1, 'Título é obrigatório.'),
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
@@ -70,6 +71,7 @@ export default function AddSpaceStepOne({
     const form = useForm<z.infer<typeof addSpaceStepOneSchema>>({
         resolver: zodResolver(addSpaceStepOneSchema),
         defaultValues: {
+            type: "SPACE",
             title: '',
             description: '',
             capacity: undefined,

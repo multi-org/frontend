@@ -28,6 +28,7 @@ export const useCompanies = () => {
             setCompanies(response.data)
         } catch (err) {
             setError("Erro na busca por instituições")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -60,6 +61,7 @@ export const useCompanies = () => {
             return response.data
         } catch (err) {
             setError("Erro na tentativa de criar instituição")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -77,6 +79,7 @@ export const useCompanies = () => {
             return response.data
         } catch (err) {
             setError("Erro na tentativa de alterar instituição")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -90,6 +93,7 @@ export const useCompanies = () => {
             deleteCompany(id)
         } catch (err) {
             setError("Erro na tentativa de deletar instituição")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -104,6 +108,7 @@ export const useCompanies = () => {
             setCompanyRegisterRequests(response.data)
         } catch (err) {
             setError("Erro na busca por instituições")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -136,6 +141,40 @@ export const useCompanies = () => {
             return response.data
         } catch (err) {
             setError("Erro na tentativa de criar instituição")
+            throw new Error()
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const confirmCompanyRegisterRequest = async (company: {
+        popularName: string
+        legalName: string
+        description: string
+        cnpj: string
+        zipCode: string
+        street: string
+        number: string
+        complement?: string
+        neighborhood: string
+        city: string
+        state: string
+        country: string
+        email: string
+        phone: string
+        isMicroenterprise: boolean
+    }) => {
+        setLoading(true)
+        setError(null)
+        try {
+            const response = await api.post("/companies/confirm/:cnpj", {
+                ...company
+            })
+            create(response.data)
+            return response.data
+        } catch (err) {
+            setError("Erro na tentativa de criar instituição")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -149,6 +188,7 @@ export const useCompanies = () => {
             deleteCompany(id)
         } catch (err) {
             setError("Erro na tentativa de deletar instituição")
+            throw new Error()
         } finally {
             setLoading(false)
         }
@@ -166,6 +206,7 @@ export const useCompanies = () => {
         companyRegisterRequests,
         getCompanyRegisterRequests,
         createCompanyRegisterRequest,
+        confirmCompanyRegisterRequest,
         deleteCompanyRegisterRequestById,
         deleteCompanyRegisterRequest,
     }

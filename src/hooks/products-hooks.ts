@@ -53,12 +53,29 @@ export const useProducts = () => {
     }
   }
 
+  // const updateProduct = async (product: ProductType) => {
+  //   setLoading(true)
+  //   setError(null)
+  //   try {
+  //     const response = await api.put<ProductType>(
+  //       `/produtos/${product._id}`,
+  //       product,
+  //     )
+  //     update(response.data)
+  //     return response.data
+  //   } catch (err) {
+  //     setError('Erro ao atualizar produto')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
   const updateProduct = async (product: ProductType) => {
     setLoading(true)
     setError(null)
     try {
       const response = await api.put<ProductType>(
-        `/produtos/${product._id}`,
+        `/produtos/${product.id}`,
         product,
       )
       update(response.data)

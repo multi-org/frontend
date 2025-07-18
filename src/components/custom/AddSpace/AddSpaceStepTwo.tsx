@@ -49,55 +49,55 @@ const addSpaceStepTwoSchema = z.object({
     sundayHourEnd: z.string().optional(),
 }).superRefine((data, ctx) => {
     const intervals = [
-      ["weekdayHourStart", "weekdayHourEnd"],
-      ["saturdayHourStart", "saturdayHourEnd"],
-      ["sundayHourStart", "sundayHourEnd"],
+        ["weekdayHourStart", "weekdayHourEnd"],
+        ["saturdayHourStart", "saturdayHourEnd"],
+        ["sundayHourStart", "sundayHourEnd"],
     ] as const
 
     intervals.forEach(([startKey, endKey]) => {
-      const start = data[startKey]
-      const end = data[endKey]
+        const start = data[startKey]
+        const end = data[endKey]
 
-      if (start && end) {
-        const startNum = hourStringToNumber(start)
-        const endNum = hourStringToNumber(end)
+        if (start && end) {
+            const startNum = hourStringToNumber(start)
+            const endNum = hourStringToNumber(end)
 
-        if (startNum >= endNum) {
-          ctx.addIssue({
-            path: [endKey],
-            code: z.ZodIssueCode.custom,
-            message: "O horário de término deve ser maior que o de início",
-          })
+            if (startNum >= endNum) {
+                ctx.addIssue({
+                    path: [endKey],
+                    code: z.ZodIssueCode.custom,
+                    message: "O horário de término deve ser maior que o de início",
+                })
+            }
         }
-      }
     })
 
     // Validação de preços
     if (data.chargingModel === "por_hora" && data.pricePerHour === undefined) {
-      ctx.addIssue({
-        path: ["pricePerHour"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe o preço por hora",
-      })
+        ctx.addIssue({
+            path: ["pricePerHour"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por hora",
+        })
     }
     if (data.chargingModel === "por_dia" && data.pricePerDay === undefined) {
-      ctx.addIssue({
-        path: ["pricePerDay"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe o preço por dia",
-      })
+        ctx.addIssue({
+            path: ["pricePerDay"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por dia",
+        })
     }
     if (
-      data.chargingModel === "ambos" &&
-      (data.pricePerHour === undefined || data.pricePerDay === undefined)
+        data.chargingModel === "ambos" &&
+        (data.pricePerHour === undefined || data.pricePerDay === undefined)
     ) {
-      ctx.addIssue({
-        path: ["pricePerHour"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe os dois preços para o modelo 'ambos'",
-      })
+        ctx.addIssue({
+            path: ["pricePerHour"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe os dois preços para o modelo 'ambos'",
+        })
     }
-  })
+})
 
 export default function AddSpaceStepTwo({
     onNext,
@@ -112,7 +112,48 @@ export default function AddSpaceStepTwo({
     })
 
     function onSubmit(data: z.infer<typeof addSpaceStepTwoSchema>) {
-        onNext(data)
+        const {
+            chargingModel,
+            pricePerHour,
+            pricePerDay,
+            weekdayHourStart,
+            weekdayHourEnd,
+            saturdayHourStart,
+            saturdayHourEnd,
+            sundayHourStart,
+            sundayHourEnd,
+        } = data;
+
+        const weeklyAvailability = {
+            monday: { start: weekdayHourStart, end: weekdayHourEnd },
+            tuesday: { start: weekdayHourStart, end: weekdayHourEnd },
+            wednesday: { start: weekdayHourStart, end: weekdayHourEnd },
+            thursday: { start: weekdayHourStart, end: weekdayHourEnd },
+            friday: { start: weekdayHourStart, end: weekdayHourEnd },
+            ...(saturdayHourStart && saturdayHourEnd
+                ? {
+                    saturday: {
+                        start: saturdayHourStart,
+                        end: saturdayHourEnd,
+                    },
+                }
+                : {}),
+            ...(sundayHourStart && sundayHourEnd
+                ? {
+                    sunday: {
+                        start: sundayHourStart,
+                        end: sundayHourEnd,
+                    },
+                }
+                : {}),
+        };
+
+        onNext({
+            chargingModel,
+            pricePerHour,
+            pricePerDay,
+            weeklyAvailability, // novo formato
+        } as any);
     }
 
     return (
