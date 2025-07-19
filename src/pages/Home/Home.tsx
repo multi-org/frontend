@@ -116,32 +116,33 @@ export function Home() {
         </div>
 
         {/* FAQ */}
-        <div id="faq" className="mb-28 mt-20 px-4 pb-20 w-full">
+        <div id="faq" className="mb-28 mt-20 px-4 pb-20  flex flex-col items-center">
           <h1 className="text-center text-2xl font-bold">
             Perguntas frequentes
             <hr className="mx-auto mb-20 mt-[-4px] w-20 border-[1.5px] border-orangeNormal" />
           </h1>
-          <Carousel className="max-w-6xl w-full">
-  <CarouselContent className="flex gap-6 overflow-x-auto px-4">
-    {faqCarouselItems.map((item) => (
-      <CarouselItem
-        key={item.id}
-        className="min-w-[250px] md:min-w-[300px] lg:min-w-[30%] h-72 rounded-[6px] border p-4"
-      >
-        <div className="flex h-32 items-center justify-center rounded-[6px] bg-[#D9D9D9]">
-          {item.image}
-        </div>
-        <div className="mt-6 text-center">{item.question}</div>
-      </CarouselItem>
-    ))}
-  </CarouselContent>
+        <Carousel className="max-w-6xl w-full">
+        <CarouselContent className="flex gap-6 px-4">
+          {faqCarouselItems.map((item) => (
+            <CarouselItem
+              key={item.id}
+              className="w-full sm:w-[48%] md:w-[30%] lg:w-[30%] h-72 rounded-[6px] border p-4"
+            >
+              <div className="flex h-32 items-center justify-center rounded-[6px] bg-[#D9D9D9]">
+                {item.image}
+              </div>
+              <div className="mt-6 text-center">{item.question}</div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
 
-  {/* Botões visíveis apenas em tela média para cima */}
-  <div className="hidden md:flex justify-center gap-4 mt-4">
-    <CarouselPrevious />
-    <CarouselNext />
-  </div>
-</Carousel>
+        {/* Botões visíveis apenas em tela média para cima */}
+        <div className="hidden md:flex justify-center gap-4 mt-4">
+          <CarouselPrevious />
+          <CarouselNext />
+        </div>
+      </Carousel>
+
 
         </div>
       </div>
