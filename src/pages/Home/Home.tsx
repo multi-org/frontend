@@ -22,99 +22,91 @@ export function Home() {
     <>
       <Header />
       <div className="flex w-full flex-col items-center">
+        {/* HERO */}
         <div
           id="home"
-          className={`flex h-[600px] w-full items-center justify-center bg-[url('/src/assets/home-bg-image.jpg')] from-transparent to-white bg-cover bg-center bg-no-repeat`}
+          className="flex h-[500px] w-full items-center justify-center bg-[url('/src/assets/home-bg-image.jpg')] bg-cover bg-center bg-no-repeat"
         >
-          <div className="flex flex-col items-center justify-center text-grayLight">
-            <h1 className="text-6xl font-bold">MULTI</h1>
-            <h1 className="text-center text-3xl font-bold">UEPB</h1>
-            <p className="mt-6 w-40 text-center">Um breve slogan do projeto</p>
+          <div className="flex flex-col items-center justify-center text-grayLight text-center">
+            <h1 className="text-5xl font-bold sm:text-6xl">MULTI</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">UEPB</h1>
+            <p className="mt-6 w-64 text-sm">Um breve slogan do projeto</p>
           </div>
         </div>
-        <div className="mt-[-144px] h-36 w-full bg-gradient-to-b from-transparent to-white"></div>
+
+        {/* GRADIENT */}
+        <div className="mt-[-144px] h-36 w-full bg-gradient-to-b from-transparent to-white" />
+
+        {/* SOBRE */}
         <div
           id="about-us"
-          className="flex w-full flex-col items-center pt-20 text-center"
+          className="flex w-full max-w-6xl flex-col items-center px-4 pt-20 text-center"
         >
-          <h1 className="flex flex-col items-center text-2xl font-bold">
+          <h1 className="text-2xl font-bold">
             Quem somos?
-            <hr className="mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
+            <hr className="mx-auto mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
           </h1>
-          <div className="mt-24 flex w-[670px] items-center justify-between">
+          <div className="mt-16 flex flex-col items-center gap-6 md:flex-row md:justify-between">
             <img
               src="src/assets/multi-logo.jpg"
               alt="Logo do Multi"
-              className="h-[144px] w-[200px]"
+              className="h-[120px] w-[180px] object-contain"
             />
-            <p className="w-72">
+            <p className="max-w-md text-sm text-justify">
               A plataforma Multi UEPB é projetada para ser uma solução
               abrangente e eficiente para o gerenciamento de aluguel de espaços,
               serviços e equipamentos em diversas instituições, atendendo a
               diferentes tipos de usuários: individuais, empresas, instituições
-              públicas e instituições públicas/privadas.
+              públicas e privadas.
             </p>
           </div>
         </div>
+
+        {/* FUNCIONALIDADES */}
         <div
           id="features"
-          className="flex w-full flex-col items-center py-20 text-center"
+          className="flex w-full max-w-7xl flex-col items-center px-4 py-20 text-center"
         >
-          <h1 className="flex flex-col items-center text-2xl font-bold">
+          <h1 className="text-2xl font-bold">
             Funcionalidades
-            <hr className="mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
+            <hr className="mx-auto mt-[-4px] w-24 border-[1.5px] border-orangeNormal" />
           </h1>
-          <div className="flex w-[750px] justify-between pt-20">
-            <Card className="size-60">
-              <CardHeader className="flex items-center">
-                <BankIcon size={50} />
-                <h1 className="text-sm font-medium">Instituições parceiras</h1>
-              </CardHeader>
-              <CardContent className="text-xs">
-                As instituições parceiras disponibilizam suas centrais de forma
-                visível e acessível, além de apoiar os pesquisadores na gestão
-                dos equipamentos.
-              </CardContent>
-            </Card>
-
-            <Card className="size-60">
-              <CardHeader className="flex items-center">
-                <HammerIcon size={50} />
-                <h1 className="text-sm font-medium">
-                  Equipamentos disponivéis
-                </h1>
-              </CardHeader>
-              <CardContent className="text-xs">
-                As centrais oferecem seus equipamentos de uso coletivo como um
-                serviço para os usuários que necessitam.
-              </CardContent>
-            </Card>
-
-            <Card className="size-60">
-              <CardHeader className="flex items-center">
-                <CheckedClipboard size={50} />
-                <h1 className="text-sm font-medium">Requisição de serviços</h1>
-              </CardHeader>
-              <CardContent className="text-xs">
-                Ao encontrar o equipamento necessário, o usuário faz uma
-                requisição de serviço, preenchendo os detalhes e dados para
-                cobrança.
-              </CardContent>
-            </Card>
+          <div className="mt-10 flex flex-col gap-6 md:flex-row md:justify-between">
+            {[{
+              Icon: BankIcon,
+              title: "Instituições parceiras",
+              desc: "As instituições parceiras disponibilizam suas centrais de forma visível e acessível, além de apoiar os pesquisadores na gestão dos equipamentos."
+            }, {
+              Icon: HammerIcon,
+              title: "Equipamentos disponíveis",
+              desc: "As centrais oferecem seus equipamentos de uso coletivo como um serviço para os usuários que necessitam."
+            }, {
+              Icon: CheckedClipboard,
+              title: "Requisição de serviços",
+              desc: "Ao encontrar o equipamento necessário, o usuário faz uma requisição de serviço, preenchendo os detalhes e dados para cobrança."
+            }].map(({ Icon, title, desc }, index) => (
+              <Card className="w-full max-w-[280px]" key={index}>
+                <CardHeader className="flex flex-col items-center">
+                  <Icon size={50} />
+                  <h1 className="mt-2 text-sm font-medium">{title}</h1>
+                </CardHeader>
+                <CardContent className="text-xs text-justify">{desc}</CardContent>
+              </Card>
+            ))}
           </div>
         </div>
+
+        {/* ENCONTRE EQUIPAMENTOS */}
         <div
           id="find-equipment"
-          className="flex w-full flex-col items-center justify-center bg-blueNormal py-8 text-center text-white"
+          className="flex w-full flex-col items-center justify-center bg-blueNormal px-4 py-12 text-center text-white"
         >
-          <div className="flex flex-col">
-            <h1 className="w-[450px] text-center text-[32px] font-bold">
-              ENCONTRE O EQUIPAMENTO QUE PRECISA
-            </h1>
-            <p className="w-60 self-center text-sm">
-              Faça seu cadastro e descubra os equipamentos disponíveis
-            </p>
-          </div>
+          <h1 className="text-2xl font-bold sm:text-3xl max-w-md">
+            ENCONTRE O EQUIPAMENTO QUE PRECISA
+          </h1>
+          <p className="mt-2 text-sm max-w-xs">
+            Faça seu cadastro e descubra os equipamentos disponíveis
+          </p>
           <Button
             className="mt-6 h-10 w-44 bg-yellowDark"
             onClick={() => (window.location.href = '/produtos')}
@@ -122,29 +114,31 @@ export function Home() {
             Comece agora
           </Button>
         </div>
-        <div id="faq" className="mb-28 mt-20 pb-20">
-          <h1 className="flex flex-col items-center text-2xl font-bold">
+
+        {/* FAQ */}
+        <div id="faq" className="mb-28 mt-20 px-4 pb-20 w-full">
+          <h1 className="text-center text-2xl font-bold">
             Perguntas frequentes
-            <hr className="mb-20 mt-[-4px] w-20 border-[1.5px] border-orangeNormal" />
+            <hr className="mx-auto mb-20 mt-[-4px] w-20 border-[1.5px] border-orangeNormal" />
           </h1>
-          <Carousel className="flex justify-center">
-            <CarouselContent className="w-[950px] gap-8 px-10">
+          <Carousel className="max-w-6xl mx-auto">
+            <CarouselContent className="flex flex-wrap justify-center gap-6 px-4">
               {faqCarouselItems.map((item) => (
                 <CarouselItem
                   key={item.id}
-                  className="h-72 basis-1/3 rounded-[6px] border px-4 pt-8"
+                  className="w-full sm:w-[45%] md:w-[30%] h-72 rounded-[6px] border p-4"
                 >
                   <div className="flex h-32 items-center justify-center rounded-[6px] bg-[#D9D9D9]">
                     {item.image}
                   </div>
-                  <div className="mt-6 flex items-center justify-center">
-                    {item.question}
-                  </div>
+                  <div className="mt-6 text-center">{item.question}</div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <div className="hidden md:flex justify-center gap-4 mt-4">
+              <CarouselPrevious />
+              <CarouselNext />
+            </div>
           </Carousel>
         </div>
       </div>
@@ -152,3 +146,4 @@ export function Home() {
     </>
   )
 }
+
