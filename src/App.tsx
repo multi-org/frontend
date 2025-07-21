@@ -1,5 +1,5 @@
 import { RouterProvider } from 'react-router-dom'
-import { defaultRoutes } from './routes/browserRouters'
+import { defaultRoutes } from './browserRouters'
 import { Toaster } from './components/ui/toaster'
 
 

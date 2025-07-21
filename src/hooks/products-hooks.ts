@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
-import api from '@/apis/api'
+import api from '@/utils/api'
 import { CategoriaType } from '@/types/Categoria'
 
 export const useProducts = () => {

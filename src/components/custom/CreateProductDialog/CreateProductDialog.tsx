@@ -31,7 +31,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { useProducts } from '@/hooks/products-hooks'
-import { toast } from '@/hooks/use-toast'
+import { toast } from '@/components/ui/use-toast'
 import { Loading } from '../Loading'
 import { ToastAction } from '@/components/ui/toast'
 
@@ -58,9 +58,7 @@ export function CreateProductDialog() {
           action:
             <ToastAction
               onClick={() => window.location.reload()}
-
-              altText="Continuar">
-            
+              altText="Ok">
               Continuar
             </ToastAction>
         })
