@@ -43,9 +43,11 @@ const addSpaceStepOneSchema = z.object({
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
         .max(300, 'A descrição deve ter no máximo 300 caracteres.'),
-    capacity: z.number().min(0, 'Preço deve ser maior ou igual a 0.'),
-    area: z.number().min(0, 'Preço deve ser maior ou igual a 0.'),
-    category: z.enum(['Sala de aula', 'Auditório', 'Laboratório', 'Espaço para eventos', 'Instação esportiva','Área administrativa/coorporativa', 'Outros'], {
+    capacity: z
+        .preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, 'Capacidade deve ser maior ou igual a 0.')),
+    area: z
+        .preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, 'Área deve ser maior ou igual a 0.')),
+    category: z.enum(['Sala de aula', 'Auditório', 'Laboratório', 'Espaço para eventos', 'Instação esportiva', 'Área administrativa/coorporativa', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
     image: z
@@ -58,7 +60,7 @@ const addSpaceStepOneSchema = z.object({
             (files: File[]) =>
                 files.every((file) => file.size <= 3 * 1024 * 1024),
             'Cada imagem deve ter no máximo 3MB.'
-        ),
+        )
 })
 
 export default function AddSpaceStepOne({
@@ -138,7 +140,8 @@ export default function AddSpaceStepOne({
                                             control={form.control}
                                             name="description"
                                             render={({ field }) => {
-                                                const remainingCharacters = 300 - field.value.length
+                                                // const remainingCharacters = 300 - field.value.length
+                                                const remainingCharacters = 300 - ((field.value || "").length)
                                                 return (
                                                     <FormItem>
                                                         <FormLabel className="text-grayLight"
@@ -262,7 +265,9 @@ export default function AddSpaceStepOne({
                                                 <FormItem>
                                                     <FormControl>
                                                         <ImageUploader
-                                                            {...field}
+                                                            // {...field}
+                                                            value={field.value}
+                                                            onChange={field.onChange}
                                                         />
                                                     </FormControl>
                                                     <FormMessage className="text-grayLight" />
@@ -279,7 +284,11 @@ export default function AddSpaceStepOne({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>

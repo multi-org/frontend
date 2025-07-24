@@ -37,8 +37,10 @@ export const useProducts = () => {
     type: string,
     title: string,
     description: string,
-    capacity: number,
-    area: number,
+    spaceDetails: {
+      capacity: number,
+      area: number,
+    },
     category: string,
     image: File,
     chargingModel: string,
@@ -65,20 +67,20 @@ export const useProducts = () => {
         start: string,
         end: string,
       },
-      saturday: {
+      saturday?: {
         start: string,
         end: string,
       },
-      sunday: {
+      sunday?: {
         start: string,
         end: string,
       },
-    }
+    },
   }) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.post('/produtos', {
+      const response = await api.post('/products/:companyId', {
         ...product,
         // disponibilidade: [
         //   { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },

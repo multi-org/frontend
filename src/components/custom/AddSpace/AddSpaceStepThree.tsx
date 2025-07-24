@@ -4,6 +4,8 @@ import {
     CardContent
 } from "@/components/ui/card"
 import { SummaryItem } from "../SummaryItem";
+import { useProducts } from "@/hooks/products-hooks";
+import { Loader } from "lucide-react";
 
 type AddSpaceStepThreeProps = {
     data: {
@@ -32,6 +34,8 @@ export default function AddSpaceStepThree({
     onBack,
     onConfirm
 }: AddSpaceStepThreeProps) {
+
+    const { loading } = useProducts()
 
     if (!data) {
         return <p>Dados não disponíveis.</p>;
@@ -85,7 +89,7 @@ export default function AddSpaceStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.image.length} selecionada(s)`} />
+                        <SummaryItem label="Imagens" value={`${data.image?.length ?? 0} selecionada(s)`} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -102,7 +106,7 @@ export default function AddSpaceStepThree({
                             onClick={onConfirm}
                             className="w-full bg-success hover:bg-successLight"
                         >
-                            Confirmar
+                            {loading ? <Loader className="animate-spin" /> : "Confirmar"}
                         </Button>
                     </div>
                 </CardContent>

@@ -14,8 +14,10 @@ export interface ProductType {
   type: string,
   title: string,
   description: string,
-  capacity: number,
-  area: number,
+  spaceDetails: {
+    capacity: number,
+    area: number,
+  },
   category: string,
   image: File,
   chargingModel: string,
@@ -42,11 +44,11 @@ export interface ProductType {
       start: string,
       end: string,
     },
-    saturday: {
+    saturday?: {
       start: string,
       end: string,
     },
-    sunday: {
+    sunday?: {
       start: string,
       end: string,
     },

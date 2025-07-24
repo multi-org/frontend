@@ -112,48 +112,7 @@ export default function AddSpaceStepTwo({
     })
 
     function onSubmit(data: z.infer<typeof addSpaceStepTwoSchema>) {
-        const {
-            chargingModel,
-            pricePerHour,
-            pricePerDay,
-            weekdayHourStart,
-            weekdayHourEnd,
-            saturdayHourStart,
-            saturdayHourEnd,
-            sundayHourStart,
-            sundayHourEnd,
-        } = data;
-
-        const weeklyAvailability = {
-            monday: { start: weekdayHourStart, end: weekdayHourEnd },
-            tuesday: { start: weekdayHourStart, end: weekdayHourEnd },
-            wednesday: { start: weekdayHourStart, end: weekdayHourEnd },
-            thursday: { start: weekdayHourStart, end: weekdayHourEnd },
-            friday: { start: weekdayHourStart, end: weekdayHourEnd },
-            ...(saturdayHourStart && saturdayHourEnd
-                ? {
-                    saturday: {
-                        start: saturdayHourStart,
-                        end: saturdayHourEnd,
-                    },
-                }
-                : {}),
-            ...(sundayHourStart && sundayHourEnd
-                ? {
-                    sunday: {
-                        start: sundayHourStart,
-                        end: sundayHourEnd,
-                    },
-                }
-                : {}),
-        };
-
-        onNext({
-            chargingModel,
-            pricePerHour,
-            pricePerDay,
-            weeklyAvailability, // novo formato
-        } as any);
+        onNext(data)
     }
 
     return (
@@ -275,7 +234,11 @@ export default function AddSpaceStepTwo({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>
