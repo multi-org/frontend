@@ -72,12 +72,12 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
         // Criar objeto final no formato esperado
         const fullData = {
             ...restStepOne,
-            ...restStepTwo, // contém: chargingModel, pricePerHour, pricePerDay
+            ...restStepTwo, // contém: chargingModel, hourlyPrice, dailyPrice
             spaceDetails,
-            pricePerHour: restStepTwo.pricePerHour ?? 0,
-            pricePerDay: restStepTwo.pricePerDay ?? 0,
+            hourlyPrice: restStepTwo.hourlyPrice ?? 0,
+            dailyPrice: restStepTwo.dailyPrice ?? 0,
             weeklyAvailability,
-            image: stepOneData?.image as File, // garante que image é do tipo File
+            image: stepOneData?.ImagesFiles as File, // garante que image é do tipo File
         };
 
         console.log("Dados enviados:", fullData);

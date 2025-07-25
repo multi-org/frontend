@@ -38,9 +38,9 @@ export type StepTwoData = z.infer<typeof addSpaceStepTwoSchema>
 const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
 
 const addSpaceStepTwoSchema = z.object({
-    chargingModel: z.enum(['por_hora', 'por_dia', 'ambos']),
-    pricePerHour: z.number().optional(),
-    pricePerDay: z.number().optional(),
+    chargingModel: z.enum(['POR_HORA', 'POR_DIA', 'AMBOS']),
+    hourlyPrice: z.number().optional(),
+    dailyPrice: z.number().optional(),
     weekdayHourStart: z.string().min(1),
     weekdayHourEnd: z.string().min(1),
     saturdayHourStart: z.string().optional(),
@@ -73,26 +73,26 @@ const addSpaceStepTwoSchema = z.object({
     })
 
     // Validação de preços
-    if (data.chargingModel === "por_hora" && data.pricePerHour === undefined) {
+    if (data.chargingModel === "POR_HORA" && data.hourlyPrice === undefined) {
         ctx.addIssue({
-            path: ["pricePerHour"],
+            path: ["hourlyPrice"],
             code: z.ZodIssueCode.custom,
             message: "Informe o preço por hora",
         })
     }
-    if (data.chargingModel === "por_dia" && data.pricePerDay === undefined) {
+    if (data.chargingModel === "POR_DIA" && data.dailyPrice === undefined) {
         ctx.addIssue({
-            path: ["pricePerDay"],
+            path: ["dailyPrice"],
             code: z.ZodIssueCode.custom,
             message: "Informe o preço por dia",
         })
     }
     if (
-        data.chargingModel === "ambos" &&
-        (data.pricePerHour === undefined || data.pricePerDay === undefined)
+        data.chargingModel === "AMBOS" &&
+        (data.hourlyPrice === undefined || data.dailyPrice === undefined)
     ) {
         ctx.addIssue({
-            path: ["pricePerHour"],
+            path: ["hourlyPrice"],
             code: z.ZodIssueCode.custom,
             message: "Informe os dois preços para o modelo 'ambos'",
         })
@@ -166,11 +166,11 @@ export default function AddSpaceStepTwo({
                                             )}
                                         />
                                     </div>
-                                    {form.watch("chargingModel") === "por_hora" || form.watch("chargingModel") === "ambos" ? (
+                                    {form.watch("chargingModel") === "POR_HORA" || form.watch("chargingModel") === "AMBOS" ? (
                                         <div className="grid gap-3">
                                             <FormField
                                                 control={form.control}
-                                                name="pricePerHour"
+                                                name="hourlyPrice"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-grayLight">Preço por hora</FormLabel>
@@ -191,11 +191,11 @@ export default function AddSpaceStepTwo({
                                             />
                                         </div>
                                     ) : null}
-                                    {form.watch("chargingModel") === "por_dia" || form.watch("chargingModel") === "ambos" ? (
+                                    {form.watch("chargingModel") === "POR_DIA" || form.watch("chargingModel") === "AMBOS" ? (
                                         <div className="grid gap-3">
                                             <FormField
                                                 control={form.control}
-                                                name="pricePerDay"
+                                                name="dailyPrice"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-grayLight">Preço por dia</FormLabel>

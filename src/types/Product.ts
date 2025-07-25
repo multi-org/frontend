@@ -19,10 +19,10 @@ export interface ProductType {
     area: number,
   },
   category: string,
-  image: File,
+  ImagesFiles: File,
   chargingModel: string,
-  pricePerHour: number,
-  pricePerDay: number,
+  hourlyPrice: number,
+  dailyPrice: number,
   weeklyAvailability: {
     monday: {
       start: string,
