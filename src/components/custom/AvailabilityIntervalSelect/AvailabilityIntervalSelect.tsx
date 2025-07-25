@@ -48,7 +48,7 @@ export default function AvailabilityIntervalSelect({
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className={triggerClass}>
-                        <SelectValue placeholder="Ex: 08h" />
+                        <SelectValue placeholder="Ex: 08:00" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -72,7 +72,7 @@ export default function AvailabilityIntervalSelect({
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className={triggerClass}>
-                        <SelectValue placeholder="Ex: 17h" />
+                        <SelectValue placeholder="Ex: 17:00" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

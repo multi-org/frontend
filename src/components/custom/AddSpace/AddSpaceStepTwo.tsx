@@ -35,7 +35,7 @@ type AddSpaceStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addSpaceStepTwoSchema>
 
-const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
+// const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
 
 const addSpaceStepTwoSchema = z.object({
     chargingModel: z.enum(['POR_HORA', 'POR_DIA', 'AMBOS']),
@@ -59,8 +59,8 @@ const addSpaceStepTwoSchema = z.object({
         const end = data[endKey]
 
         if (start && end) {
-            const startNum = hourStringToNumber(start)
-            const endNum = hourStringToNumber(end)
+            const startNum = start
+            const endNum = end
 
             if (startNum >= endNum) {
                 ctx.addIssue({
