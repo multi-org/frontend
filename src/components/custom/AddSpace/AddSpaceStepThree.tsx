@@ -14,7 +14,7 @@ type AddSpaceStepThreeProps = {
         capacity: number;
         area: number;
         category: string;
-        ImagesFiles: File[];
+        imagesFiles: File[];
         chargingModel: string;
         hourlyPrice?: number;
         dailyPrice?: number;
@@ -89,7 +89,7 @@ export default function AddSpaceStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.ImagesFiles?.length ?? 0} selecionada(s)`} />
+                        <SummaryItem label="Imagens" value={`${data.imagesFiles?.length ?? 0} selecionada(s)`} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

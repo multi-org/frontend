@@ -156,9 +156,9 @@ export default function AddSpaceStepTwo({
                                                             <SelectValue placeholder="Selecione o modelo de cobrança" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="por_hora">Por hora</SelectItem>
-                                                            <SelectItem value="por_dia">Por dia</SelectItem>
-                                                            <SelectItem value="ambos">Ambos</SelectItem>
+                                                            <SelectItem value="POR_HORA">Por hora</SelectItem>
+                                                            <SelectItem value="POR_DIA">Por dia</SelectItem>
+                                                            <SelectItem value="AMBOS">Ambos</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage className="text-grayLight" />
