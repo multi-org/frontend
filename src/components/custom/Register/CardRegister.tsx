@@ -121,8 +121,24 @@ const validarStepAtual = (): boolean => {
     errors.name = "Nome é obrigatório";
   }
 
-  if (formData.password.length < 8) {
+    if (formData.password.length < 8) {
     errors.password = "Senha deve ter pelo menos 8 caracteres";
+  } else {
+    // Regex para verificar se tem pelo menos um caractere especial
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+    const hasNumber = /\d/.test(formData.password);
+    const hasUpperCase = /[A-Z]/.test(formData.password);
+    const hasLowerCase = /[a-z]/.test(formData.password);
+
+    if (!hasSpecialChar) {
+      errors.password = "Senha deve conter pelo menos um caractere especial (!@#$%^&*(),.?\":{}|<>)";
+    } else if (!hasNumber) {
+      errors.password = "Senha deve conter pelo menos um número";
+    } else if (!hasUpperCase) {
+      errors.password = "Senha deve conter pelo menos uma letra maiúscula";
+    } else if (!hasLowerCase) {
+      errors.password = "Senha deve conter pelo menos uma letra minúscula";
+    }
   }
 
   if (formData.confirmPassword.length < 8) {
