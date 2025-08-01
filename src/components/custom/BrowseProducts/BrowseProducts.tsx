@@ -36,10 +36,10 @@ export default function BrowseProducts() {
 
     const filteredProducts = products.filter((product: ProductType) => {
         const matchesSearchTerm = searchTerm
-            ? product.nome.toLowerCase().includes(searchTerm.toLowerCase())
+            ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
             : true
 
-        const matchesCategory = category ? product.categoria === category : true
+        const matchesCategory = category ? product.category === category : true
         // const matchesDate = date
         //   ? new Date(product.date).toDateString() === date.toDateString() // Assumindo que `product.date` é uma string válida
         //   : true;
@@ -81,12 +81,18 @@ export default function BrowseProducts() {
                     <div className='p-6 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2'>
                         {filteredProducts.length > 0 ? (
                             filteredProducts.map((product) => (
-                                <ProductCard key={product._id} product={product} />
+                                <ReducedProductCard
+                                    key={product.id}
+                                    product={product}
+                                    tipo="espaco"
+                                    localizacao="Centro - São Paulo"
+                                    onNext={() => setBookingStep(1)}
+                                />
                             ))
                         ) : (
                             <>
-                                {/* <p>Nenhum produto encontrado.</p> */}
-                                <ReducedProductCard
+                                <p>Nenhum produto encontrado.</p>
+                                {/* <ReducedProductCard
                                     id="ESP-001"
                                     nome="Sala de Reunião Executiva"
                                     descricacao="Sala moderna e equipada com projetor, ar-condicionado, mesa para 12 pessoas e acesso à internet de alta velocidade. Ideal para reuniões corporativas e apresentações."
@@ -118,7 +124,7 @@ export default function BrowseProducts() {
                                     tipo="espaco"
                                     localizacao="Centro - São Paulo"
                                     onNext={() => setBookingStep(1)}
-                                />
+                                /> */}
                             </>
                         )}
                     </div>

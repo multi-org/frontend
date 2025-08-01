@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
 import api from '@/apis/api'
-import { CategoriaType } from '@/types/Categoria'
+// import { CategoriaType } from '@/types/Categoria'
 
 export const useProducts = () => {
   const {
@@ -30,19 +30,61 @@ export const useProducts = () => {
   }
 
   const createProduct = async (product: {
-    nome: string
-    descricao: string
-    categoria: CategoriaType
-    preco: number
+    // nome: string
+    // descricao: string
+    // categoria: CategoriaType
+    // preco: number
+    type: string,
+    title: string,
+    description: string,
+    spaceDetails: {
+      capacity: number,
+      area: number,
+    },
+    category: string,
+    ImagesFiles?: File,
+    chargingModel: string,
+    hourlyPrice: number,
+    dailyPrice: number,
+    weeklyAvailability: {
+      monday: {
+        start: string,
+        end: string,
+      },
+      tuesday: {
+        start: string,
+        end: string,
+      },
+      wednesday: {
+        start: string,
+        end: string,
+      },
+      thursday: {
+        start: string,
+        end: string,
+      },
+      friday: {
+        start: string,
+        end: string,
+      },
+      saturday?: {
+        start: string,
+        end: string,
+      },
+      sunday?: {
+        start: string,
+        end: string,
+      },
+    },
   }) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.post('/produtos', {
+      const response = await api.post('/products/:companyId', {
         ...product,
-        disponibilidade: [
-          { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
-        ],
+        // disponibilidade: [
+        //   { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
+        // ],
       })
       create(response.data)
       return response.data
@@ -53,12 +95,29 @@ export const useProducts = () => {
     }
   }
 
+  // const updateProduct = async (product: ProductType) => {
+  //   setLoading(true)
+  //   setError(null)
+  //   try {
+  //     const response = await api.put<ProductType>(
+  //       `/produtos/${product._id}`,
+  //       product,
+  //     )
+  //     update(response.data)
+  //     return response.data
+  //   } catch (err) {
+  //     setError('Erro ao atualizar produto')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
   const updateProduct = async (product: ProductType) => {
     setLoading(true)
     setError(null)
     try {
       const response = await api.put<ProductType>(
-        `/produtos/${product._id}`,
+        `/produtos/${product.id}`,
         product,
       )
       update(response.data)

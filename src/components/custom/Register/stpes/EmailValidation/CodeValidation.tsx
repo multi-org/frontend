@@ -29,12 +29,14 @@ const CodeValidation: React.FC<CodeValidationProps> = ({ onValidate }) => {
         onChange={setCode}
       >
         <InputOTPGroup>
-          <InputOTPSlot className="border-black" index={0} />
-          <InputOTPSlot className="border-black" index={1} />
-          <InputOTPSlot className="border-black" index={2} />
-          <InputOTPSlot className="border-black" index={3} />
-          <InputOTPSlot className="border-black" index={4} />
-          <InputOTPSlot className="border-black" index={5} />
+          <InputOTPSlot className="border-yellowDark" index={0} />
+          <InputOTPSlot className="border-yellowDark" index={0} />
+          <InputOTPSlot className="border-yellowDark" index={0} />
+          <InputOTPSlot className="border-yellowDark" index={1} />
+          <InputOTPSlot className="border-yellowDark" index={2} />
+          <InputOTPSlot className="border-yellowDark" index={3} />
+          <InputOTPSlot className="border-yellowDark" index={4} />
+          <InputOTPSlot className="border-yellowDark" index={5} />
         </InputOTPGroup>
         
       </InputOTP>

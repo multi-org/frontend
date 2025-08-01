@@ -24,7 +24,7 @@ const StepEmail: React.FC<StepEmaildProps> = ({
     <div className="flex flex-col w-full max-w-[360px]">
       <label>Email:</label>
       <Input
-        className="h-[50px] min-w-full border border-gray-300 rounded-md p-2"
+        className="h-[50px] min-w-full border border-gray-300 rounded-md p-2 focus-visible:ring-yellowDark"
         placeholder="E-mail"
         onChange={e => onEmailChange(e.target.value)}
         value={email}

@@ -2,6 +2,8 @@ import {
   BadgeCheck,
   Bell,
   ChevronDown,
+  CircleCheck,
+  CircleX,
   LogOut,
 } from "lucide-react"
 import {
@@ -23,9 +25,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useNavigate } from 'react-router-dom'
-import { useToast } from '@/components/ui/use-toast'
 import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
 import { useEffect, useState } from "react"
+import { toast } from "@/hooks/use-toast"
+import { useUsers } from "@/hooks/users-hooks"
 
 type NavUserProps = {
   onNavUserOption: (navUserOption: number) => void;
@@ -37,20 +40,46 @@ export default function NavUser({
   unreadNotifications = 3,
 }: NavUserProps) {
 
+  const { userLogout } = useUsers()
   const navigate = useNavigate()
-  const { toast } = useToast()
-  const [userName, setUserName] = useState("")
-  const [userAvatar, setUserAvatar] = useState("")
+  const [storedUserName, setStoredUserName] = useState("")
+  const [storedUserAvatar, setStoredUserAvatar] = useState("")
   const [unreadNotificationsNumber, setUnreadNotificationsNumber] = useState<number>(unreadNotifications)
 
-  const handleLogout = () => {
-    localStorage.removeItem('userName')
-    localStorage.removeItem('user')
-    toast({
-      title: "Logout realizado",
-      description: "Até logo!",
-    })
-    navigate('/login')
+  const handleLogout = async () => {
+    try {
+      const result = await userLogout()
+      if (result) {
+        console.log(result)
+        toast({
+          description: (
+            <div className="flex items-center gap-2">
+              <CircleCheck className="text-blueNormal" size={20} />
+              Saindo.. até logo!
+            </div>
+          ),
+          variant: 'default',
+          style: {
+            color: "#36858E",
+          },
+        })
+        localStorage.removeItem('userName')
+        localStorage.removeItem('userRoles')
+        localStorage.removeItem('userProfilePic')
+        navigate('/login')
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Erro inesperado"
+      toast({
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleX className="text-white" size={20} />
+            {message}
+          </div>
+        ),
+        variant: 'destructive'
+      })
+    }
   }
 
   const handleUnreadNotifications = () => {
@@ -59,14 +88,16 @@ export default function NavUser({
   }
 
   useEffect(() => {
-    const storedName = localStorage.getItem("userName") || ""
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
-    setUserName(storedName)
-    setUserAvatar(storedUser.avatar || "")
+    const storedUserName = localStorage.getItem("userName") || "";
+    const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+    const storedUserAvatar = localStorage.getItem("userProfilePic")
+    setStoredUserName(storedUserName);
+    setStoredUserAvatar(storedUserAvatar || "");
+    console.log("Roles carregadas:", storedUserRoles) // teste
   }, [])
 
-  const initials = getUserInitials(userName);
-  const firstName = getFirstName(userName);
+  const initials = getUserInitials(storedUserName);
+  const firstName = getFirstName(storedUserName);
 
   return (
     <SidebarMenu>
@@ -78,7 +109,7 @@ export default function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={userAvatar} alt={userName} />
+                <AvatarImage src={storedUserAvatar} alt={storedUserName} />
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

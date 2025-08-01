@@ -23,6 +23,15 @@ import { ArrowLeft, CircleCheck, Search } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { maskCPF, maskPhone } from "@/utils/masks.ts"
+import { useEffect, useState } from "react"
+import { useCompanies } from "@/hooks/companies-hooks.ts"
+import { debounce } from "@/utils/debounce.ts"
+import { useLegalResponsibleUser } from "@/hooks/LegalResponsibleUser-hooks.ts"
+
+type InstitutionOption = {
+    id: string
+    name: string
+}
 
 type legalResponsibleUserRequestProps = {
     onBack: () => void;
@@ -31,13 +40,13 @@ type legalResponsibleUserRequestProps = {
 
 const legalResponsibleUserRequestSchema = z.object({
     name: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido"),
-    cpf: z.string().
+    userCpf: z.string().
         min(1, 'Nº de CPF é obrigatório.')
         .refine((value) => value.replace(/\D/g, '').length === 11, {
             message: 'CPF deve conter exatamente 11 números.',
         }),
     email: z.string().regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email inválido"),
-    phone: z.string().regex(/^\(\d{2}\) \d \d{4}-\d{4}$/, "Telefone inválido"),
+    phoneNumber: z.string().regex(/^\(\d{2}\) \d \d{4}-\d{4}$/, "Telefone inválido"),
     companyName: z.string().min(1, 'Nome da instituição é obrigatório.'),
     position: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Informar cargo exercido"),
     document: z
@@ -64,20 +73,83 @@ export default function LegalResponsibleUserRequest({
     ...props
 }: legalResponsibleUserRequestProps) {
 
+    const { getCompanies, companies } = useCompanies()
+    const { createLegalResponsibleUserRequest, error, loading} = useLegalResponsibleUser()
+    const [query, setQuery] = useState("")
+    const [filteredInstitutions, setFilteredInstitutions] = useState<InstitutionOption[]>([])
+    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
+
+    useEffect(() => {
+        const debouncedSearch = debounce(async () => {
+            if (!query) {
+                setFilteredInstitutions([])
+                return
+            }
+            try {
+                const response = await getCompanies()
+                const filtered = response
+                    .filter((company) =>
+                        company.legalName.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .map((company) => ({
+                        id: company.id,
+                        name: company.legalName,
+                    }))
+
+                setFilteredInstitutions(filtered)
+            } catch (err) {
+                console.error("Erro ao buscar instituições:", err)
+            }
+        }, 300)
+        debouncedSearch()
+        return () => debouncedSearch.cancel()
+    }, [query])
+
     const form = useForm<z.infer<typeof legalResponsibleUserRequestSchema>>({
         resolver: zodResolver(legalResponsibleUserRequestSchema),
         defaultValues: {
             name: '',
-            cpf: '',
+            userCpf: '',
             email: '',
-            phone: '',
+            phoneNumber: '',
             companyName: '',
             position: '',
             document: [],
         },
     })
 
-    function onSubmit(data: z.infer<typeof legalResponsibleUserRequestSchema>) {
+    const onSubmit = async (data: z.infer<typeof legalResponsibleUserRequestSchema>) => {
+        if (!selectedCompanyId) {
+            toast({
+                title: "Selecione uma instituição válida.",
+                variant: "destructive"
+            });
+            return;
+        }
+        if (!data.document || !Array.isArray(data.document) || data.document.length !== 1) {
+            toast({
+                title: "Você deve enviar 1 documento PDF.",
+                variant: "destructive"
+            });
+            return;
+        }
+        const finalData = {
+            name: data.name,
+            userCpf: data.userCpf,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            companyName: data.companyName,
+            companyId: selectedCompanyId,
+            position: data.position,
+            document: data.document[0] as File,
+        };
+        try {
+            console.log("dados enviados:", finalData)
+            const result = await createLegalResponsibleUserRequest(finalData)
+            console.log("Resposta da requisição:", result)
+        } catch (err) {
+
+        }
         console.log("Dados enviados:", data)
         form.reset();
         toast({
@@ -143,7 +215,7 @@ export default function LegalResponsibleUserRequest({
                                             <div>
                                                 <FormField
                                                     control={form.control}
-                                                    name="cpf"
+                                                    name="userCpf"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="text-black">
@@ -185,7 +257,7 @@ export default function LegalResponsibleUserRequest({
                                             <div>
                                                 <FormField
                                                     control={form.control}
-                                                    name="phone"
+                                                    name="phoneNumber"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel>Telefone</FormLabel>
@@ -208,18 +280,40 @@ export default function LegalResponsibleUserRequest({
                                                 control={form.control}
                                                 name="companyName"
                                                 render={({ field }) => (
-                                                    <FormItem>
+                                                    <FormItem className="relative">
                                                         <FormLabel className="text-black">Instituição</FormLabel>
                                                         <FormControl>
                                                             <div className="relative">
                                                                 <Input
                                                                     type="search"
                                                                     placeholder="Buscar instituição..."
-                                                                    className="pl-10 text-black focus-visible:ring-yellowLight"
-                                                                    {...field}
-                                                                    onChange={(e) => field.onChange(e.target.value)}
+                                                                    className="pl-8 text-black focus-visible:ring-yellowLight"
+                                                                    value={field.value}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value
+                                                                        field.onChange(value)
+                                                                        setQuery(value)
+                                                                    }}
                                                                 />
                                                                 <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                                                {filteredInstitutions.length > 0 && (
+                                                                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-auto">
+                                                                        {filteredInstitutions.map((inst, index) => (
+                                                                            <div
+                                                                                key={index}
+                                                                                className="cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                                                                onClick={() => {
+                                                                                    field.onChange(inst.name)
+                                                                                    setSelectedCompanyId(inst.id)
+                                                                                    setQuery("")
+                                                                                    setFilteredInstitutions([])
+                                                                                }}
+                                                                            >
+                                                                                {inst.name}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </FormControl>
                                                         <FormMessage className="text-red-500" />

@@ -1,7 +1,7 @@
 import { AskedQuestionsHandler } from "@/components/custom/AskedQuestions";
-import { 
-    AssociateHandler, 
-    RequestsHandler 
+import {
+    AssociateHandler,
+    RequestsHandler
 } from "@/components/custom/AssociateToCompany";
 import { BrowseBookings } from "@/components/custom/BrowseBookings";
 import { BrowseProducts } from "@/components/custom/BrowseProducts";
@@ -9,20 +9,26 @@ import { NewProduct } from "@/components/custom/NewProduct";
 import { UserAccountManagement } from "@/components/custom/UserAccountManagement";
 import { BrowseNotifications } from "@/components/custom/UserNotifications";
 import { UserSidebar } from "@/components/custom/UserSidebar";
-import { 
-    SidebarInset, 
-    SidebarProvider, 
-    SidebarTrigger 
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 
 export default function User() {
 
     const [sidebarOption, setSidebarOption] = useState<number>(2);
+    const [animate, setAnimate] = useState(false);
 
     function handleMenuClick(option: number) {
         setSidebarOption(option);
     }
+
+    function sideBarAnimationHandler () {
+        setAnimate(true)
+        setTimeout(() => setAnimate(false), 500);
+    };
 
     return (
         <SidebarProvider>
@@ -30,7 +36,10 @@ export default function User() {
                 onMenuClick={handleMenuClick}
                 activeOption={sidebarOption}
             />
-            <SidebarTrigger className="hover:cursor-pointer" />
+            <SidebarTrigger 
+            onClick={sideBarAnimationHandler}
+            className={`hover:cursor-pointer rotate-180 ${animate ? 'animate-spin-once' : ''}`} 
+            />
             <SidebarInset className="flex flex-col flex-1 overflow-x-hidden">
                 {sidebarOption === 0 && (<UserAccountManagement />)}
                 {sidebarOption === 1 && (<BrowseNotifications />)}
