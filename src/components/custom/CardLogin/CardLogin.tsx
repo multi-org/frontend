@@ -59,7 +59,6 @@ const CardLogin: React.FC = () => {
       const userName = user?.userName;
       const userAvatar = user?.photoPerfil || "";
       const userRoles = user?.userRoles || [];
-      console.log("user.userRoles:", user.userRoles)
 
       // O token está sendo enviado como cookie HTTP-only automaticamente
       // Não precisamos salvar o token manualmente, ele já está nos cookies
