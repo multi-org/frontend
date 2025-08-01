@@ -19,6 +19,7 @@ export interface CompanyType {
 }
 
 export type CompanyRegisterRequestType = CompanyType & {
+  customisedId: string;
   requiredAt: string;
   requestedByUser: {
     name: string;

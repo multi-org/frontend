@@ -13,22 +13,27 @@ export const useCompanies = () => {
         getCompanyById,
         companyRegisterRequests,
         setCompanyRegisterRequests,
+        getCompanyRegisterRequestByCustomisedId,
         deleteCompanyRegisterRequest,
     } = useCompanyStore()
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    // Menaging companies
-    const getCompanies = async () => {
+    // Managing companies
+
+    const getCompanies = async (): Promise<CompanyType[]> => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<CompanyType[]>("/companies/all")
-            setCompanies(response.data)
+            const response = await api.get("/companies/all")
+            const data = response.data.companies
+            setCompanies(data)
+            return data
         } catch (err) {
-            setError("Erro na busca por instituições")
-            throw new Error()
+            const message = "Erro na busca por instituições";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -60,8 +65,9 @@ export const useCompanies = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            setError("Erro na tentativa de criar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de criar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -78,8 +84,9 @@ export const useCompanies = () => {
             update(response.data)
             return response.data
         } catch (err) {
-            setError("Erro na tentativa de alterar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de alterar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -92,8 +99,9 @@ export const useCompanies = () => {
             await api.delete(`/companies/${id}`)
             deleteCompany(id)
         } catch (err) {
-            setError("Erro na tentativa de deletar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de deletar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -107,8 +115,9 @@ export const useCompanies = () => {
             const response = await api.get<CompanyRegisterRequestType[]>("/companies/all/requests")
             setCompanyRegisterRequests(response.data)
         } catch (err) {
-            setError("Erro na busca por instituições")
-            throw new Error()
+            const message = "Erro na busca por instituições";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -140,8 +149,9 @@ export const useCompanies = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            setError("Erro na tentativa de criar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de criar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -167,28 +177,30 @@ export const useCompanies = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.post("/companies/confirm/:cnpj", {
+            const response = await api.post(`/companies/confirm/${encodeURIComponent(company.cnpj)}`, {
                 ...company
             })
             create(response.data)
             return response.data
         } catch (err) {
-            setError("Erro na tentativa de criar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de criar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
     }
 
-    const deleteCompanyRegisterRequestById = async (id: string) => {
+    const deleteCompanyRegisterRequestByCustomisedId = async (customisedId: string) => {
         setLoading(true)
         setError(null)
         try {
-            await api.delete(`/companies/${id}`)
-            deleteCompany(id)
+            await api.delete(`/companies/${customisedId}`)
+            deleteCompanyRegisterRequest(customisedId)
         } catch (err) {
-            setError("Erro na tentativa de deletar instituição")
-            throw new Error()
+            const message = "Erro na tentativa de deletar instituição";
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -207,7 +219,8 @@ export const useCompanies = () => {
         getCompanyRegisterRequests,
         createCompanyRegisterRequest,
         confirmCompanyRegisterRequest,
-        deleteCompanyRegisterRequestById,
+        getCompanyRegisterRequestByCustomisedId,
+        deleteCompanyRegisterRequestByCustomisedId,
         deleteCompanyRegisterRequest,
     }
 

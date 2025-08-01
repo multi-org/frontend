@@ -12,7 +12,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { ArrowLeft, CircleCheck, Loader } from "lucide-react"
+import { ArrowLeft, CircleCheck, CircleX, Loader } from "lucide-react"
 import { maskCEP, maskCNPJ, maskPhone } from "@/utils/masks"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { useEffect } from "react"
@@ -34,7 +34,7 @@ const companyRegisterRequestSchema = z.object({
     cnpj: z.string().min(18, "CNPJ precisa ter 18 caracteres"),
     zipCode: z.string().min(8, 'CEP precisa ter 8 números'),
     street: z.string().min(1, "Rua é pbrigatória"),
-    number: z.string().regex(/^[0-9]*$/, "Número é obrigatóriio"),
+    number: z.string().min(1, "Número é obrigatóriio"),
     complement: z.string().optional(),
     neighborhood: z.string().min(1, "Bairro é obrigatório"),
     city: z.string().min(1, "Cidade é obrigatório"),
@@ -52,7 +52,7 @@ export default function CompanyRegisterRequest({
     ...props
 }: companyRegisterRequestProps) {
 
-    const { createCompanyRegisterRequest, loading, error } = useCompanies();
+    const { createCompanyRegisterRequest, loading } = useCompanies();
 
     const form = useForm<z.infer<typeof companyRegisterRequestSchema>>({
         resolver: zodResolver(companyRegisterRequestSchema),
@@ -90,6 +90,7 @@ export default function CompanyRegisterRequest({
                 form.setValue("neighborhood", data.bairro || '')
                 form.setValue("city", data.localidade || '')
                 form.setValue("state", data.uf || '')
+                form.setValue("country", "Brasil")
             })
             .catch((err) => console.error("Erro ao buscar CEP:", err))
     }, [cep, form])
@@ -115,8 +116,14 @@ export default function CompanyRegisterRequest({
                 form.reset()
             }
         } catch (err) {
-            toast({ 
-                title: `${error}`, 
+            const message = err instanceof Error ? err.message : "Erro inesperado";
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
                 variant: 'destructive'
             })
         }
@@ -331,6 +338,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: 12 ou s/n"
                                                                     {...field}
                                                                 />
                                                             </FormControl>
@@ -348,6 +356,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: Casa"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>

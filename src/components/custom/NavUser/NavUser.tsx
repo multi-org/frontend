@@ -23,9 +23,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useNavigate } from 'react-router-dom'
-import { useToast } from '@/components/ui/use-toast'
 import { getFirstName, getUserInitials } from "@/utils/manipulateNames"
 import { useEffect, useState } from "react"
+import { toast } from "@/hooks/use-toast"
 
 type NavUserProps = {
   onNavUserOption: (navUserOption: number) => void;
@@ -38,9 +38,8 @@ export default function NavUser({
 }: NavUserProps) {
 
   const navigate = useNavigate()
-  const { toast } = useToast()
-  const [userName, setUserName] = useState("")
-  const [userAvatar, setUserAvatar] = useState("")
+  const [storedUserName, setStoredUserName] = useState("")
+  const [storedUserAvatar, setStoredUserAvatar] = useState("")
   const [unreadNotificationsNumber, setUnreadNotificationsNumber] = useState<number>(unreadNotifications)
 
   const handleLogout = () => {
@@ -59,14 +58,16 @@ export default function NavUser({
   }
 
   useEffect(() => {
-    const storedName = localStorage.getItem("userName") || ""
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
-    setUserName(storedName)
-    setUserAvatar(storedUser.avatar || "")
+    const storedUserName = localStorage.getItem("userName") || "";
+    const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+    const storedUserAvatar = localStorage.getItem("userProfilePic")
+    setStoredUserName(storedUserName);
+    setStoredUserAvatar(storedUserAvatar || "");
+    console.log("Roles carregadas:", storedUserRoles) // teste
   }, [])
 
-  const initials = getUserInitials(userName);
-  const firstName = getFirstName(userName);
+  const initials = getUserInitials(storedUserName);
+  const firstName = getFirstName(storedUserName);
 
   return (
     <SidebarMenu>
@@ -78,7 +79,7 @@ export default function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={userAvatar} alt={userName} />
+                <AvatarImage src={storedUserAvatar} alt={storedUserName} />
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">

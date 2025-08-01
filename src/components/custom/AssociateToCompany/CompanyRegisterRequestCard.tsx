@@ -31,11 +31,13 @@ export default function CompanyRegisterRequestCard({
 
     const {
         loading,
-        error,
         confirmCompanyRegisterRequest,
-        deleteCompanyRegisterRequestById
+        getCompanyRegisterRequestByCustomisedId,
+        deleteCompanyRegisterRequestByCustomisedId,
     } = useCompanies()
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+    company.customisedId = `${company.cnpj}-${company.zipCode}`
 
     const handleProceed = async () => {
         try {
@@ -48,8 +50,9 @@ export default function CompanyRegisterRequestCard({
             } = company
             const result = await confirmCompanyRegisterRequest(companyData)
             if (result) {
-                console.log("Solicitação de cadastro de instituição aprovada!")
-                console.log("Dados enviados:", companyData)
+                console.log("Solicitação de cadastro de instituição aprovada..")
+                console.log("..Instituição devidamente cadastrada no sistema")
+                console.log("Dados enviados:", companyData) // teste temporário
                 toast({
                     description: (
                         <div className="flex items-center gap-2">
@@ -64,28 +67,52 @@ export default function CompanyRegisterRequestCard({
                     },
                 })
             }
-        } catch {
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Erro inesperado";
             toast({
-                title: `${error}`,
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleCheck className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
                 variant: 'destructive'
             })
         }
     }
 
-    const handleReject = () => {
-        console.log("Instituição rejeitada!")
-        setIsDeleteDialogOpen(true)
-    }
-
-    const handleDeletion = async () => {
+    const handleReject = async () => {
         try {
-            const {
-                id,
-            } = company
-            await deleteCompanyRegisterRequestById(id)
-            // continuar aqui..
-        } catch {
-            toast({ title: 'error', variant: 'destructive' })
+            await deleteCompanyRegisterRequestByCustomisedId(company.customisedId)
+            const result = getCompanyRegisterRequestByCustomisedId(company.customisedId)
+            if (!result) {
+                console.log("Solicitação de cadastro de instituição rejeitada..")
+                console.log("..Dados da instituição devidamente removidos no sistema")
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Solicitação de cadastro de instituição rejeitada!
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                })
+            }
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Erro inesperado";
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleCheck className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
+                variant: 'destructive'
+            })
         }
     }
 
@@ -285,7 +312,7 @@ export default function CompanyRegisterRequestCard({
                 </CardContent>
                 <CardFooter className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Button
-                        onClick={handleReject}
+                        onClick={() => setIsDeleteDialogOpen(true)}
                         variant="outline"
                         className="flex-1 text-orangeDark hover:text-orangeLight border-orangeLight bg-transparent hover:bg-orange-50 truncate"
                     >
@@ -317,6 +344,7 @@ export default function CompanyRegisterRequestCard({
                         </AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-red-600 hover:bg-red-500 text-grayLight"
+                            onClick={handleReject}
                         >
                             Confirmar
                         </AlertDialogAction>

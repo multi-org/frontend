@@ -13,7 +13,8 @@ interface CompanyStoreProps {
     // solicitações de instituições
     companyRegisterRequests: CompanyRegisterRequestType[];
     setCompanyRegisterRequests: (requests: CompanyRegisterRequestType[]) => void;
-    deleteCompanyRegisterRequest: (id: string) => void;
+    getCompanyRegisterRequestByCustomisedId: (customisedId: string) => CompanyRegisterRequestType | null;
+    deleteCompanyRegisterRequest: (customisedId: string) => void;
 }
 
 export const useCompanyStore = create<CompanyStoreProps>()((set, get) => ({
@@ -59,9 +60,18 @@ export const useCompanyStore = create<CompanyStoreProps>()((set, get) => ({
             companyRegisterRequests: requests
         })),
 
-    deleteCompanyRegisterRequest: (id) =>
+    getCompanyRegisterRequestByCustomisedId: (customisedId) => {
+        const state = get();
+        const companyRegisterRequest = state.companyRegisterRequests.find(
+            (companyRegisterRequest: CompanyRegisterRequestType) =>
+                companyRegisterRequest.customisedId === customisedId
+        )
+        return companyRegisterRequest || null;
+    },
+
+    deleteCompanyRegisterRequest: (customisedId) =>
         set((state) => ({
-            companyRegisterRequests: state.companyRegisterRequests.filter((request) => request.id !== id),
+            companyRegisterRequests: state.companyRegisterRequests.filter((request) => request.customisedId !== customisedId),
         })),
 
 }))

@@ -4,30 +4,24 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ProductType } from "@/types/Product"
 
 interface ReducedProductCardProps {
-    // id: string
-    // nome: string
-    // descricacao: string
-    // precoHora: number
-    // precoDia: number
-    // imagem: string
-    tipo: "espaco" | "equipamento" | "servico"
+    type: "SPACE" | "EQUIPMENT" | "SERVICE"
     product: ProductType
     localizacao?: string
     onNext: () => void;
 }
 
-const tipoConfig = {
-    espaco: {
+const typoConfig = {
+    SPACE: {
         label: "Espaço",
         icon: MapPin,
         color: "bg-blue-100 text-blue-800",
     },
-    equipamento: {
+    EQUIPMENT: {
         label: "Equipamento",
         icon: Wrench,
         color: "bg-green-100 text-green-800",
     },
-    servico: {
+    SERVICE: {
         label: "Serviço",
         icon: Users,
         color: "bg-purple-100 text-purple-800",
@@ -35,29 +29,27 @@ const tipoConfig = {
 }
 
 export default function ReducedProductCard({
-    // id = "PROD-001",
-    // nome = "Sala de Reunião Executiva",
-    // descricacao = "Sala moderna e equipada com projetor, ar-condicionado, mesa para 12 pessoas e acesso à internet de alta velocidade. Ideal para reuniões corporativas e apresentações.",
-    // precoHora = 45.0,
-    // precoDia = 320.0,
-    // imagem = "/placeholder.svg?height=200&width=400",
-    tipo = "espaco",
-    product: {
-        id,
-        title,
-        description,
-        pricePerHour,
-        pricePerDay,
-    },
+    type,
+    product,
     localizacao = "Centro - São Paulo",
     onNext,
 }: ReducedProductCardProps) {
 
-    const config = tipoConfig[tipo]
+    const defineProductType = () => {
+        if (product.type === "SPACE") {
+            type = "SPACE"
+        }else if (product.type === "EQUIPMENT") {
+            type = "EQUIPMENT"
+        } else {
+            type = "SERVICE"
+        }
+        return type
+    }
+    const config = typoConfig[defineProductType()]
     const IconComponent = config.icon
 
     const handleRent = () => {
-        console.log("Solicitar aluguel do produto:", id)
+        console.log("Solicitar aluguel do produto:", product.id)
         // implementari lógica de aluguel
         onNext();
     }
@@ -73,7 +65,7 @@ export default function ReducedProductCard({
         <Card className="w-full max-w-sm mx-auto overflow-hidden hover:shadow-lg transition-shadow duration-300">
             {/* Imagem do Produto */}
             <div className="relative h-48 w-full">
-                <img src={"/src/assets/unsplash-lab.jpg"} alt={title} className="object-cover h-52 w-96" />
+                <img src={"/src/assets/unsplash-lab.jpg"} alt={product.title} className="object-cover h-52 w-96" />
                 <div className="absolute top-3 left-3">
                     <div className={`${config.color} flex items-center text-sm gap-1 p-1 rounded-full`}>
                         <IconComponent className="h-3 w-3" />
@@ -86,7 +78,7 @@ export default function ReducedProductCard({
                 {/* Nome do Produto */}
                 <div className="space-y-1">
                     <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
-                        {title}
+                        {product.title}
                     </h3>
                     {localizacao && (
                         <p className="text-sm text-gray-500 flex items-center gap-1">
@@ -98,7 +90,7 @@ export default function ReducedProductCard({
 
                 {/* Descrição */}
                 <p className="text-sm text-gray-600 line-clamp-3">
-                    {description}
+                    {product.description}
                 </p>
 
                 {/* Preços */}
@@ -109,7 +101,7 @@ export default function ReducedProductCard({
                             <span className="text-sm font-medium">Por hora</span>
                         </div>
                         <span className="font-semibold text-gray-900">
-                            {formatPrice(pricePerHour)}
+                            {formatPrice(product.hourlyPrice)}
                         </span>
                     </div>
 
@@ -119,7 +111,7 @@ export default function ReducedProductCard({
                             <span className="text-sm font-medium">Por dia</span>
                         </div>
                         <span className="font-semibold text-gray-900">
-                            {formatPrice(pricePerDay)}
+                            {formatPrice(product.dailyPrice)}
                         </span>
                     </div>
                 </div>
