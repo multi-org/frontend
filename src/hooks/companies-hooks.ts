@@ -191,12 +191,15 @@ export const useCompanies = () => {
         }
     }
 
-    const deleteCompanyRegisterRequestByCustomisedId = async (customisedId: string) => {
+    const deleteCompanyRegisterRequestByCustomisedId = async (company: {
+        customisedId: string
+        cnpj: string
+    }) => {
         setLoading(true)
         setError(null)
         try {
-            await api.delete(`/companies/${customisedId}`)
-            deleteCompanyRegisterRequest(customisedId)
+            await api.delete(`/companies/reject/request/${encodeURIComponent(company.cnpj)}`)
+            deleteCompanyRegisterRequest(company.customisedId)
         } catch (err) {
             const message = "Erro na tentativa de deletar instituição";
             setError(message)

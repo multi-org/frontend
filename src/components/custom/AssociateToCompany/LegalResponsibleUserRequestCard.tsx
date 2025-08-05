@@ -63,11 +63,11 @@ export default function LegalResponsibleUserRequestCard({
             requiredAt,
             ...legalResponsibleUserRequestData
         } = legalResponsibleUserRequest
+        console.log("Dados enviados:", legalResponsibleUserRequestData) //teste temporário
         try {
             const result = await confirmLegalResponsibleUserRequest(legalResponsibleUserRequestData)
             if (result) {
                 console.log("Solicitação de usuário responsável legal por instituição aprovada!")
-                console.log("Dados enviados:", legalResponsibleUserRequestData) //teste temporário
                 toast({
                     description: (
                         <div className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export default function LegalResponsibleUserRequestCard({
         <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
             <Card className="w-full max-w-2xl mx-auto overflow-hidden">
                 <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between max-[400px]:flex-col">
+                    <div className="flex items-center justify-between max-[950px]:flex-col">
                         <div className="flex items-center gap-2">
                             <UserCog className="h-5 w-5 text-blueDark shrink-0" />
                             <CardTitle
@@ -177,7 +177,7 @@ export default function LegalResponsibleUserRequestCard({
                                     Nome
                                 </label>
                                 <p
-                                    className="text-sm text-gray-900">
+                                    className="text-sm text-gray-900 sm:truncate">
                                     {/* João Silva */}
                                     {legalResponsibleUserRequest?.userId?.name ?? "...Carregando"}
                                 </p>
@@ -199,7 +199,7 @@ export default function LegalResponsibleUserRequestCard({
                                     Email
                                 </label>
                                 <p
-                                    className="text-sm text-gray-900">
+                                    className="text-sm text-gray-900 sm:truncate">
                                     {/* joao@silva.com */}
                                     {legalResponsibleUserRequest?.userId?.email ?? "...Carregando"}
                                 </p>
@@ -212,7 +212,7 @@ export default function LegalResponsibleUserRequestCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* (83) 99876-7654 */}
-                                    {legalResponsibleUserRequest?.userId?.phone ?? "...Carregando"}
+                                    {legalResponsibleUserRequest?.userId?.phoneNumber ?? "...Carregando"}
                                 </p>
                             </div>
                         </div>
@@ -224,7 +224,7 @@ export default function LegalResponsibleUserRequestCard({
                             <p
                                 className="text-sm text-gray-900">
                                 {/* Universidade Estadual da Paraíba - UEPB */}
-                                {legalResponsibleUserRequest?.companyId?.name ?? "...Carregando"}
+                                {legalResponsibleUserRequest?.companyId?.legalName ?? "...Carregando"}
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">

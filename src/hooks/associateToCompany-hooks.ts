@@ -34,7 +34,7 @@ export const useAssociateToCompany = () => {
         document: File,
         companyId: {
             id: string,
-            name: string,
+            legalName: string,
         },
     }) => {
         setLoading(true)
@@ -42,7 +42,7 @@ export const useAssociateToCompany = () => {
         try {
             const formData = new FormData()
             formData.append("userCpf", request.userCpf)
-            formData.append("companyName", request.companyId.name)
+            formData.append("companyName", request.companyId.legalName)
             formData.append("document", request.document)
 
             const response = await api.post(
@@ -87,7 +87,7 @@ export const useAssociateToCompany = () => {
         companyId: {
             alert: string,
             id: string,
-            name: string,
+            legalName: string,
             status: string,
         },
         userId: {
@@ -102,7 +102,7 @@ export const useAssociateToCompany = () => {
         setError(null)
         try {
             const response = await api.post(
-                `/associationOrLegalRepresentative/confirmation/${request.userId.id}/${request.companyId.id}?request=associate`,
+                `/users/associationOrLegalRepresentative/confirmation/${request.userId.id}/${request.companyId.id}?request=associate`,
                 {
                     ...request
                 })
@@ -130,7 +130,7 @@ export const useAssociateToCompany = () => {
         setError(null)
         try {
             await api.delete(
-                `/associationOrLegalRepresentative/reject/${request.userId.id}/${request.companyId.id}?request=associate`
+                `/users/associationOrLegalRepresentative/reject/${request.userId.id}/${request.companyId.id}?request=associate`
             )
             deleteAssociateToCompanyRequestByCustomisedId(request.customisedId)
         } catch (err) {
@@ -146,7 +146,7 @@ export const useAssociateToCompany = () => {
         setLoading(true)
         setError(null)
         try {
-            await api.delete("all/associationOrLegalRepresentative/reject/:companyId")
+            await api.delete("/users/all/associationOrLegalRepresentative/reject/:companyId")
         } catch (err) {
             const message = "Erro na tentativa de deletar todas as solicitações de associção com instituição";
             setError(message)
@@ -163,7 +163,7 @@ export const useAssociateToCompany = () => {
         position: string,
         companyId: {
             id: string,
-            name: string,
+            legalName: string,
         },
     }) => {
         setLoading(true)
@@ -171,7 +171,7 @@ export const useAssociateToCompany = () => {
         try {
             const formData = new FormData()
             formData.append("userCpf", request.userCpf)
-            formData.append("companyName", request.companyId.name)
+            formData.append("companyName", request.companyId.legalName)
             formData.append("document", request.document)
             formData.append("position", request.position)
 
@@ -218,13 +218,13 @@ export const useAssociateToCompany = () => {
         companyId: {
             alert: string,
             id: string,
-            name: string,
+            legalName: string,
             status: string,
         },
         userId: {
             alert: string;
             email: string;
-            phone: string,
+            phoneNumber: string,
             id: string;
             name: string;
             status: string;
@@ -234,7 +234,7 @@ export const useAssociateToCompany = () => {
         setError(null)
         try {
             const response = await api.post(
-                `/associationOrLegalRepresentative/confirmation/${request.userId.id}/${request.companyId.id}?request=representative`,
+                `/users/associationOrLegalRepresentative/confirmation/${request.userId.id}/${request.companyId.id}?request=representative`,
                 {
                     ...request
                 })
@@ -262,7 +262,7 @@ export const useAssociateToCompany = () => {
         setError(null)
         try {
             await api.delete(
-                `/associationOrLegalRepresentative/reject/${request.userId.id}/${request.companyId.id}?request=representative`
+                `/users/associationOrLegalRepresentative/reject/${request.userId.id}/${request.companyId.id}?request=representative`
             )
             deleteLegalResponsibleUserRequestByCustomisedId(request.customisedId)
         } catch (err) {
@@ -278,7 +278,7 @@ export const useAssociateToCompany = () => {
         setLoading(true)
         setError(null)
         try {
-            await api.delete("all/associationOrLegalRepresentative/reject/:companyId")
+            await api.delete("/users/all/associationOrLegalRepresentative/reject/:companyId")
         } catch (err) {
             const message = "Erro na tentativa de deletar todas as solicitações de associção com instituição";
             setError(message)

@@ -146,9 +146,13 @@ export default function LegalResponsibleUserRequest({
         const finalData = {
             userCpf: data.userCpf,
             document: data.document[0] as File,
+            userId: {
+                name: data.name,
+                phoneNumber: data.phoneNumber,
+            },
             companyId: {
                 id: selectedCompanyId,
-                name: data.companyName,
+                legalName: data.companyName,
             },
             position: data.position,
         };

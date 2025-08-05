@@ -39,6 +39,8 @@ export default function CompanyRegisterRequestCard({
 
     company.customisedId = `${company.cnpj}-${company.zipCode}`
 
+    console.log("Dados recebido no CompanyRegisterRequestCard:", company)
+
     const handleProceed = async () => {
         try {
             const {
@@ -83,7 +85,7 @@ export default function CompanyRegisterRequestCard({
 
     const handleReject = async () => {
         try {
-            await deleteCompanyRegisterRequestByCustomisedId(company.customisedId)
+            await deleteCompanyRegisterRequestByCustomisedId(company)
             const result = getCompanyRegisterRequestByCustomisedId(company.customisedId)
             if (!result) {
                 console.log("Solicitação de cadastro de instituição rejeitada..")

@@ -16,7 +16,7 @@ interface AssociateToCompanyProps {
     deleteAssociateToCompanyRequestByCustomisedId: (customisedId: string) => void;
     deleteLegalResponsibleUserRequestByCustomisedId: (customisedId: string) => void;
     getAssociateToCompanyRequestByCustomisedId: (customisedId: string) => AssociateToCompanyType | null;
-    getLegalResponsibleUserRequestByCustomisedId: (customisedId: string) => AssociateToCompanyType | null;
+    getLegalResponsibleUserRequestByCustomisedId: (customisedId: string) => LegalResponsibleUserType | null;
 }
 
 export const useAssociateToCompanyStore = create<AssociateToCompanyProps>()((set, get) => ({

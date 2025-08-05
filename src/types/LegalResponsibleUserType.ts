@@ -3,7 +3,7 @@ export interface LegalResponsibleUserType {
     userId: {
         alert: string,
         email: string,
-        phone: string,
+        phoneNumber: string,
         id: string,
         name: string,
         status: string,
@@ -12,7 +12,7 @@ export interface LegalResponsibleUserType {
     companyId: {
         alert: string,
         id: string,
-        name: string,
+        legalName: string,
         status: string,
     },
     position: string,
