@@ -1,14 +1,21 @@
 export interface LegalResponsibleUserType {
-    name: string,
+    customisedId: string,
+    userId: {
+        alert: string,
+        email: string,
+        phone: string,
+        id: string,
+        name: string,
+        status: string,
+    },
     userCpf: string,
-    email: string,
-    phoneNumber: string,
-    companyName: string,
-    companyId: string,
+    companyId: {
+        alert: string,
+        id: string,
+        name: string,
+        status: string,
+    },
     position: string,
-    document: File,
-}
-
-export type LegalResponsibleUserRequestType = LegalResponsibleUserType & {
-    requiredAt: string,
+    documentUrl: string,
+    requiredAt: string;
 }

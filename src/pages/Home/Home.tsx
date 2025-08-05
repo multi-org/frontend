@@ -7,16 +7,9 @@ import {
   HammerIcon,
   CheckedClipboard,
 } from '@/components/custom-icons'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel'
-import { faqCarouselItems } from './Home.helpers'
 import { Footer } from '@/components/custom/Footer'
-import { FrequentlyAskedQuestions } from '@/components/custom/AskedQuestions'
+import { AskedQuestion } from '@/components/custom/AskedQuestions'
+import { Accordion } from '@/components/ui/accordion'
 
 
 export function Home() {
@@ -119,16 +112,21 @@ export function Home() {
 
         {/* FAQ */}
         <div id="faq" className="mb-28 mt-20 px-4 pb-20  flex flex-col items-center">
-          
-            <div id="faq" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
-
-
-          <FrequentlyAskedQuestions onNext={() => console.log("Abrir formulário")} />
-        </div>
-
-
-
-
+          <div id="faq" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
+            <h1 className="text-3xl font-bold text-center">
+              Perguntas frequentes
+            </h1>
+            <div className="m-16 p-8 bg-gray-100 rounded-lg">
+              <Accordion
+                type="single"
+                collapsible
+                className="w-full"
+                defaultValue="item-1"
+              >
+                <AskedQuestion />
+              </Accordion>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

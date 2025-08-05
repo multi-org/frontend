@@ -44,13 +44,13 @@ export default function NavUser({
   const navigate = useNavigate()
   const [storedUserName, setStoredUserName] = useState("")
   const [storedUserAvatar, setStoredUserAvatar] = useState("")
+  // const [storedUserRoles, setStoredUserRoles] = useState<string[]>([])
   const [unreadNotificationsNumber, setUnreadNotificationsNumber] = useState<number>(unreadNotifications)
 
   const handleLogout = async () => {
     try {
       const result = await userLogout()
       if (result) {
-        console.log(result)
         toast({
           description: (
             <div className="flex items-center gap-2">
@@ -89,15 +89,18 @@ export default function NavUser({
 
   useEffect(() => {
     const storedUserName = localStorage.getItem("userName") || "";
-    const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+    // const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
     const storedUserAvatar = localStorage.getItem("userProfilePic")
     setStoredUserName(storedUserName);
     setStoredUserAvatar(storedUserAvatar || "");
-    console.log("Roles carregadas:", storedUserRoles) // teste
+    // setStoredUserRoles(storedUserRoles)
   }, [])
 
   const initials = getUserInitials(storedUserName);
   const firstName = getFirstName(storedUserName);
+  // const isAdmin = storedUserRoles.includes("adminUser");
+  // const isSubAdmin = storedUserRoles.includes("adminCompany");
+  // const isCommon = storedUserRoles.includes("commomUser");
 
   return (
     <SidebarMenu>

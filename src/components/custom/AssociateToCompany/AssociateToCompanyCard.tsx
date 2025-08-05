@@ -57,7 +57,7 @@ export default function AssociateToCompanyCard({
                     description: (
                         <div className="flex items-center gap-2">
                             <CircleCheck className="text-white" size={20} />
-                            Instituição cadastrada com sucesso
+                            Associação com instituição cadastrada com sucesso
                         </div>
                     ),
                     variant: 'default',
@@ -253,7 +253,10 @@ export default function AssociateToCompanyCard({
                             onClick={handleReject}
                             className="bg-red-600 hover:bg-red-500 text-grayLight"
                         >
-                            Confirmar
+                            {loading
+                                ? <Loader />
+                                : "Confirmar"
+                            }
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
