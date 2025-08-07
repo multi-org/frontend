@@ -10,6 +10,7 @@ import { Loader } from "lucide-react";
 type AddSpaceStepThreeProps = {
     data: {
         title: string;
+        companyName: string, // em teste
         description: string;
         capacity: number;
         area: number;
@@ -54,6 +55,7 @@ export default function AddSpaceStepThree({
 
                     <div className="grid gap-4 text-grayLight">
                         <SummaryItem label="Título" value={data.title} />
+                        <SummaryItem label="Instituição" value={data.companyName} />
                         <SummaryItem label="Descrição" value={data.description} />
                         <SummaryItem label="Capacidade" value={`${data.capacity} pessoas`} />
                         <SummaryItem label="Área (m²)" value={`${data.area} m²`} />

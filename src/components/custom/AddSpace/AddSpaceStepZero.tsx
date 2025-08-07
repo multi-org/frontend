@@ -19,6 +19,7 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
     const [stepTwoData, setStepTwoData] = useState<StepTwoData | null>(null);
 
     const handleNextStepOne = (formStepOneData: StepOneData) => {
+        console.log("Dados do formStepOne:", formStepOneData) // em teste
         setStepOneData(formStepOneData)
         setStep(2)
     }

@@ -34,6 +34,7 @@ export const useProducts = () => {
     // descricao: string
     // categoria: CategoriaType
     // preco: number
+    companyId: string,
     type: string,
     title: string,
     description: string,
@@ -80,7 +81,7 @@ export const useProducts = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.post('/products/:companyId', {
+      const response = await api.post(`/products/${product.companyId}`, {
         ...product,
         // disponibilidade: [
         //   { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
