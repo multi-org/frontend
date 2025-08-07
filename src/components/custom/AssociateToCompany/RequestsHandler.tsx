@@ -10,7 +10,6 @@ import CompanyRegisterForm from "./CompanyRegisterForm";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
-import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
 import AssociateToCompanyCard from "./AssociateToCompanyCard";
 import LegalResponsibleUserRequestCard from "./LegalResponsibleUserRequestCard";
 import { useCompanies } from "@/hooks/companies-hooks";
@@ -127,12 +126,6 @@ export default function RequestsHandler({
                         )}
                         {companyRegisterStep === 1 && (
                             <CompanyRegisterForm
-                                onBack={() => setCompanyRegisterStep(0)}
-                                onNext={() => setCompanyRegisterStep(2)}
-                            />
-                        )}
-                        {companyRegisterStep === 2 && (
-                            <LegalResponsibleUserForm
                                 onBack={() => setCompanyRegisterStep(0)}
                             />
                         )}

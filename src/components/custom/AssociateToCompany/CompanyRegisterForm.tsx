@@ -24,7 +24,6 @@ import { useCompanies } from "@/hooks/companies-hooks.ts"
 type companyRegisterFormProps = {
     className?: string;
     onBack: () => void;
-    onNext: () => void;
 }
 
 const companyRegisterFormSchema = z.object({
@@ -47,7 +46,6 @@ const companyRegisterFormSchema = z.object({
 
 export default function CompanyRegisterForm({
     onBack,
-    onNext,
     className,
     ...props
 }: companyRegisterFormProps) {
@@ -469,18 +467,6 @@ export default function CompanyRegisterForm({
                                                 : "Prosseguir"
                                             }
                                         </Button>
-                                    </div>
-                                    <div className="text-center text-sm">
-                                        Clique{" "}
-                                        <Button
-                                            type="button"
-                                            className="p-0 text-yellowDark hover:text-blueDark"
-                                            variant="link"
-                                            onClick={onNext}
-                                        >
-                                            aqui
-                                        </Button>
-                                        {" "}para solicitar um responsável legal pela instituição.
                                     </div>
                                     <div className="flex justify-end text-center text-sm ">
                                         <Button

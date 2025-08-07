@@ -21,6 +21,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import { useEffect, useState } from "react";
 
 type UserSidebarProps = {
     onMenuClick: (option: number) => void;
@@ -34,6 +35,12 @@ export default function UserSidebar({
     ...props
 }: UserSidebarProps) {
 
+    const [storedUserRoles, setStoredUserRoles] = useState<string[]>([])
+
+    useEffect(() => {
+        const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+        setStoredUserRoles(storedUserRoles)
+    }, [])
     const data = {
         user: {
             name: "username",
@@ -45,36 +52,42 @@ export default function UserSidebar({
                 title: "Página inicial",
                 // url: "#",
                 icon: House,
+                roles: ["commonUser", "adminSystemUser"],
             },
             {
                 id: 3,
                 title: "Minhas reservas",
                 // url: "#",
                 icon: NotebookPen,
+                roles: ["commonUser", "adminSystemUser"],
             },
             {
                 id: 4,
                 title: "Cadastrar produtos",
                 // url: "#",
                 icon: PackagePlus,
+                roles: ["adminSystemUser"],
             },
             {
                 id: 5,
                 title: "Associar-se",
                 // url: "#",
                 icon: Contact,
+                roles: ["commonUser", "adminSystemUser"],
             },
             {
                 id: 6,
                 title: "Dúvidas",
                 // url: "#",
                 icon: MessageCircleQuestion,
+                roles: ["commonUser", "adminSystemUser"],
             },
             {
                 id: 7,
                 title: "Solicitações",
                 // url: "#",
                 icon: ClipboardPen,
+                roles: ["adminSystemUser"],
             },
         ],
     }
@@ -82,24 +95,27 @@ export default function UserSidebar({
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
-                <NavUser onNavUserOption={(navUserOption) => onMenuClick(navUserOption)}/>
+                <NavUser onNavUserOption={(navUserOption) => onMenuClick(navUserOption)} />
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {data.items.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton
-                                        className={`hover:cursor-pointer ${activeOption === item.id && "bg-orange-100 text-orangeLight"}`}
-                                        onClick={() => onMenuClick(item.id)}
-                                    >
-                                        <item.icon />
-                                        <span>{item.title}</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                            {data.items
+                                .filter(item =>
+                                    item.roles.some(role => storedUserRoles.includes(role)))
+                                .map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton
+                                            className={`hover:cursor-pointer ${activeOption === item.id && "bg-orange-100 text-orangeLight"}`}
+                                            onClick={() => onMenuClick(item.id)}
+                                        >
+                                            <item.icon />
+                                            <span>{item.title}</span>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

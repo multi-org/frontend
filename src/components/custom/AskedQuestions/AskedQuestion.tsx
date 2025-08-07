@@ -21,7 +21,7 @@ export default function AskedQuestion() {
         setStoredUserRoles(storedUserRoles)
     }, [])
 
-    const isAdmin = storedUserRoles.includes("adminUser");
+    const isAdmin = storedUserRoles.includes("adminSystemUser");
 
     const handleDelete = () => {
         console.log("Deleting asked question...")
