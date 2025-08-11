@@ -30,10 +30,6 @@ export const useProducts = () => {
   }
 
   const createProduct = async (product: {
-    // nome: string
-    // descricao: string
-    // categoria: CategoriaType
-    // preco: number
     companyId: string,
     type: string,
     title: string,
@@ -43,7 +39,7 @@ export const useProducts = () => {
       area: number,
     },
     category: string,
-    ImagesFiles?: File,
+    images?: File,
     chargingModel: string,
     hourlyPrice: number,
     dailyPrice: number,
@@ -81,12 +77,32 @@ export const useProducts = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.post(`/products/${product.companyId}`, {
-        ...product,
-        // disponibilidade: [
-        //   { data: '2025-10-05T00:00:00.000+00:00', horario: '09:00-11:00' },
-        // ],
-      })
+      const formData = new FormData()
+      formData.append("companyId", product.companyId)
+      formData.append("type", product.type)
+      formData.append("title", product.title)
+      formData.append("description", product.description)
+      formData.append("capacity", product.spaceDetails.capacity.toString())
+      formData.append("area", product.spaceDetails.area.toString())
+      formData.append("category", product.category)
+      if (product.images) {
+        formData.append("images", product.images)
+      }
+      formData.append("chargingModel", product.chargingModel)
+      formData.append("hourlyPrice", product.hourlyPrice.toString())
+      formData.append("dailyPrice", product.dailyPrice.toString())
+      formData.append(
+        "weeklyAvailability",
+        JSON.stringify(product.weeklyAvailability)
+      )
+
+      const response = await api.post(`/products/${product.companyId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        })
       create(response.data)
       return response.data
     } catch (err) {

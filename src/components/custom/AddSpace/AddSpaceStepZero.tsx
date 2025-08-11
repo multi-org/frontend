@@ -19,7 +19,6 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
     const [stepTwoData, setStepTwoData] = useState<StepTwoData | null>(null);
 
     const handleNextStepOne = (formStepOneData: StepOneData) => {
-        console.log("Dados do formStepOne:", formStepOneData) // em teste
         setStepOneData(formStepOneData)
         setStep(2)
     }
@@ -78,7 +77,7 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
             hourlyPrice: restStepTwo.hourlyPrice ?? 0,
             dailyPrice: restStepTwo.dailyPrice ?? 0,
             weeklyAvailability,
-            imagesFiles: stepOneData?.imagesFiles as File, // garante que image é do tipo File
+            images: stepOneData?.images as File, // garante que image é do tipo File
         };
 
         console.log("Dados enviados:", fullData);

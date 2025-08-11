@@ -62,7 +62,7 @@ const addSpaceStepOneSchema = z.object({
     category: z.enum(['Sala de aula', 'Auditório', 'Laboratório', 'Espaço para eventos', 'Instalação esportiva', 'Área administrativa/coorporativa', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
-    imagesFiles: z
+    images: z
         .any()
         .refine(
             (files: File[]) => files && files.length > 0 && files.length <= 3,
@@ -124,7 +124,7 @@ export default function AddSpaceStepOne({
             capacity: undefined,
             area: undefined,
             category: undefined,
-            imagesFiles: [],
+            images: [],
         },
     })
 
@@ -150,7 +150,7 @@ export default function AddSpaceStepOne({
             capacity: data.capacity,
             area: data.area,
             category: data.category,
-            imagesFiles: data.imagesFiles
+            images: data.images
         }
         onNext(finalData)
     }
@@ -375,7 +375,7 @@ export default function AddSpaceStepOne({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
-                                            name="imagesFiles"
+                                            name="images"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
