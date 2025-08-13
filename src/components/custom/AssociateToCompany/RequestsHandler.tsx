@@ -9,10 +9,12 @@ import CompanyRegisterRequestCard from "./CompanyRegisterRequestCard";
 import CompanyRegisterForm from "./CompanyRegisterForm";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
 import AssociateToCompanyCard from "./AssociateToCompanyCard";
 import LegalResponsibleUserRequestCard from "./LegalResponsibleUserRequestCard";
+import { useCompanies } from "@/hooks/companies-hooks";
+import { useAssociateToCompany } from "@/hooks/associateToCompany-hooks";
 
 type requestsHandlerProps = {
     className?: string;
@@ -24,6 +26,19 @@ export default function RequestsHandler({
 }: requestsHandlerProps) {
 
     const [companyRegisterStep, setCompanyRegisterStep] = useState(0)
+    const {
+        companyRegisterRequests,
+        getCompanyRegisterRequests,
+    } = useCompanies()
+    const {
+        associateToCompanyRequests,
+        getAssociateToCompanyRequests,
+    } = useAssociateToCompany()
+
+    useEffect(() => {
+        getCompanyRegisterRequests()
+        getAssociateToCompanyRequests()
+    }, [])
 
     return (
         <>
@@ -54,10 +69,24 @@ export default function RequestsHandler({
                         </TabsList>
                     </div>
                     <TabsContent value="associate">
-                        <div className="grid grid-cols-1 sm:grid-cols-2">
-                            <AssociateToCompanyCard />
-                            <AssociateToCompanyCard />
-                        </div>
+                        {associateToCompanyRequests.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2">
+                                {associateToCompanyRequests.map((request) => {
+                                    return (
+                                        <AssociateToCompanyCard
+                                            key={request.customisedId}
+                                            associateToCompanyRequest={request}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        ) : (
+                            <div className="flex justify-center w-full text-center py-4">
+                                <p>
+                                    Nenhuma solicitação de associação com instituição no momemnto
+                                </p>
+                            </div>
+                        )}
                     </TabsContent>
                     <TabsContent value="companyRegiter">
                         {companyRegisterStep === 0 && (
@@ -72,10 +101,25 @@ export default function RequestsHandler({
                                         Cadastrar instituição
                                     </Button>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2">
-                                    <CompanyRegisterRequestCard />
-                                    <CompanyRegisterRequestCard />
-                                </div>
+                                {companyRegisterRequests.length > 0 ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2">
+                                        {companyRegisterRequests.map((request) => {
+                                            // const uniqueKey = `${request.cnpj}-${request.email}`;
+                                            return (
+                                                <CompanyRegisterRequestCard
+                                                    key={request.customisedId}
+                                                    company={request}
+                                                />
+                                            )
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-center w-full text-center py-4">
+                                        <p>
+                                            Nenhuma solicitação cadastro de instituição no momemnto
+                                        </p>
+                                    </div>
+                                )}
                             </>
                         )}
                         {companyRegisterStep === 1 && (

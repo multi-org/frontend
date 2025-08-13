@@ -36,6 +36,23 @@ const userLogin = async (user: {
     }
 }
 
+const userLogout = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+        const response = await api.post("/users/logout", {}, {
+            withCredentials: true
+        })
+        return response.data
+    } catch (err) {
+        const message = "Erro na tentativa de realizar logout"
+        setError(message)
+        throw new Error(message)
+    } finally {
+        setLoading(false)
+    }
+}
+
 const createUser = async (user: {
     name: string;
     birthdate: string;
@@ -78,6 +95,7 @@ return {
     users, 
     createUser, 
     userLogin , 
+    userLogout,
     getUsers, 
     getUserById, 
     loading, 

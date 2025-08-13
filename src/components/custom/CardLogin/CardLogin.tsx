@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff } from 'lucide-react'
+import { CircleCheck, Eye, EyeOff } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
 import api from '@/apis/api'
@@ -55,20 +55,32 @@ const CardLogin: React.FC = () => {
       console.log('Response status:', response.status)
 
       // A resposta do seu backend contém: { message, userName }
-      const { message, userName } = response.data
+      const { user } = response.data;
+      const userName = user?.userName;
+      const userAvatar = user?.photoPerfil || "";
+      const userRoles = user?.userRoles || [];
 
       // O token está sendo enviado como cookie HTTP-only automaticamente
       // Não precisamos salvar o token manualmente, ele já está nos cookies
 
       // Salvar apenas as informações do usuário no localStorage (opcional)
-      if (userName) {
+      if (user) {
         localStorage.setItem('userName', userName)
-        localStorage.setItem('user', JSON.stringify({ name: userName, email: data.email }))
+        localStorage.setItem('userProfilePic', userAvatar)
+        localStorage.setItem('userRoles', JSON.stringify(userRoles))
       }
 
       toast({
-        title: "Login realizado com sucesso!",
-        description: `Bem-vindo, ${userName || 'usuário'}!`,
+        description: (
+          <div className="flex items-center gap-2">
+            <CircleCheck className="text-blueNormal" size={20} />
+            Bem-vindo, {userName || 'usuário'}!
+          </div>
+        ),
+        variant: 'default',
+        style: {
+          color: "#36858E",
+        },
       })
 
       // Redirecionamento
@@ -148,6 +160,7 @@ const CardLogin: React.FC = () => {
                   autoComplete="email"
                   {...register('email')}
                   className={errors.email ? 'border-red-500 focus:ring-red-500' : 'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'}
+
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs">
@@ -187,7 +200,7 @@ const CardLogin: React.FC = () => {
               <div className="flex flex-col items-center py-7 space-y-0.5">
                 <Button
                   type="submit"
-                  className="w-full mt-4 bg-[#36858E] hover:bg-[#5fb7c1] text-white"
+                  className="w-full mt-4 bg-[#36858E] hover:bg-[#5fb7c1] text-grayLight"
                   disabled={loading}
                 >
                   {loading ? 'Entrando...' : 'Entrar'}
@@ -196,7 +209,7 @@ const CardLogin: React.FC = () => {
                 <Link to="/cadastro">
                   <Button
                     variant="link"
-                    className="text-blue-500 hover:underline"
+                    className="text-blueLight hover:text-yellowDark hover:no-underline"
                     type="button"
                   >
                     Não possui conta? clique aqui

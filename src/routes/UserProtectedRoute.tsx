@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { Loader } from "lucide-react"
+import api from "@/apis/api"
 
 type UserProtectedRouteProps = {
   children: React.ReactNode
@@ -14,9 +14,10 @@ export function UserProtectedRoute({ children }: UserProtectedRouteProps) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        await axios.get("/api/me", { withCredentials: true })
+        await api.get("/users/me", { withCredentials: true })
         setIsAuthenticated(true)
       } catch (error) {
+        console.warn("Autenticação necessária:", error);
         setIsAuthenticated(false)
       } finally {
         setIsLoading(false)

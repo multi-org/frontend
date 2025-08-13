@@ -65,7 +65,7 @@ export default function LegalResponsibleUserRequestCard({
         <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
             <Card className="w-full max-w-2xl mx-auto overflow-hidden">
                 <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between max-[315px]:flex-col">
+                    <div className="flex items-center justify-between max-[400px]:flex-col">
                         <div className="flex items-center gap-2">
                             <UserCog className="h-5 w-5 text-blueDark shrink-0" />
                             <CardTitle
@@ -108,7 +108,7 @@ export default function LegalResponsibleUserRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    Jucelio Santos
+                                    João Silva
                                     {/* {name} */}
                                 </p>
                             </div>
@@ -130,7 +130,7 @@ export default function LegalResponsibleUserRequestCard({
                                 </label>
                                 <p
                                     className="text-sm text-gray-900">
-                                    jucelio@santos.com
+                                    joao@silva.com
                                     {/* {email} */}
                                 </p>
                             </div>

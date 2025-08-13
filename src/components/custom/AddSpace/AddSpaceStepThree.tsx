@@ -4,6 +4,8 @@ import {
     CardContent
 } from "@/components/ui/card"
 import { SummaryItem } from "../SummaryItem";
+import { useProducts } from "@/hooks/products-hooks";
+import { Loader } from "lucide-react";
 
 type AddSpaceStepThreeProps = {
     data: {
@@ -12,10 +14,10 @@ type AddSpaceStepThreeProps = {
         capacity: number;
         area: number;
         category: string;
-        image: File[];
+        imagesFiles: File[];
         chargingModel: string;
-        pricePerHour?: number;
-        pricePerDay?: number;
+        hourlyPrice?: number;
+        dailyPrice?: number;
         weekdayHourStart: string;
         weekdayHourEnd: string;
         saturdayHourStart?: string;
@@ -32,6 +34,8 @@ export default function AddSpaceStepThree({
     onBack,
     onConfirm
 }: AddSpaceStepThreeProps) {
+
+    const { loading } = useProducts()
 
     if (!data) {
         return <p>Dados não disponíveis.</p>;
@@ -55,19 +59,19 @@ export default function AddSpaceStepThree({
                         <SummaryItem label="Área (m²)" value={`${data.area} m²`} />
                         <SummaryItem label="Categoria" value={data.category} />
 
-                        {data.chargingModel === "por_hora" || data.chargingModel === "ambos" ? (
+                        {data.chargingModel === "POR_HORA" || data.chargingModel === "AMBOS" ? (
                             <SummaryItem
                                 label="Preço por hora"
-                                value={`R$ ${data.pricePerHour?.toLocaleString('pt-BR', {
+                                value={`R$ ${data.hourlyPrice?.toLocaleString('pt-BR', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 })}`} />
                         ) : null}
 
-                        {data.chargingModel === "por_dia" || data.chargingModel === "ambos" ? (
+                        {data.chargingModel === "POR_DIA" || data.chargingModel === "AMBOS" ? (
                             <SummaryItem
                                 label="Preço por dia"
-                                value={`R$ ${data.pricePerDay?.toLocaleString('pt-BR', {
+                                value={`R$ ${data.dailyPrice?.toLocaleString('pt-BR', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 })}`} />
@@ -85,7 +89,7 @@ export default function AddSpaceStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.image.length} selecionada(s)`} />
+                        <SummaryItem label="Imagens" value={`${data.imagesFiles?.length ?? 0} selecionada(s)`} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -102,7 +106,7 @@ export default function AddSpaceStepThree({
                             onClick={onConfirm}
                             className="w-full bg-success hover:bg-successLight"
                         >
-                            Confirmar
+                            {loading ? <Loader className="animate-spin" /> : "Confirmar"}
                         </Button>
                     </div>
                 </CardContent>

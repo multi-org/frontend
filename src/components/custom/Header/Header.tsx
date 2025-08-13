@@ -19,7 +19,7 @@ export function Header() {
   }
 
   return (
-    <div className="flex h-20 items-center justify-between px-4 sm:px-8 md:px-16 lg:px-32 xl:px-64 shadow-md relative select-none">
+    <div className="flex h-20 items-center justify-between px-4 sm:px-8 md:px-8 lg:px-8 xl:px-8 shadow-md relative select-none">
       {/* Logo */}
       <Link to={'/'}>
         <img
@@ -86,7 +86,7 @@ export function Header() {
           <div className="flex flex-col p-4 space-y-4">
             <Link
               to={'/produtos'}
-              className="rounded-md bg-yellowNormal px-6 py-3 font-inter font-semibold text-gray-100 text-center transition duration-500 hover:bg-yellowDark"
+              className="rounded-md bg-yellowNormal px-6 py-3 font-inter font-semibold text-grayLight text-center transition duration-500 hover:bg-yellowDark"
               onClick={() => setIsMenuOpen(false)}
             >
               Comece agora
