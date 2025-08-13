@@ -77,7 +77,7 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
             hourlyPrice: restStepTwo.hourlyPrice ?? 0,
             dailyPrice: restStepTwo.dailyPrice ?? 0,
             weeklyAvailability,
-            images: stepOneData?.images as File, // garante que image é do tipo File
+            images: stepOneData?.images as File[], // garante que image é do tipo File
         };
 
         console.log("Dados enviados:", fullData);

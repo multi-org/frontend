@@ -118,8 +118,8 @@ export default function AddSpaceStepOne({
         defaultValues: {
             type: "SPACE",
             title: '',
-            companyName: '', // em teste
-            companyId: '', // em teste
+            companyName: '',
+            companyId: '',
             description: '',
             capacity: undefined,
             area: undefined,

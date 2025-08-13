@@ -1,14 +1,3 @@
-// export interface ProductType {
-//   _id: string
-//   nome: string
-//   descricao: string
-//   preco: number
-//   // preco: string
-//   categoria: string
-
-//   disponibilidade: { _id: string; data: Date; horario: string }[]
-// }
-
 export interface ProductType {
   id: string,
   type: string,
@@ -18,16 +7,16 @@ export interface ProductType {
     capacity: number,
     area: number,
   },
-  // serviceDetails: {
-  //   durationMinutes: string,
-  //   requirements: string,
-  // },
-  // equipmentDetails: {
-  //   brand: string,
-  //   model: string,
-  //   specifications: string,
-  //   stock: number,
-  // },
+  serviceDetails: {
+    durationMinutes: number,
+    requirements: string,
+  },
+  equipmentDetails: {
+    brand: string,
+    model: string,
+    specifications: string,
+    stock: number,
+  },
   category: string,
   images: string[],
   chargingModel: string,

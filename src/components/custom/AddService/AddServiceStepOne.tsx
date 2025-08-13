@@ -28,6 +28,16 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useCompanies } from "@/hooks/companies-hooks"
+import { useEffect, useState } from "react"
+import { debounce } from "@/utils/debounce"
+import { toast } from "@/hooks/use-toast"
+import { CircleX, Search } from "lucide-react"
+
+type InstitutionOption = {
+    id: string
+    name: string
+}
 
 type AddServiceStepOneProps = {
     onNext: (data: z.infer<typeof addServiceStepOneSchema>) => void
@@ -38,14 +48,20 @@ type AddServiceStepOneProps = {
 export type StepOneData = z.infer<typeof addServiceStepOneSchema>
 
 const addServiceStepOneSchema = z.object({
+    type: z.string(),
     title: z.string().min(1, 'Título é obrigatório.'),
+    companyName: z.string().min(1, 'Informar instituição é obigatório'),
+    companyId: z.string().min(1, 'Informar instituição é obigatório'),
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
         .max(300, 'A descrição deve ter no máximo 300 caracteres.'),
+    durationMinutes: z
+        .preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, 'Duração deve ser maior ou igual a 0.')),
+    requirements: z.string().min(1, 'Informar requisitos necessários é obrigatório'),
     category: z.enum(['Técnico/operacional', 'Acadêmico/profissional', 'Logística e organização', 'Alimentação', 'Comunicação e marketing', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
-    image: z
+    images: z
         .any()
         .refine(
             (files: File[]) => files && files.length > 0 && files.length <= 3,
@@ -65,18 +81,77 @@ export default function AddServiceStepOne({
     ...props
 }: AddServiceStepOneProps) {
 
+    const { getCompanies } = useCompanies()
+    const [query, setQuery] = useState("")
+    const [filteredInstitutions, setFilteredInstitutions] = useState<InstitutionOption[]>([])
+    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
+
+    useEffect(() => {
+        const debouncedSearch = debounce(async () => {
+            if (!query) {
+                setFilteredInstitutions([])
+                return
+            }
+            try {
+                const response = await getCompanies()
+                const filtered = response
+                    .filter((company) =>
+                        company.popularName.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .map((company) => ({
+                        id: company.id,
+                        name: company.popularName,
+                    }))
+
+                setFilteredInstitutions(filtered)
+            } catch (err) {
+                console.error("Erro ao buscar instituições:", err)
+            }
+        }, 300)
+        debouncedSearch()
+        return () => debouncedSearch.cancel()
+    }, [query])
+
     const form = useForm<z.infer<typeof addServiceStepOneSchema>>({
         resolver: zodResolver(addServiceStepOneSchema),
         defaultValues: {
+            type: "SERVICE",
             title: '',
+            companyName: '',
+            companyId: '',
             description: '',
+            durationMinutes: undefined,
+            requirements: '',
             category: undefined,
-            image: [],
+            images: [],
         },
     })
 
     function onSubmit(data: z.infer<typeof addServiceStepOneSchema>) {
-        onNext(data)
+        if (!selectedCompanyId) {
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        Selecione uma instituição válida.
+                    </div>
+                ),
+                variant: "destructive"
+            });
+            return;
+        }
+        const finalData = {
+            type: data.type,
+            title: data.title,
+            companyName: data.companyName,
+            companyId: selectedCompanyId,
+            description: data.description,
+            durationMinutes: data.durationMinutes,
+            requirements: data.requirements,
+            category: data.category,
+            images: data.images
+        }
+        onNext(finalData)
     }
 
     return (
@@ -130,6 +205,53 @@ export default function AddServiceStepOne({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
+                                            name="companyName"
+                                            render={({ field }) => ( // em teste
+                                                <FormItem className="relative">
+                                                    <FormLabel className="text-grayLight">Instituição</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="search"
+                                                                placeholder="Buscar instituição..."
+                                                                className="pl-8 text-black focus-visible:ring-blueLight"
+                                                                value={field.value}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value
+                                                                    field.onChange(value)
+                                                                    setQuery(value)
+                                                                }}
+                                                            />
+                                                            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                                                            {filteredInstitutions.length > 0 && (
+                                                                <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-auto">
+                                                                    {filteredInstitutions.map((inst, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className="cursor-pointer px-4 py-2 text-black hover:bg-gray-100"
+                                                                            onClick={() => {
+                                                                                field.onChange(inst.name)
+                                                                                setSelectedCompanyId(inst.id)
+                                                                                form.setValue("companyId", inst.id)
+                                                                                setQuery("")
+                                                                                setFilteredInstitutions([])
+                                                                            }}
+                                                                        >
+                                                                            {inst.name}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
                                             name="description"
                                             render={({ field }) => {
                                                 const remainingCharacters = 300 - field.value.length
@@ -159,6 +281,49 @@ export default function AddServiceStepOne({
                                                     </FormItem>
                                                 )
                                             }}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="durationMinutes"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Duração</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-blueLight"
+                                                            placeholder="Ex.: 40 minutos"
+                                                            type="number"
+                                                            value={field.value === undefined || field.value === null ? "" : field.value}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value
+                                                                field.onChange(value === "" ? undefined : parseFloat(value));
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="requirements"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Requisitos</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-blueLight"
+                                                            placeholder="Ex.: Equipamentos necessários.."
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
                                         />
                                     </div>
                                     <div className="grid gap-3">
@@ -199,7 +364,7 @@ export default function AddServiceStepOne({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
-                                            name="image"
+                                            name="images"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
@@ -222,7 +387,11 @@ export default function AddServiceStepOne({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>

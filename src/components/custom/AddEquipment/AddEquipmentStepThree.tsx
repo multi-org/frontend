@@ -8,12 +8,17 @@ import { SummaryItem } from "../SummaryItem";
 type AddEquipmentStepThreeProps = {
     data: {
         title: string;
+        companyName: string,
         description: string;
+        brand: string,
+        model: string,
+        specifications: string,
+        stock: number,
         category: string;
-        image: File[];
+        images: File[];
         chargingModel: string;
-        pricePerHour?: number;
-        pricePerDay?: number;
+        hourlyPrice?: number;
+        dailyPrice?: number;
         weekdayHourStart: string;
         weekdayHourEnd: string;
         saturdayHourStart?: string;
@@ -48,13 +53,18 @@ export default function AddEquipmentStepThree({
 
                     <div className="grid gap-4 text-grayLight">
                         <SummaryItem label="Título" value={data.title} />
+                        <SummaryItem label="Instituição" value={data.companyName} />
                         <SummaryItem label="Descrição" value={data.description} />
+                        <SummaryItem label="Marca" value={data.brand} />
+                        <SummaryItem label="Modelo" value={data.model} />
+                        <SummaryItem label="Especificações" value={data.specifications} />
+                        <SummaryItem label="Estoque" value={`${data.stock} unidades`} />
                         <SummaryItem label="Categoria" value={data.category} />
 
                         {data.chargingModel === "por_hora" || data.chargingModel === "ambos" ? (
                             <SummaryItem
                                 label="Preço por hora"
-                                value={`R$ ${data.pricePerHour?.toLocaleString('pt-BR', {
+                                value={`R$ ${data.hourlyPrice?.toLocaleString('pt-BR', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 })}`} />
@@ -63,7 +73,7 @@ export default function AddEquipmentStepThree({
                         {data.chargingModel === "por_dia" || data.chargingModel === "ambos" ? (
                             <SummaryItem
                                 label="Preço por dia"
-                                value={`R$ ${data.pricePerDay?.toLocaleString('pt-BR', {
+                                value={`R$ ${data.dailyPrice?.toLocaleString('pt-BR', {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 })}`} />
@@ -81,7 +91,7 @@ export default function AddEquipmentStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.image.length} selecionada(s)`} />
+                        <SummaryItem label="Imagens" value={`${data.images.length} selecionada(s)`} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

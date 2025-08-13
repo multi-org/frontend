@@ -34,15 +34,25 @@ export const useProducts = () => {
     type: string,
     title: string,
     description: string,
-    spaceDetails: {
+    spaceDetails?: {
       capacity: number,
       area: number,
     },
+    equipmentDetails?: {
+      brand: string,
+      model: string,
+      specifications: string,
+      stock: number,
+    },
+    serviceDetails?: {
+      durationMinutes: number;
+      requirements: string;
+    };
     category: string,
     images?: File[],
     chargingModel: string,
-    hourlyPrice: number,
-    dailyPrice: number,
+    hourlyPrice?: number,
+    dailyPrice?: number,
     weeklyAvailability: {
       monday: {
         start: string,
@@ -83,16 +93,38 @@ export const useProducts = () => {
       formData.append("type", product.type)
       formData.append("title", product.title)
       formData.append("description", product.description)
-      formData.append("capacity", product.spaceDetails.capacity.toString())
-      formData.append("area", product.spaceDetails.area.toString())
       formData.append("category", product.category)
       formData.append("chargingModel", product.chargingModel)
-      formData.append("hourlyPrice", product.hourlyPrice.toString())
-      formData.append("dailyPrice", product.dailyPrice.toString())
       formData.append(
         "weeklyAvailability",
         JSON.stringify(product.weeklyAvailability)
       )
+
+      if (product.hourlyPrice !== undefined) { // em teste
+        formData.append("hourlyPrice", product.hourlyPrice.toString());
+      }
+
+      if (product.dailyPrice !== undefined) { // em teste
+        formData.append("dailyPrice", product.dailyPrice.toString());
+      }
+
+      if (product.spaceDetails) { // em teste
+        formData.append("capacity", product.spaceDetails.capacity.toString())
+        formData.append("area", product.spaceDetails.area.toString())
+      }
+
+      if (product.equipmentDetails) { // em teste
+        formData.append("brand", product.equipmentDetails.brand)
+        formData.append("model", product.equipmentDetails.model)
+        formData.append("specifications", product.equipmentDetails.specifications)
+        formData.append("stock", product.equipmentDetails.stock.toString())
+      }
+
+      if (product.serviceDetails) { // em teste
+        formData.append("durationMinutes", product.serviceDetails.durationMinutes.toString())
+        formData.append("requirements", product.serviceDetails.requirements)
+      }
+
       if (product.images && product.images.length > 0) {
         product.images.forEach((file, index) => {
           if (file instanceof File) {
@@ -103,6 +135,7 @@ export const useProducts = () => {
           }
         })
       }
+
       console.log('FormData entries:')
       for (let [key, value] of formData.entries()) {
         if (value instanceof File) {
