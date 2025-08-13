@@ -34,7 +34,7 @@ import { debounce } from "@/utils/debounce"
 import { useCompanies } from "@/hooks/companies-hooks"
 import { toast } from "@/hooks/use-toast"
 
-type InstitutionOption = { // em teste
+type InstitutionOption = {
     id: string
     name: string
 }
@@ -50,7 +50,7 @@ export type StepOneData = z.infer<typeof addSpaceStepOneSchema>
 const addSpaceStepOneSchema = z.object({
     type: z.string(),
     title: z.string().min(1, 'Título é obrigatório.'),
-    companyName: z.string().min(1, 'Informar instituição é obigatório'), // em teste
+    companyName: z.string().min(1, 'Informar instituição é obigatório'),
     companyId: z.string().min(1, 'Informar instituição é obigatório'),
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
@@ -129,7 +129,7 @@ export default function AddSpaceStepOne({
     })
 
     function onSubmit(data: z.infer<typeof addSpaceStepOneSchema>) {
-        if (!selectedCompanyId) { // em teste
+        if (!selectedCompanyId) {
             toast({
                 description: (
                     <div className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function AddSpaceStepOne({
             });
             return;
         }
-        const finalData = { // em teste
+        const finalData = {
             type: data.type,
             title: data.title,
             companyName: data.companyName,

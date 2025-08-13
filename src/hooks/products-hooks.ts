@@ -39,7 +39,7 @@ export const useProducts = () => {
       area: number,
     },
     category: string,
-    images?: File,
+    images?: File[],
     chargingModel: string,
     hourlyPrice: number,
     dailyPrice: number,
@@ -78,6 +78,7 @@ export const useProducts = () => {
     setError(null)
     try {
       const formData = new FormData()
+
       formData.append("companyId", product.companyId)
       formData.append("type", product.type)
       formData.append("title", product.title)
@@ -85,9 +86,6 @@ export const useProducts = () => {
       formData.append("capacity", product.spaceDetails.capacity.toString())
       formData.append("area", product.spaceDetails.area.toString())
       formData.append("category", product.category)
-      if (product.images) {
-        formData.append("images", product.images)
-      }
       formData.append("chargingModel", product.chargingModel)
       formData.append("hourlyPrice", product.hourlyPrice.toString())
       formData.append("dailyPrice", product.dailyPrice.toString())
@@ -95,7 +93,24 @@ export const useProducts = () => {
         "weeklyAvailability",
         JSON.stringify(product.weeklyAvailability)
       )
-
+      if (product.images && product.images.length > 0) {
+        product.images.forEach((file, index) => {
+          if (file instanceof File) {
+            formData.append('images', file)
+            console.log(`Arquivo ${index} adicionado:`, file.name, file.size)
+          } else {
+            console.error(`Item ${index} não é um File:`, file)
+          }
+        })
+      }
+      console.log('FormData entries:')
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(key, `File: ${value.name}(${value.size} bytes)`)
+        } else {
+          console.log(key, value)
+        }
+      }
       const response = await api.post(`/products/${product.companyId}`,
         formData,
         {

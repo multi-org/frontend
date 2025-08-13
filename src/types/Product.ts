@@ -29,7 +29,7 @@ export interface ProductType {
   //   stock: number,
   // },
   category: string,
-  images: File,
+  images: string[],
   chargingModel: string,
   hourlyPrice: number,
   dailyPrice: number,
