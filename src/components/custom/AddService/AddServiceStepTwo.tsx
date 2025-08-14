@@ -28,10 +28,9 @@ type AddServiceStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addServiceStepTwoSchema>
 
-const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
-
 const addServiceStepTwoSchema = z.object({
-    pricePerHour: z.number().optional(),
+    chargingModel: z.enum(['POR_HORA']),
+    hourlyPrice: z.number().optional(),
     weekdayHourStart: z.string().min(1),
     weekdayHourEnd: z.string().min(1),
     saturdayHourStart: z.string().optional(),
@@ -50,8 +49,8 @@ const addServiceStepTwoSchema = z.object({
         const end = data[endKey]
 
         if (start && end) {
-            const startNum = hourStringToNumber(start)
-            const endNum = hourStringToNumber(end)
+            const startNum = start
+            const endNum = end
 
             if (startNum >= endNum) {
                 ctx.addIssue({
@@ -62,6 +61,15 @@ const addServiceStepTwoSchema = z.object({
             }
         }
     })
+
+    // Validação de preços
+    if (data.chargingModel === "POR_HORA" && data.hourlyPrice === undefined) {
+        ctx.addIssue({
+            path: ["hourlyPrice"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por hora",
+        })
+    }
 })
 
 export default function AddServiceStepTwo({
@@ -73,7 +81,9 @@ export default function AddServiceStepTwo({
 
     const form = useForm<z.infer<typeof addServiceStepTwoSchema>>({
         resolver: zodResolver(addServiceStepTwoSchema),
-        defaultValues: {},
+        defaultValues: {
+            chargingModel: 'POR_HORA',
+        },
     })
 
     function onSubmit(data: z.infer<typeof addServiceStepTwoSchema>) {
@@ -112,7 +122,7 @@ export default function AddServiceStepTwo({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
-                                            name="pricePerHour"
+                                            name="hourlyPrice"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-grayLight">Preço por hora</FormLabel>
@@ -151,7 +161,11 @@ export default function AddServiceStepTwo({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>

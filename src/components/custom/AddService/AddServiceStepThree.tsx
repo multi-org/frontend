@@ -8,10 +8,14 @@ import { SummaryItem } from "../SummaryItem";
 type AddServiceStepThreeProps = {
     data: {
         title: string;
+        companyName: string,
         description: string;
+        durationMinutes: number;
+        requirements: string;
         category: string;
-        image: File[];
-        pricePerHour?: number;
+        images: File[];
+        chargingModel: string;
+        hourlyPrice?: number;
         weekdayHourStart: string;
         weekdayHourEnd: string;
         saturdayHourStart?: string;
@@ -46,11 +50,17 @@ export default function AddServiceStepThree({
 
                     <div className="grid gap-4 text-grayLight">
                         <SummaryItem label="Título" value={data.title} />
+                        <SummaryItem label="Instituição" value={data.companyName} />
                         <SummaryItem label="Descrição" value={data.description} />
+                        <SummaryItem
+                            label="Duração estimada"
+                            value={`${data.durationMinutes}`}
+                        />
+                        <SummaryItem label="Requisitos" value={`${data.requirements}`} />
                         <SummaryItem label="Categoria" value={data.category} />
                         <SummaryItem
                             label="Preço por hora"
-                            value={`R$ ${data.pricePerHour?.toLocaleString('pt-BR', {
+                            value={`R$ ${data.hourlyPrice?.toLocaleString('pt-BR', {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             })}`} />
@@ -67,7 +77,10 @@ export default function AddServiceStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.image.length} selecionada(s)`} />
+                        <SummaryItem
+                            label="Imagens"
+                            value={`${data.images?.length ?? 0} selecionada(s)`}
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

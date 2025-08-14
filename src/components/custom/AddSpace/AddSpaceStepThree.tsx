@@ -10,7 +10,7 @@ import { Loader } from "lucide-react";
 type AddSpaceStepThreeProps = {
     data: {
         title: string;
-        companyName: string, // em teste
+        companyName: string,
         description: string;
         capacity: number;
         area: number;

@@ -28,6 +28,16 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useCompanies } from "@/hooks/companies-hooks"
+import { useEffect, useState } from "react"
+import { debounce } from "@/utils/debounce"
+import { toast } from "@/hooks/use-toast"
+import { CircleX, Search } from "lucide-react"
+
+type InstitutionOption = {
+    id: string
+    name: string
+}
 
 type AddEquipmentStepOneProps = {
     onNext: (data: z.infer<typeof addEquipmentStepOneSchema>) => void
@@ -38,14 +48,22 @@ type AddEquipmentStepOneProps = {
 export type StepOneData = z.infer<typeof addEquipmentStepOneSchema>
 
 const addEquipmentStepOneSchema = z.object({
+    type: z.string(),
     title: z.string().min(1, 'Título é obrigatório.'),
+    companyName: z.string().min(1, 'Informar instituição é obigatório'),
+    companyId: z.string().min(1, 'Informar instituição é obigatório'),
     description: z.string()
         .min(1, 'Descrição é obrigatória.')
         .max(300, 'A descrição deve ter no máximo 300 caracteres.'),
-    category: z.enum(['Audiovisual', 'Informática/tecnologia','Laboratorial', 'Mobiliário', 'Esportivo', 'Outros'], {
+    brand: z.string().min(1, 'Marca é obrigatória.'),
+    model: z.string().min(1, 'Modelo é obrigatório.'),
+    specifications: z.string().min(1, 'Especificação é obrigatório.'),
+    stock: z
+        .preprocess(val => val === "" ? undefined : Number(val), z.number().min(0, 'Estoque deve ser maior ou igual a 0.')),
+    category: z.enum(['Audiovisual', 'Informática/tecnologia', 'Laboratorial', 'Mobiliário', 'Esportivo', 'Outros'], {
         errorMap: () => ({ message: 'Categoria é obrigatória.' }),
     }),
-    image: z
+    images: z
         .any()
         .refine(
             (files: File[]) => files && files.length > 0 && files.length <= 3,
@@ -65,18 +83,81 @@ export default function AddEquipmentStepOne({
     ...props
 }: AddEquipmentStepOneProps) {
 
+    const { getCompanies } = useCompanies()
+    const [query, setQuery] = useState("")
+    const [filteredInstitutions, setFilteredInstitutions] = useState<InstitutionOption[]>([])
+    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
+
+    useEffect(() => {
+        const debouncedSearch = debounce(async () => {
+            if (!query) {
+                setFilteredInstitutions([])
+                return
+            }
+            try {
+                const response = await getCompanies()
+                const filtered = response
+                    .filter((company) =>
+                        company.popularName.toLowerCase().includes(query.toLowerCase())
+                    )
+                    .map((company) => ({
+                        id: company.id,
+                        name: company.popularName,
+                    }))
+
+                setFilteredInstitutions(filtered)
+            } catch (err) {
+                console.error("Erro ao buscar instituições:", err)
+            }
+        }, 300)
+        debouncedSearch()
+        return () => debouncedSearch.cancel()
+    }, [query])
+
     const form = useForm<z.infer<typeof addEquipmentStepOneSchema>>({
         resolver: zodResolver(addEquipmentStepOneSchema),
         defaultValues: {
+            type: "EQUIPMENT",
             title: '',
+            companyName: '',
+            companyId: '',
             description: '',
+            brand: '',
+            model: '',
+            specifications: '',
+            stock: undefined,
             category: undefined,
-            image: [],
+            images: [],
         },
     })
 
     function onSubmit(data: z.infer<typeof addEquipmentStepOneSchema>) {
-        onNext(data)
+        if (!selectedCompanyId) {
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        Selecione uma instituição válida.
+                    </div>
+                ),
+                variant: "destructive"
+            });
+            return;
+        }
+        const finalData = {
+            type: data.type,
+            title: data.title,
+            companyName: data.companyName,
+            companyId: selectedCompanyId,
+            description: data.description,
+            brand: data.brand,
+            model: data.model,
+            specifications: data.specifications,
+            stock: data.stock,
+            category: data.category,
+            images: data.images
+        }
+        onNext(finalData)
     }
 
     return (
@@ -130,6 +211,53 @@ export default function AddEquipmentStepOne({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
+                                            name="companyName"
+                                            render={({ field }) => ( // em teste
+                                                <FormItem className="relative">
+                                                    <FormLabel className="text-grayLight">Instituição</FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="search"
+                                                                placeholder="Buscar instituição..."
+                                                                className="pl-8 text-black focus-visible:ring-yellowLight"
+                                                                value={field.value}
+                                                                onChange={(e) => {
+                                                                    const value = e.target.value
+                                                                    field.onChange(value)
+                                                                    setQuery(value)
+                                                                }}
+                                                            />
+                                                            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                                                            {filteredInstitutions.length > 0 && (
+                                                                <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-md max-h-48 overflow-auto">
+                                                                    {filteredInstitutions.map((inst, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className="cursor-pointer px-4 py-2 text-black hover:bg-gray-100"
+                                                                            onClick={() => {
+                                                                                field.onChange(inst.name)
+                                                                                setSelectedCompanyId(inst.id)
+                                                                                form.setValue("companyId", inst.id)
+                                                                                setQuery("")
+                                                                                setFilteredInstitutions([])
+                                                                            }}
+                                                                        >
+                                                                            {inst.name}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
                                             name="description"
                                             render={({ field }) => {
                                                 const remainingCharacters = 300 - field.value.length
@@ -159,6 +287,87 @@ export default function AddEquipmentStepOne({
                                                     </FormItem>
                                                 )
                                             }}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="brand"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Marca</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-yellowLight"
+                                                            placeholder="Ex.: Samsung"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="model"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Modelo</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-yellowLight"
+                                                            placeholder="Ex.: S-22"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="specifications"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Especificações</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-yellowLight"
+                                                            placeholder="Ex.: 6mm de espessura, cor prata.."
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="stock"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">Estoque</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-yellowLight"
+                                                            placeholder="Ex.: 2 unidades"
+                                                            type="number"
+                                                            value={field.value === undefined || field.value === null ? "" : field.value}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value
+                                                                field.onChange(value === "" ? undefined : parseFloat(value));
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
                                         />
                                     </div>
                                     <div className="grid gap-3">
@@ -199,7 +408,7 @@ export default function AddEquipmentStepOne({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
-                                            name="image"
+                                            name="images"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
@@ -222,7 +431,11 @@ export default function AddEquipmentStepOne({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>
