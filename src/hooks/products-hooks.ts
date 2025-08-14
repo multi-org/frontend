@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
 import api from '@/apis/api'
-// import { CategoriaType } from '@/types/Categoria'
 
 export const useProducts = () => {
   const {
@@ -53,36 +52,10 @@ export const useProducts = () => {
     chargingModel: string,
     hourlyPrice?: number,
     dailyPrice?: number,
-    weeklyAvailability: {
-      monday: {
-        start: string,
-        end: string,
-      },
-      tuesday: {
-        start: string,
-        end: string,
-      },
-      wednesday: {
-        start: string,
-        end: string,
-      },
-      thursday: {
-        start: string,
-        end: string,
-      },
-      friday: {
-        start: string,
-        end: string,
-      },
-      saturday?: {
-        start: string,
-        end: string,
-      },
-      sunday?: {
-        start: string,
-        end: string,
-      },
-    },
+    weeklyAvailability: Record<string, {
+      start: string;
+      end: string;
+    }>;
   }) => {
     setLoading(true)
     setError(null)
@@ -100,27 +73,27 @@ export const useProducts = () => {
         JSON.stringify(product.weeklyAvailability)
       )
 
-      if (product.hourlyPrice !== undefined) { // em teste
+      if (product.hourlyPrice !== undefined) {
         formData.append("hourlyPrice", product.hourlyPrice.toString());
       }
 
-      if (product.dailyPrice !== undefined) { // em teste
+      if (product.dailyPrice !== undefined) {
         formData.append("dailyPrice", product.dailyPrice.toString());
       }
 
-      if (product.spaceDetails) { // em teste
+      if (product.spaceDetails) {
         formData.append("capacity", product.spaceDetails.capacity.toString())
         formData.append("area", product.spaceDetails.area.toString())
       }
 
-      if (product.equipmentDetails) { // em teste
+      if (product.equipmentDetails) {
         formData.append("brand", product.equipmentDetails.brand)
         formData.append("model", product.equipmentDetails.model)
         formData.append("specifications", product.equipmentDetails.specifications)
         formData.append("stock", product.equipmentDetails.stock.toString())
       }
 
-      if (product.serviceDetails) { // em teste
+      if (product.serviceDetails) {
         formData.append("durationMinutes", product.serviceDetails.durationMinutes.toString())
         formData.append("requirements", product.serviceDetails.requirements)
       }

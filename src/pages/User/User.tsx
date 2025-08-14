@@ -19,16 +19,10 @@ import { useState } from "react";
 export default function User() {
 
     const [sidebarOption, setSidebarOption] = useState<number>(2);
-    const [animate, setAnimate] = useState(false);
 
     function handleMenuClick(option: number) {
         setSidebarOption(option);
     }
-
-    function sideBarAnimationHandler () {
-        setAnimate(true)
-        setTimeout(() => setAnimate(false), 500);
-    };
 
     return (
         <SidebarProvider>
@@ -36,9 +30,8 @@ export default function User() {
                 onMenuClick={handleMenuClick}
                 activeOption={sidebarOption}
             />
-            <SidebarTrigger 
-            onClick={sideBarAnimationHandler}
-            className={`hover:cursor-pointer rotate-180 ${animate ? 'animate-spin-once' : ''}`} 
+            <SidebarTrigger
+            className={`hover:cursor-pointer rotate-180`} 
             />
             <SidebarInset className="flex flex-col flex-1 overflow-x-hidden">
                 {sidebarOption === 0 && (<UserAccountManagement />)}
