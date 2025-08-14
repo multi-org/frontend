@@ -37,6 +37,7 @@ type StepPersonalDataProps = {
     value: any
   ) => void
   fieldErrors?: { [key: string]: string }
+  clearFieldError?: (field: string) => void // Nova prop opcional
 }
 
 function formatPhone(value: string) {
@@ -65,64 +66,93 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   preferences,
   onChange,
   fieldErrors = {},
+  clearFieldError, // Nova prop
 }) => {
   const [open, setOpen] = useState(false)
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
-    useState(false)
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
 
   const selectedDate = birthDate ? new Date(birthDate) : undefined
+
+  const handleFieldChange = (
+    field: 'name' | 'phoneNumber' | 'cpf' | 'birthDate' | 'password' | 'confirmPassword' | 'preferences',
+    value: any
+  ) => {
+    onChange(field, value)
+    if (clearFieldError && fieldErrors[field]) {
+      clearFieldError(field)
+    }
+  }
 
   const togglePreference = (type: AssociationType) => {
     const newPreferences = preferences?.includes(type)
       ? preferences.filter((item) => item !== type)
       : [...(preferences ?? []), type]
-    onChange('preferences', newPreferences)
+    handleFieldChange('preferences', newPreferences)
+  }
+
+  const handleDateChange = (date: Date | undefined) => {
+    setOpen(false)
+    if (date) {
+      const iso = date.toISOString().split('T')[0]
+      handleFieldChange('birthDate', iso)
+    }
   }
 
   return (
     <div className="flex w-full flex-col gap-1">
+      {/* Nome */}
       <label className="block text-sm font-medium">Nome</label>
       <Input
         placeholder="Nome"
         value={name}
-        onChange={(e) => onChange('name', e.target.value)}
+        onChange={(e) => handleFieldChange('name', e.target.value)}
         maxLength={100}
         autoComplete="name"
-        className={fieldErrors.name ? 'border-red-500 focus:ring-red-500' : ''}
+        className={fieldErrors.name ? 
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+          'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
+        }
       />
       {fieldErrors.name && (
         <p className="text-red-500 text-xs">{fieldErrors.name}</p>
       )}
 
+      {/* Telefone */}
       <label className="block text-sm font-medium">Telefone</label>
       <Input
         placeholder="Telefone"
         value={phoneNumber}
-        onChange={(e) => onChange('phoneNumber', formatPhone(e.target.value))}
+        onChange={(e) => handleFieldChange('phoneNumber', formatPhone(e.target.value))}
         autoComplete="tel"
         maxLength={15}
-        className={
-          fieldErrors.phoneNumber ? 'border-red-500 focus:ring-red-500' : ''
+        className={fieldErrors.phoneNumber ? 
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+          'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
         }
       />
       {fieldErrors.phoneNumber && (
         <p className="text-red-500 text-xs">{fieldErrors.phoneNumber}</p>
       )}
 
+      {/* CPF */}
       <label className="block text-sm font-medium">CPF</label>
       <Input
         placeholder="CPF"
         value={cpf}
-        onChange={(e) => onChange('cpf', formatCPF(e.target.value))}
+        onChange={(e) => handleFieldChange('cpf', formatCPF(e.target.value))}
         autoComplete="off"
         maxLength={14}
-        className={fieldErrors.cpf ? 'border-red-500 focus:ring-red-500' : ''}
+        className={fieldErrors.cpf ? 
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+          'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
+        }
       />
       {fieldErrors.cpf && (
         <p className="text-red-500 text-xs">{fieldErrors.cpf}</p>
       )}
 
+      {/* Data de Nascimento */}
       <div>
         <label className="block text-sm font-medium">Data de Nascimento</label>
         <Popover open={open} onOpenChange={setOpen}>
@@ -130,7 +160,9 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
             <Button
               variant="outline"
               className={`w-full justify-start text-left font-normal ${
-                fieldErrors.birthDate ? 'border-red-500 focus:ring-red-500' : ''
+                fieldErrors.birthDate ? 
+                  'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+                  'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
               }`}
             >
               {birthDate ? (
@@ -145,13 +177,7 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={(date) => {
-                setOpen(false)
-                if (date) {
-                  const iso = date.toISOString().split('T')[0]
-                  onChange('birthDate', iso)
-                }
-              }}
+              onSelect={handleDateChange}
               disabled={(date) =>
                 date > new Date() || date < new Date('1900-01-01')
               }
@@ -165,6 +191,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           <p className="text-red-500 text-xs">{fieldErrors.birthDate}</p>
         )}
       </div>
+
+      {/* Preferências */}
       <label className="block text-sm font-medium mt-2">Preferências</label>
       <div className="flex flex-wrap gap-2 my-4">
         <Button
@@ -207,16 +235,18 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         </Button>
       </div>
 
+      {/* Senha */}
       <label className="block text-sm font-medium">Senha</label>
       <div className="relative">
         <Input
           type={isPasswordVisible ? 'text' : 'password'}
           placeholder="Senha"
           value={password}
-          onChange={(e) => onChange('password', e.target.value)}
+          onChange={(e) => handleFieldChange('password', e.target.value)}
           autoComplete="new-password"
-          className={
-            fieldErrors.password ? 'border-red-500 focus:ring-red-500' : ''
+          className={fieldErrors.password ? 
+            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+            'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
           }
         />
         <button
@@ -232,18 +262,18 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         <p className="text-red-500 text-xs">{fieldErrors.password}</p>
       )}
 
+      {/* Confirmar Senha */}
       <label className="block text-sm font-medium">Confirmar Senha</label>
       <div className="relative">
         <Input
           type={isConfirmPasswordVisible ? 'text' : 'password'}
           placeholder="Confirmar Senha"
           value={confirmPassword}
-          onChange={(e) => onChange('confirmPassword', e.target.value)}
+          onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
           autoComplete="new-password"
-          className={
-            fieldErrors.confirmPassword
-              ? 'border-red-500 focus:ring-red-500'
-              : ''
+          className={fieldErrors.confirmPassword ? 
+            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+            'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
           }
         />
         <button
@@ -258,7 +288,6 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
       {fieldErrors.confirmPassword && (
         <p className="text-red-500 text-xs">{fieldErrors.confirmPassword}</p>
       )}
-
     </div>
   )
 }

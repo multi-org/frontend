@@ -62,6 +62,13 @@ export function Header() {
         >
           Perguntas
         </button>
+        <Link
+          className="hover:text-yellowNormal transition-colors"
+          to={'/login'}
+        >
+          Login
+        </Link>
+        
       </div>
 
       {/* Botão Hamburger Mobile */}
@@ -108,6 +115,12 @@ export function Header() {
             >
               Perguntas
             </button>
+            <Link
+          className="hover:text-yellowNormal transition-colors"
+          to={'/login'}
+        >
+          Login
+        </Link>
           </div>
         </div>
       )}
