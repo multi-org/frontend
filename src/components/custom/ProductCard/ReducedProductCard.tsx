@@ -4,13 +4,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ProductType } from "@/types/Product"
 
 interface ReducedProductCardProps {
-    type: "SPACE" | "EQUIPMENT" | "SERVICE"
     product: ProductType
-    localizacao?: string
-    onNext: () => void;
+    onNext: (product: ProductType) => void;
 }
 
-const typoConfig = {
+const typeConfig = {
     SPACE: {
         label: "Espaço",
         icon: MapPin,
@@ -29,29 +27,18 @@ const typoConfig = {
 }
 
 export default function ReducedProductCard({
-    type,
     product,
-    localizacao = "Centro - São Paulo",
     onNext,
 }: ReducedProductCardProps) {
 
-    const defineProductType = () => {
-        if (product.type === "SPACE") {
-            type = "SPACE"
-        }else if (product.type === "EQUIPMENT") {
-            type = "EQUIPMENT"
-        } else {
-            type = "SERVICE"
-        }
-        return type
-    }
-    const config = typoConfig[defineProductType()]
+    console.log("product.type recebido:", product.type)
+    const config = typeConfig[product.type]
     const IconComponent = config.icon
 
     const handleRent = () => {
         console.log("Solicitar aluguel do produto:", product.id)
         // implementari lógica de aluguel
-        onNext();
+        onNext(product);
     }
 
     const formatPrice = (price: number) => {
@@ -65,11 +52,14 @@ export default function ReducedProductCard({
         <Card className="w-full max-w-sm mx-auto overflow-hidden hover:shadow-lg transition-shadow duration-300">
             {/* Imagem do Produto */}
             <div className="relative h-48 w-full">
-                <img src={"/src/assets/unsplash-lab.jpg"} alt={product.title} className="object-cover h-52 w-96" />
-                <div className="absolute top-3 left-3">
+                <img src={product.imagesUrls[0]} alt={product.title} className="object-cover h-52 w-96" />
+                <div className="absolute flex gap-2 top-3 left-3">
                     <div className={`${config.color} flex items-center text-sm gap-1 p-1 rounded-full`}>
                         <IconComponent className="h-3 w-3" />
                         {config.label}
+                    </div>
+                    <div className="p-1 rounded-full border bg-grayLight">
+                        {product.category}
                     </div>
                 </div>
             </div>
@@ -80,12 +70,11 @@ export default function ReducedProductCard({
                     <h3 className="font-semibold text-lg text-gray-900 line-clamp-2">
                         {product.title}
                     </h3>
-                    {localizacao && (
-                        <p className="text-sm text-gray-500 flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {localizacao}
-                        </p>
-                    )}
+                    <p className="text-sm text-gray-500 flex items-center gap-1">
+                        <MapPin className="h-3 w-3 shrink-0" />
+                        {product.owner.address.street}, {product.owner.address.number} -
+                        {product.owner.address.neighborhood} - {product.owner.address.city}, {product.owner.address.state}
+                    </p>
                 </div>
 
                 {/* Descrição */}
@@ -111,7 +100,10 @@ export default function ReducedProductCard({
                             <span className="text-sm font-medium">Por dia</span>
                         </div>
                         <span className="font-semibold text-gray-900">
-                            {formatPrice(product.dailyPrice)}
+                            {product.dailyPrice
+                                ? formatPrice(product.dailyPrice)
+                                : "Indisponível"
+                            }
                         </span>
                     </div>
                 </div>

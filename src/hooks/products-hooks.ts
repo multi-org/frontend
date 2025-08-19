@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ProductType } from '@/types/Product'
+import { GetProductsResponse, ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
 import api from '@/apis/api'
 
@@ -19,8 +19,8 @@ export const useProducts = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.get<ProductType[]>('/produtos')
-      setProducts(response.data)
+      const response = await api.get<GetProductsResponse>('/products/all') // em teste
+      setProducts(response.data.data)
     } catch (err) {
       setError('Erro ao buscar produtos')
     } finally {

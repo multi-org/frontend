@@ -1,59 +1,48 @@
-import { 
-    Clock, 
-    Calendar, 
-    MapPin, 
-    Wrench, 
-    Users, 
-    ChevronLeft, 
-    ChevronRight, 
-    User, 
-    Maximize 
+import {
+    Clock,
+    Calendar,
+    MapPin,
+    Wrench,
+    Users,
+    ChevronLeft,
+    ChevronRight,
+    User,
+    Maximize,
+    Tag,
+    Package,
+    PackageSearch,
+    Layers,
+    ListChecks
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { 
-    Card, 
-    CardContent, 
-    CardFooter, 
-    CardHeader 
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
-
-interface Disponibilility {
-    segSex: { inicio: string; fim: string }
-    sabado: { inicio: string; fim: string }
-    domingo: { inicio: string; fim: string }
-}
+import { ProductType } from "@/types/Product"
 
 interface ExtendedProductCardProps {
-    id: string
-    nome: string
-    descricacao: string
-    categoria: string
-    capacidade?: number // Apenas para espaços
-    area?: number // Apenas para espaços (em m²)
-    imagens: string[]
-    precoHora: number
-    precoDia: number
-    tipo: "espaco" | "equipamento" | "servico"
-    localizacao?: string
-    disponibilidade: Disponibilility
+    product: ProductType
     onBack: () => void;
     onNext: () => void;
 }
 
-const tipoConfig = {
-    espaco: {
+const typeConfig = {
+    SPACE: {
         label: "Espaço",
         icon: MapPin,
         color: "bg-blue-100 text-blue-800",
     },
-    equipamento: {
+    EQUIPMENT: {
         label: "Equipamento",
         icon: Wrench,
         color: "bg-green-100 text-green-800",
     },
-    servico: {
+    SERVICE: {
         label: "Serviço",
         icon: Users,
         color: "bg-purple-100 text-purple-800",
@@ -61,36 +50,18 @@ const tipoConfig = {
 }
 
 export default function ExtendedProductCard({
-    id = "PROD-001",
-    nome = "Auditório Premium",
-    descricacao = "Auditório moderno e totalmente equipado com sistema de som profissional, projetor 4K, ar-condicionado, iluminação cênica e poltronas confortáveis. Ideal para palestras, seminários, apresentações corporativas e eventos acadêmicos.",
-    categoria = "Auditório",
-    capacidade = 150,
-    area = 200,
-    imagens = [
-        "/src/assets/unsplash-lab.jpg",
-        "/src/assets/unsplash-lab.jpg",
-        "/src/assets/unsplash-lab.jpg",
-    ],
-    precoHora = 180.0,
-    precoDia = 1200.0,
-    tipo = "espaco",
-    localizacao = "Campus Central - São Paulo",
-    disponibilidade = {
-        segSex: { inicio: "08:00", fim: "22:00" },
-        sabado: { inicio: "09:00", fim: "18:00" },
-        domingo: { inicio: "14:00", fim: "20:00" },
-    },
+    product,
     onBack,
     onNext,
 }: ExtendedProductCardProps) {
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
-    const config = tipoConfig[tipo]
+    const config = typeConfig[product.type]
     const IconComponent = config.icon
+    console.log(product)
 
     const handleRent = () => {
-        console.log("Solicitar aluguel do produto:", id)
+        console.log("Solicitar aluguel do produto:", product.id)
         onNext();
     }
 
@@ -102,11 +73,13 @@ export default function ExtendedProductCard({
     }
 
     const nextImage = () => {
-        setCurrentImageIndex((prev) => (prev + 1) % imagens.length)
+        setCurrentImageIndex((prev) => (prev + 1) % product.imagesUrls.length)
     }
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => (prev - 1 + imagens.length) % imagens.length)
+        setCurrentImageIndex((prev) =>
+            (prev - 1 + product.imagesUrls.length)
+            % product.imagesUrls.length)
     }
 
     return (
@@ -119,15 +92,18 @@ export default function ExtendedProductCard({
                                 <IconComponent className="h-3 w-3" />
                                 {config.label}
                             </div>
-                            <div className="p-1 rounded-full border">{categoria}</div>
+                            <div className="p-1 rounded-full border">
+                                {product.category}
+                            </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900">{nome}</h2>
-                        {localizacao && (
-                            <p className="text-gray-600 flex items-center gap-1">
-                                <MapPin className="h-4 w-4" />
-                                {localizacao}
-                            </p>
-                        )}
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            {product.title}
+                        </h2>
+                        <p className="text-gray-600 flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {product.owner.address.street}, {product.owner.address.number} -
+                            {product.owner.address.neighborhood} - {product.owner.address.city}, {product.owner.address.state}
+                        </p>
                     </div>
                 </div>
             </CardHeader>
@@ -137,11 +113,11 @@ export default function ExtendedProductCard({
                 <div className="relative">
                     <div className="relative h-[500px] w-full rounded-lg overflow-hidden">
                         <img
-                            src={imagens[currentImageIndex] || "/src/assets/multi-prod-esp.png"}
-                            alt={`${nome} - Imagem ${currentImageIndex + 1}`}
+                            src={product.imagesUrls[currentImageIndex] || "/src/assets/multi-prod-esp.png"}
+                            alt={`${product.title} - Imagem ${currentImageIndex + 1}`}
                             className="object-cover h-[500px] w-full"
                         />
-                        {imagens.length > 1 && (
+                        {product.imagesUrls.length > 1 && (
                             <>
                                 <Button
                                     variant="outline"
@@ -162,9 +138,9 @@ export default function ExtendedProductCard({
                             </>
                         )}
                     </div>
-                    {imagens.length > 1 && (
+                    {product.imagesUrls.length > 1 && (
                         <div className="flex justify-center gap-2 mt-3">
-                            {imagens.map((_, index) => (
+                            {product.imagesUrls.map((_, index) => (
                                 <button
                                     key={index}
                                     className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? "bg-yellowDark" : "bg-gray-300"
@@ -181,35 +157,138 @@ export default function ExtendedProductCard({
                     <div className="space-y-4">
                         <div>
                             <h3 className="font-semibold text-lg mb-2">Descrição</h3>
-                            <p className="text-gray-600 leading-relaxed">{descricacao}</p>
+                            <p className="text-gray-600 leading-relaxed">
+                                {product.description}
+                            </p>
                         </div>
 
                         {/* Informações específicas por tipo */}
-                        {tipo === "espaco" && (capacidade || area) && (
+                        {product.type === "SPACE" && (product.spaceProduct?.capacity || product.spaceProduct?.area) && (
                             <div className="space-y-3">
                                 <h3 className="font-semibold text-lg">Especificações</h3>
                                 <div className="grid grid-cols-2 gap-4">
-                                    {capacidade && (
+                                    {product.spaceProduct.capacity && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                                             <User className="h-4 w-4 text-gray-600" />
                                             <div>
-                                                <p className="text-sm text-gray-600">Capacidade</p>
-                                                <p className="font-semibold">{capacidade} pessoas</p>
+                                                <p className="text-sm text-gray-600">
+                                                    Capacidade
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.spaceProduct.capacity} pessoas
+                                                </p>
                                             </div>
                                         </div>
                                     )}
-                                    {area && (
+                                    {product.spaceProduct.area && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
                                             <Maximize className="h-4 w-4 text-gray-600" />
                                             <div>
                                                 <p className="text-sm text-gray-600">Área</p>
-                                                <p className="font-semibold">{area} m²</p>
+                                                <p className="font-semibold">
+                                                    {product.spaceProduct.area} m²
+                                                </p>
                                             </div>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         )}
+
+                        {product.type === "EQUIPMENT" && (product.equipamentProduct?.brand || product.equipamentProduct?.model || product.equipamentProduct?.specifications || product.equipamentProduct?.stock) && (
+                            <div className="space-y-3">
+                                <h3 className="font-semibold text-lg">Especificações</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {product.equipamentProduct.brand && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <Tag className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Marca
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.equipamentProduct.brand}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {product.equipamentProduct.model && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <Package className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Modelo
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.equipamentProduct.model}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {product.equipamentProduct.specifications && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <PackageSearch className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Especificações
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.equipamentProduct.specifications}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {product.equipamentProduct.stock && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <Layers className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Estoque
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.equipamentProduct.stock}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {product.type === "SERVICE" && (product.servicesProduct?.durationMinutes || product.servicesProduct?.requirements) && (
+                            <div className="space-y-3">
+                                <h3 className="font-semibold text-lg">Especificações</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {product.servicesProduct.durationMinutes && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <Clock className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Duração
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.servicesProduct.durationMinutes} minutos
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {product.servicesProduct.requirements && (
+                                        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                            <ListChecks className="h-4 w-4 text-gray-600" />
+                                            <div>
+                                                <p className="text-sm text-gray-600">
+                                                    Requisitos
+                                                </p>
+                                                <p className="font-semibold">
+                                                    {product.servicesProduct.requirements}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
 
                     {/* Preços e Disponibilidade */}
@@ -223,7 +302,7 @@ export default function ExtendedProductCard({
                                         <Clock className="h-4 w-4" />
                                         <span className="font-medium">Por hora</span>
                                     </div>
-                                    <span className="font-semibold text-lg text-gray-900">{formatPrice(precoHora)}</span>
+                                    <span className="font-semibold text-lg text-gray-900">{formatPrice(product.hourlyPrice)}</span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
@@ -231,7 +310,12 @@ export default function ExtendedProductCard({
                                         <Calendar className="h-4 w-4" />
                                         <span className="font-medium">Por dia</span>
                                     </div>
-                                    <span className="font-semibold text-lg text-gray-900">{formatPrice(precoDia)}</span>
+                                    <span className="font-semibold text-gray-900">
+                                        {product.dailyPrice
+                                            ? formatPrice(product.dailyPrice)
+                                            : "Indisponível"
+                                        }
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -243,22 +327,40 @@ export default function ExtendedProductCard({
                             <h3 className="font-semibold text-lg">Disponibilidade</h3>
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
-                                    <span className="text-sm font-medium text-gray-700">Segunda à Sexta</span>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Segunda à Sexta
+                                    </span>
                                     <span className="text-sm text-gray-600">
-                                        {disponibilidade.segSex.inicio} - {disponibilidade.segSex.fim}
+                                        {product.ProductWeeklyAvailability.monday.start} - {product.ProductWeeklyAvailability.monday.end}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
-                                    <span className="text-sm font-medium text-gray-700">Sábado</span>
-                                    <span className="text-sm text-gray-600">
-                                        {disponibilidade.sabado.inicio} - {disponibilidade.sabado.fim}
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Sábado
                                     </span>
+                                    {product.ProductWeeklyAvailability.saturday ? (
+                                        <span className="text-sm text-gray-600">
+                                            {product.ProductWeeklyAvailability.saturday?.start} - {product.ProductWeeklyAvailability.saturday?.end}
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-gray-600">
+                                            Indisponível
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="flex justify-between items-center p-2 rounded max-[300px]:flex-col">
-                                    <span className="text-sm font-medium text-gray-700">Domingo</span>
-                                    <span className="text-sm text-gray-600">
-                                        {disponibilidade.domingo.inicio} - {disponibilidade.domingo.fim}
+                                    <span className="text-sm font-medium text-gray-700">
+                                        Domingo
                                     </span>
+                                    {product.ProductWeeklyAvailability.sunday ? (
+                                        <span className="text-sm text-gray-600">
+                                            {product.ProductWeeklyAvailability.sunday?.start} - {product.ProductWeeklyAvailability.sunday?.end}
+                                        </span>
+                                    ) : (
+                                        <span className="text-sm text-gray-600">
+                                            Indisponível
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -267,11 +369,11 @@ export default function ExtendedProductCard({
             </CardContent>
 
             <CardFooter className="pt-6 grid grid-cols-2 gap-6 max-[300px]:grid-cols-1">
-                <Button 
-                variant={"outline"}
-                onClick={onBack} 
-                size="lg" 
-                className="w-full border-yellowDark text-yellowDark hover:bg-yellow-100 hover:text-yellowDark">
+                <Button
+                    variant={"outline"}
+                    onClick={onBack}
+                    size="lg"
+                    className="w-full border-yellowDark text-yellowDark hover:bg-yellow-100 hover:text-yellowDark">
                     Voltar
                 </Button>
                 <Button onClick={handleRent} size="lg" className="w-full bg-yellowDark hover:bg-yellowNormal">
