@@ -19,7 +19,7 @@ export const useProducts = () => {
     setLoading(true)
     setError(null)
     try {
-      const response = await api.get<GetProductsResponse>('/products/all') // em teste
+      const response = await api.get<GetProductsResponse>('/products/all')
       setProducts(response.data.data)
     } catch (err) {
       setError('Erro ao buscar produtos')

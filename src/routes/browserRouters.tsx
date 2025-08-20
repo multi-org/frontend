@@ -15,7 +15,7 @@ export const defaultRoutes = createBrowserRouter([
     errorElement: <ErrorPage />
   },
   {
-    path: '/produtos',
+    path: '/products',
     element: <Products />,
   },
   {

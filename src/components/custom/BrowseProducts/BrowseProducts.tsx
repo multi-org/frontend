@@ -12,7 +12,6 @@ import { ExtendedProductCard, ReducedProductCard } from '@/components/custom/Pro
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -27,30 +26,37 @@ export default function BrowseProducts() {
 
     const { products, getProducts } = useProducts()
     const [searchTerm, setSearchTerm] = useState<string>('')
+    const [type, setType] = useState<string>('')
     const [category, setCategory] = useState<string>('')
     const [bookingStep, setBookingStep] = useState<number>(0)
     const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
+    const [currentPage, setCurrentPage] = useState(1)
+    const productsPerPage = 6
 
-    useEffect(() => { // em teste
+    useEffect(() => {
         getProducts()
     }, [])
 
     useEffect(() => {
-        console.log("Produtos atualizados (crus):", products)
+        console.log("Produtos atualizados (crus):", products) // em teste
     }, [products])
 
-    // const filteredProducts = products.filter((product: ProductType) => {
-    //     const matchesSearchTerm = searchTerm
-    //         ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
-    //         : true
+    const filteredProducts = products.filter((product: ProductType) => {
+        const matchesSearchTerm = searchTerm
+            ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
+            : true;
+        const matchesCategory = category ? product.category === category : true;
+        const matchesType = type ? product.type === type : true;
 
-    //     const matchesCategory = category ? product.category === category : true
-    //     // const matchesDate = date
-    //     //   ? new Date(product.date).toDateString() === date.toDateString() // Assumindo que `product.date` é uma string válida
-    //     //   : true;
+        return matchesSearchTerm && matchesCategory && matchesType;
+    })
 
-    //     return matchesSearchTerm && matchesCategory
-    // })
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage)
+
+    const paginatedProducts = filteredProducts.slice(
+        (currentPage - 1) * productsPerPage,
+        currentPage * productsPerPage
+    )
 
     return (
         <>
@@ -69,23 +75,76 @@ export default function BrowseProducts() {
                                 className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400 pointer-events-none"
                             />
                         </div>
+                        <Select onValueChange={(value) => setType(value)}>
+                            <SelectTrigger className="w-[180px] max-[350px]:w-full truncate ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
+                                <SelectValue placeholder="Tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value="SPACE">Espaço</SelectItem>
+                                    <SelectItem value="SERVICE">Serviço</SelectItem>
+                                    <SelectItem value="EQUIPMENT">Equipamento</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
                         <Select onValueChange={(value) => setCategory(value)}>
                             <SelectTrigger className="w-[180px] max-[350px]:w-full truncate ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
                                 <SelectValue placeholder="Categoria" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value="Espaços">Espaços</SelectItem>
-                                    <SelectItem value="Serviços">Serviços</SelectItem>
-                                    <SelectItem value="Equipamentos">Equipamentos</SelectItem>
+                                    <SelectItem value="Sala de aula">Sala de aula</SelectItem>
+                                    <SelectItem value="Auditório">Auditório</SelectItem>
+                                    <SelectItem value="Laboratório">Laboratório</SelectItem>
+                                    <SelectItem value="Espaço para eventos">
+                                        Espaço para eventos
+                                    </SelectItem>
+                                    <SelectItem value="Instalação esportiva">
+                                        Instalação esportiva
+                                    </SelectItem>
+                                    <SelectItem value="Área administrativa/coorporativa">
+                                        Área administrativa/coorporativa
+                                    </SelectItem>
+                                    <SelectItem value="Técnico/operacional">
+                                        Técnico/operacional
+                                    </SelectItem>
+                                    <SelectItem value="Acadêmico/profissional">
+                                        Acadêmico/profissional
+                                    </SelectItem>
+                                    <SelectItem value="Logística e organização">
+                                        Logística e organização
+                                    </SelectItem>
+                                    <SelectItem value="Alimentação">
+                                        Alimentação
+                                    </SelectItem>
+                                    <SelectItem value="Comunicação e marketing">
+                                        Comunicação e marketing
+                                    </SelectItem>
+                                    <SelectItem value="Audiovisual">
+                                        Audiovisual
+                                    </SelectItem>
+                                    <SelectItem value="Informática/tecnologia">
+                                        Informática/tecnologia
+                                    </SelectItem>
+                                    <SelectItem value="Laboratorial">
+                                        Laboratorial
+                                    </SelectItem>
+                                    <SelectItem value="Mobiliário">
+                                        Mobiliário
+                                    </SelectItem>
+                                    <SelectItem value="Esportivo">
+                                        Esportivo
+                                    </SelectItem>
+                                    <SelectItem value="Outros">
+                                        Outros
+                                    </SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
                     </header>
-                    {/* <div className="mt-8 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2"></div> */}
                     <div className='p-6 grid grid-cols-3 max-[750px]:grid-cols-2 max-[500px]:grid-cols-1 gap-2'>
-                        {products.length > 0 ? (
-                            products.map((product) => (
+                        {paginatedProducts.length > 0 ? (
+                            paginatedProducts.map((product) => (
                                 <ReducedProductCard
                                     key={product.id}
                                     product={product}
@@ -97,30 +156,45 @@ export default function BrowseProducts() {
                             ))
                         ) : (
                             <>
-                                <p>Nenhum produto encontrado.</p>
+                                <p className='col-start-2 text-center max-[750px]:col-span-2'>
+                                    Nenhum produto encontrado
+                                </p>
                             </>
                         )}
                     </div>
                     <div className="flex justify-center items-center p-6 max-[350px]:w-80 truncate">
                         <Pagination>
                             <PaginationContent>
+                                {/* Botão anterior */}
                                 <PaginationItem>
-                                    <PaginationPrevious href="#" />
+                                    <button
+                                        disabled={currentPage === 1}
+                                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                        className="px-3 py-1 disabled:opacity-50"
+                                    >
+                                        <PaginationPrevious href="#" />
+                                    </button>
                                 </PaginationItem>
+                                {/* Páginas */}
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                    <PaginationItem key={page}>
+                                        <button
+                                            onClick={() => setCurrentPage(page)}
+                                            className={`px-3 py-1 ${page === currentPage ? "font-extrabold" : ""}`}
+                                        >
+                                            <PaginationLink href="#">{page}</PaginationLink>
+                                        </button>
+                                    </PaginationItem>
+                                ))}
+                                {/* Botão próximo */}
                                 <PaginationItem>
-                                    <PaginationLink href="#">1</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">2</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationLink href="#">3</PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationEllipsis />
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext href="#" />
+                                    <button
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                        className="px-3 py-1 disabled:opacity-50"
+                                    >
+                                        <PaginationNext href="#" />
+                                    </button>
                                 </PaginationItem>
                             </PaginationContent>
                         </Pagination>

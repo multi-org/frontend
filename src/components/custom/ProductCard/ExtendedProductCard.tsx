@@ -12,7 +12,8 @@ import {
     Package,
     PackageSearch,
     Layers,
-    ListChecks
+    ListChecks,
+    Loader
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,6 +25,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 import { ProductType } from "@/types/Product"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/auth-hooks"
 
 interface ExtendedProductCardProps {
     product: ProductType
@@ -58,10 +61,17 @@ export default function ExtendedProductCard({
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
     const config = typeConfig[product.type]
     const IconComponent = config.icon
-    console.log(product)
+    const navigate = useNavigate()
+    const { isAuthenticated, isLoading } = useAuth()
+    console.log(product) // em teste
 
     const handleRent = () => {
-        console.log("Solicitar aluguel do produto:", product.id)
+        if (isLoading) return
+        if (!isAuthenticated) {
+            navigate("/login")
+            return
+        }
+        console.log("Usuário autenticado -> Solicitar aluguel:", product.id)
         onNext();
     }
 
@@ -87,12 +97,12 @@ export default function ExtendedProductCard({
             <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                     <div className="space-y-2">
-                        <div className="flex items-center gap-2 max-[300px]:flex-col max-[300px]:items-start">
-                            <div className={`${config.color} flex items-center gap-1 p-1 rounded-full`}>
+                        <div className="flex gap-2 max-[430px]:flex-col max-[300px]:items-start">
+                            <div className={`${config.color} flex items-center gap-1 p-1 rounded-full max-w-fit`}>
                                 <IconComponent className="h-3 w-3" />
                                 {config.label}
                             </div>
-                            <div className="p-1 rounded-full border">
+                            <div className="p-1 rounded-full border max-w-fit">
                                 {product.category}
                             </div>
                         </div>
@@ -101,8 +111,7 @@ export default function ExtendedProductCard({
                         </h2>
                         <p className="text-gray-600 flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
-                            {product.owner.address.street}, {product.owner.address.number} -
-                            {product.owner.address.neighborhood} - {product.owner.address.city}, {product.owner.address.state}
+                            {product.owner.address.street}, {product.owner.address.number} -  {product.owner.address.neighborhood} - {product.owner.address.city}, {product.owner.address.state}
                         </p>
                     </div>
                 </div>
@@ -111,12 +120,21 @@ export default function ExtendedProductCard({
             <CardContent className="space-y-6">
                 {/* Carrossel de Imagens */}
                 <div className="relative">
-                    <div className="relative h-[500px] w-full rounded-lg overflow-hidden">
-                        <img
-                            src={product.imagesUrls[currentImageIndex] || "/src/assets/multi-prod-esp.png"}
-                            alt={`${product.title} - Imagem ${currentImageIndex + 1}`}
-                            className="object-cover h-[500px] w-full"
-                        />
+                    <div className="relative flex items-center justify-center bg-gray-200 h-[500px] w-full rounded-lg overflow-hidden">
+                        {product?.imagesUrls?.length > 0 ? (
+                            <img
+                                src={product.imagesUrls[currentImageIndex]}
+                                alt={`${product.title} - Imagem ${currentImageIndex + 1}`}
+                                className="object-cover h-[500px] w-full"
+                            />
+                        ) : (
+                            <img
+                                src={"/src/assets/svg/image.svg"}
+                                alt={product?.title ?? "...Carregando"}
+                                className="h-10 w-10 opacity-50"
+                            />
+                        )}
+
                         {product.imagesUrls.length > 1 && (
                             <>
                                 <Button
@@ -169,7 +187,7 @@ export default function ExtendedProductCard({
                                 <div className="grid grid-cols-2 gap-4">
                                     {product.spaceProduct.capacity && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <User className="h-4 w-4 text-gray-600" />
+                                            <User className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Capacidade
@@ -182,7 +200,7 @@ export default function ExtendedProductCard({
                                     )}
                                     {product.spaceProduct.area && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <Maximize className="h-4 w-4 text-gray-600" />
+                                            <Maximize className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">Área</p>
                                                 <p className="font-semibold">
@@ -201,7 +219,7 @@ export default function ExtendedProductCard({
                                 <div className="grid grid-cols-2 gap-4">
                                     {product.equipamentProduct.brand && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <Tag className="h-4 w-4 text-gray-600" />
+                                            <Tag className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Marca
@@ -214,7 +232,7 @@ export default function ExtendedProductCard({
                                     )}
                                     {product.equipamentProduct.model && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <Package className="h-4 w-4 text-gray-600" />
+                                            <Package className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Modelo
@@ -227,7 +245,7 @@ export default function ExtendedProductCard({
                                     )}
                                     {product.equipamentProduct.specifications && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <PackageSearch className="h-4 w-4 text-gray-600" />
+                                            <PackageSearch className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Especificações
@@ -240,7 +258,7 @@ export default function ExtendedProductCard({
                                     )}
                                     {product.equipamentProduct.stock && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <Layers className="h-4 w-4 text-gray-600" />
+                                            <Layers className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Estoque
@@ -261,7 +279,7 @@ export default function ExtendedProductCard({
                                 <div className="grid grid-cols-2 gap-4">
                                     {product.servicesProduct.durationMinutes && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <Clock className="h-4 w-4 text-gray-600" />
+                                            <Clock className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Duração
@@ -274,7 +292,7 @@ export default function ExtendedProductCard({
                                     )}
                                     {product.servicesProduct.requirements && (
                                         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                                            <ListChecks className="h-4 w-4 text-gray-600" />
+                                            <ListChecks className="h-4 w-4 text-gray-600 shrink-0" />
                                             <div>
                                                 <p className="text-sm text-gray-600">
                                                     Requisitos
@@ -377,7 +395,7 @@ export default function ExtendedProductCard({
                     Voltar
                 </Button>
                 <Button onClick={handleRent} size="lg" className="w-full bg-yellowDark hover:bg-yellowNormal">
-                    Reservar
+                    {isLoading ? <Loader /> : "Reservar"}
                 </Button>
             </CardFooter>
         </Card>
