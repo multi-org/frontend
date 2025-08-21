@@ -1,55 +1,113 @@
-export interface ProductType {
+// export interface ProductType {
+//   id: string,
+//   type: string,
+//   title: string,
+//   description: string,
+//   spaceDetails: {
+//     capacity: number,
+//     area: number,
+//   },
+//   serviceDetails: {
+//     durationMinutes: number,
+//     requirements: string,
+//   },
+//   equipmentDetails: {
+//     brand: string,
+//     model: string,
+//     specifications: string,
+//     stock: number,
+//   },
+//   category: string,
+//   images: string[],
+//   chargingModel: string,
+//   hourlyPrice: number,
+//   dailyPrice: number,
+//   weeklyAvailability: {
+//     monday: {
+//       start: string,
+//       end: string,
+//     },
+//     tuesday: {
+//       start: string,
+//       end: string,
+//     },
+//     wednesday: {
+//       start: string,
+//       end: string,
+//     },
+//     thursday: {
+//       start: string,
+//       end: string,
+//     },
+//     friday: {
+//       start: string,
+//       end: string,
+//     },
+//     saturday?: {
+//       start: string,
+//       end: string,
+//     },
+//     sunday?: {
+//       start: string,
+//       end: string,
+//     },
+//   }
+// }
+
+export interface ProductType { // em teste
   id: string,
-  type: string,
+  // type: string,
+  type: "SPACE" | "EQUIPMENT" | "SERVICE",
   title: string,
+  owner: {
+    address: {
+      street: string,
+      number: string,
+      neighborhood: string,
+      city: string,
+      state: string,
+    },
+  },
   description: string,
-  spaceDetails: {
+  category: string,
+  imagesUrls: string[],
+  chargingModel: string,
+  hourlyPrice: number,
+  dailyPrice: number,
+  spaceProduct?: {
     capacity: number,
     area: number,
   },
-  serviceDetails: {
+  servicesProduct?: {
     durationMinutes: number,
     requirements: string,
   },
-  equipmentDetails: {
+  equipamentProduct?: {
     brand: string,
     model: string,
     specifications: string,
     stock: number,
   },
-  category: string,
-  images: string[],
-  chargingModel: string,
-  hourlyPrice: number,
-  dailyPrice: number,
-  weeklyAvailability: {
-    monday: {
-      start: string,
-      end: string,
-    },
-    tuesday: {
-      start: string,
-      end: string,
-    },
-    wednesday: {
-      start: string,
-      end: string,
-    },
-    thursday: {
-      start: string,
-      end: string,
-    },
-    friday: {
-      start: string,
-      end: string,
-    },
-    saturday?: {
-      start: string,
-      end: string,
-    },
-    sunday?: {
-      start: string,
-      end: string,
-    },
+  ProductWeeklyAvailability: {
+    monday: { start: string, end: string },
+    tuesday: { start: string, end: string },
+    wednesday: { start: string, end: string },
+    thursday: { start: string, end: string },
+    friday: { start: string, end: string },
+    saturday?: { start: string, end: string },
+    sunday?: { start: string, end: string },
   }
 }
+
+export type GetProductsResponse = { // em teste
+  success: boolean
+  message: string
+  data: ProductType[]
+  statistics: {
+    totalProducts: number
+    spaceCount: number
+    serviceCount: number
+    equipmentCount: number
+  }
+}
+
