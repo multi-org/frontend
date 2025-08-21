@@ -71,7 +71,7 @@ export default function ReducedProductCard({
                         <IconComponent className="h-3 w-3" />
                         {config.label}
                     </div>
-                    <div className="p-1 rounded-full bg-white border max-w-fit">
+                    <div className="p-1 text-sm rounded-full bg-white border max-w-fit truncate">
                         {product?.category ?? "...Carregando"}
                     </div>
                 </div>

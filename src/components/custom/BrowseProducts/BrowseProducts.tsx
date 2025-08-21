@@ -206,25 +206,17 @@ export default function BrowseProducts() {
                     <ExtendedProductCard
                         product={selectedProduct}
                         onBack={() => setBookingStep(0)}
-                        onNext={() => setBookingStep(2)}
+                        onNext={(selectedProduct) => {
+                            setSelectedProduct(selectedProduct)
+                            setBookingStep(2)
+                        }}
                     />
                 </div>
             )}
-            {bookingStep === 2 && (
+            {bookingStep === 2 && selectedProduct && (
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <RentalBookingCard
-                        product={{
-                            id: "ESP-001",
-                            nome: "Auditório Premium",
-                            categoria: "Auditório",
-                            capacidade: 150,
-                            area: 200,
-                            imagem: "/src/assets/multi-prod-serv.png",
-                            precoHora: 180.0,
-                            precoDia: 1200.0,
-                            tipo: "espaco",
-                            localizacao: "Campus Central - São Paulo"
-                        }}
+                        product={selectedProduct}
                         onPayment={(data: any) => console.log("Dados do pagamento:", data)}
                         onBack={() => setBookingStep(1)}
                         onNext={() => setBookingStep(3)}

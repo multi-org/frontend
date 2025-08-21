@@ -1,4 +1,4 @@
-import { MapPin, Wrench, Users, User, Maximize, CalendarDays } from "lucide-react"
+import { MapPin, Wrench, Users, User, Maximize, CalendarDays, Tag, Package, PackageSearch, Layers, Clock, ListChecks } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -11,39 +11,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-
-interface ProductInfo {
-    id: string
-    nome: string
-    categoria: string
-    capacidade?: number
-    area?: number
-    imagem: string
-    precoHora: number
-    precoDia: number
-    tipo: "espaco" | "equipamento" | "servico"
-    localizacao?: string
-}
+import { ProductType } from "@/types/Product"
 
 interface RentalBookingCardProps {
-    product: ProductInfo
+    product: ProductType
     onPayment: (bookingData: any) => void
     onBack: () => void;
     onNext: () => void;
 }
 
-const tipoConfig = {
-    espaco: {
+const typeConfig = {
+    SPACE: {
         label: "Espaço",
         icon: MapPin,
         color: "bg-blue-100 text-blue-800",
     },
-    equipamento: {
+    EQUIPMENT: {
         label: "Equipamento",
         icon: Wrench,
         color: "bg-green-100 text-green-800",
     },
-    servico: {
+    SERVICE: {
         label: "Serviço",
         icon: Users,
         color: "bg-purple-100 text-purple-800",
@@ -60,18 +48,7 @@ const generateTimeSlots = () => {
 }
 
 export default function RentalBookingCard({
-    product = {
-        id: "ESP-001",
-        nome: "Auditório Premium",
-        categoria: "Auditório",
-        capacidade: 150,
-        area: 200,
-        imagem: "/placeholder.svg?height=200&width=300",
-        precoHora: 180.0,
-        precoDia: 1200.0,
-        tipo: "espaco",
-        localizacao: "Campus Central - São Paulo",
-    },
+    product,
     onPayment = (data: any) => console.log("Dados do pagamento:", data),
     onBack,
     onNext,
@@ -85,7 +62,7 @@ export default function RentalBookingCard({
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
 
-    const config = tipoConfig[product.tipo]
+    const config = typeConfig[product.type]
     const IconComponent = config.icon
     const timeSlots = generateTimeSlots()
 
@@ -102,13 +79,22 @@ export default function RentalBookingCard({
         if (rentalType === "dia") {
             const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-            return diffDays * product.precoDia
+            return diffDays * product.dailyPrice
         } else {
             if (!startTime || !endTime) return 0
+
             const [startHour] = startTime.split(":").map(Number)
             const [endHour] = endTime.split(":").map(Number)
-            const hours = endHour - startHour
-            return hours * product.precoHora
+
+            // Diferença em horas no mesmo dia
+            const hoursPerDay = endHour - startHour
+            if (hoursPerDay <= 0) return 0
+
+            // Diferença em dias (contando o último dia também)
+            const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+
+            return diffDays * hoursPerDay * product.hourlyPrice
         }
     }
 
@@ -135,50 +121,116 @@ export default function RentalBookingCard({
     }
 
     return (
-        <Card className="w-full max-w-4xl mx-auto">
+        <Card className="w-full max-w-4xl mx-auto overflow-hidden">
             <CardHeader>
-                <CardTitle className="text-xl">Solicitar Aluguel</CardTitle>
+                <CardTitle className="text-xl">
+                    Solicitar Aluguel
+                </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-6">
                 {/* Resumo do Produto */}
-                <div className="flex max-[600px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                        <img src={product.imagem || "/placeholder.svg"} alt={product.nome} className="object-cover h-full" />
+                <div className="flex max-[680px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="relative flex items-center justify-center bg-gray-200 w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                        {product?.imagesUrls?.length > 0 ? (
+                            <img
+                                src={product?.imagesUrls[0]}
+                                alt={product?.title ?? "...Carregando"}
+                                className="object-cover h-full w-full"
+                            />
+                        ) : (
+                            <img
+                                src={"/src/assets/svg/image.svg"}
+                                alt={product?.title ?? "...Carregando"}
+                                className="h-10 w-10 opacity-50"
+                            />
+                        )}
                     </div>
                     <div className="flex-1 space-y-2">
-                        <div className="flex max-[300px]:flex-col items-center max-[300px]:items-start gap-2">
-                            <div className={`${config.color} flex items-center gap-1 p-1 rounded-full`}>
+                        <div className="flex max-[440px]:flex-col items-center max-[440px]:items-start gap-2">
+                            <div className={`${config.color} flex items-center gap-1 p-1 rounded-full max-w-fit`}>
                                 <IconComponent className="h-3 w-3" />
                                 {config.label}
                             </div>
-                            <div className="p-1 rounded-full border">{product.categoria}</div>
+                            <div className="p-1 rounded-full border bg-white max-w-fit truncate">
+                                {product.category}
+                            </div>
                         </div>
-                        <h3 className="font-semibold text-lg">{product.nome}</h3>
-                        {product.localizacao && (
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                                <MapPin className="h-3 w-3" />
-                                {product.localizacao}
-                            </p>
-                        )}
+                        <h3 className="font-semibold text-lg">{product.title}</h3>
+                        <p className="text-sm text-gray-600 flex items-center gap-1">
+                            <MapPin className="h-3 w-3 shrink-0" />
+                            {product?.owner?.address?.street ?? "...Carregando"}, {product?.owner?.address?.number ?? ""} - {product?.owner?.address?.neighborhood ?? ""} - {product?.owner?.address?.city ?? ""}, {product?.owner?.address?.state ?? ""}
+                        </p>
                         <div className="flex max-[300px]:flex-col gap-4 text-sm text-gray-600">
-                            {product.capacidade && (
-                                <span className="flex items-center gap-1">
-                                    <User className="h-3 w-3" />
-                                    {product.capacidade} pessoas
-                                </span>
+                            {product.type === "SPACE" && (product.spaceProduct?.capacity || product.spaceProduct?.area) && (
+                                <>
+                                    {product.spaceProduct.capacity && (
+                                        <span className="flex items-center gap-1">
+                                            <User className="h-3 w-3 shrink-0" />
+                                            {product.spaceProduct.capacity} pessoas
+                                        </span>
+                                    )}
+                                    {product.spaceProduct.area && (
+                                        <span className="flex items-center gap-1">
+                                            <Maximize className="h-3 w-3 shrink-0" />
+                                            {product.spaceProduct.area} m²
+                                        </span>
+                                    )}
+                                </>
                             )}
-                            {product.area && (
-                                <span className="flex items-center gap-1">
-                                    <Maximize className="h-3 w-3" />
-                                    {product.area} m²
-                                </span>
+                            {product.type === "EQUIPMENT" && (product.equipamentProduct?.brand || product.equipamentProduct?.model || product.equipamentProduct?.specifications || product.equipamentProduct?.stock) && (
+                                <>
+                                    {product.equipamentProduct.brand && (
+                                        <span className="flex items-center gap-1">
+                                            <Tag className="h-3 w-3 shrink-0" />
+                                            {product.equipamentProduct.brand}
+                                        </span>
+                                    )}
+                                    {product.equipamentProduct.model && (
+                                        <span className="flex items-center gap-1">
+                                            <Package className="h-3 w-3 shrink-0" />
+                                            {product.equipamentProduct.model}
+                                        </span>
+                                    )}
+                                    {product.equipamentProduct.specifications && (
+                                        <span className="flex items-center gap-1">
+                                            <PackageSearch className="h-3 w-3 shrink-0" />
+                                            {product.equipamentProduct.specifications}
+                                        </span>
+                                    )}
+                                    {product.equipamentProduct.stock && (
+                                        <span className="flex items-center gap-1">
+                                            <Layers className="h-3 w-3 shrink-0" />
+                                            {product.equipamentProduct.stock}
+                                        </span>
+                                    )}
+                                </>
+                            )}
+                            {product.type === "SERVICE" && (product.servicesProduct?.durationMinutes || product.servicesProduct?.requirements) && (
+                                <>
+                                    {product.servicesProduct.durationMinutes && (
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3 shrink-0" />
+                                            {product.servicesProduct.durationMinutes} minutos
+                                        </span>
+                                    )}
+                                    {product.servicesProduct.requirements && (
+                                        <span className="flex items-center gap-1">
+                                            <ListChecks className="h-3 w-3 shrink-0" />
+                                            {product.servicesProduct.requirements}
+                                        </span>
+                                    )}
+                                </>
                             )}
                         </div>
                     </div>
-                    <div className="text-right space-y-1">
-                        <p className="text-sm text-gray-600">Por hora: {formatPrice(product.precoHora)}</p>
-                        <p className="text-sm text-gray-600">Por dia: {formatPrice(product.precoDia)}</p>
+                    <div className="text-right max-[680px]:text-left space-y-1">
+                        <p className="text-sm text-gray-600">
+                            Por hora: {formatPrice(product.hourlyPrice)}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            Por dia: {formatPrice(product.dailyPrice)}
+                        </p>
                     </div>
                 </div>
 
@@ -208,7 +260,7 @@ export default function RentalBookingCard({
                         </div>
 
                         {/* Seleção de Datas */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
                             <div className="space-y-2">
                                 <Label>Data de Início</Label>
                                 <Popover>
@@ -254,7 +306,7 @@ export default function RentalBookingCard({
 
                         {/* Seleção de Horários (apenas se for por hora) */}
                         {rentalType === "hora" && (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
                                 <div className="space-y-2">
                                     <Label>Horário de Início</Label>
                                     <Select value={startTime} onValueChange={setStartTime}>
@@ -314,7 +366,11 @@ export default function RentalBookingCard({
                                 rows={4}
                                 value={activityDescription}
                                 onChange={(e) => setActivityDescription(e.target.value)}
+                                maxLength={100}
                             />
+                            <div className={activityDescription.length > 80 ? "text-sm text-red-500 text-right" : "text-sm text-gray-500 text-right"}>
+                                {100 - activityDescription.length} caracteres disponíveis
+                            </div>
                         </div>
 
                         {/* Resumo do Preço */}

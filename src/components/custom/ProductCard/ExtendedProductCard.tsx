@@ -31,7 +31,7 @@ import { useAuth } from "@/hooks/auth-hooks"
 interface ExtendedProductCardProps {
     product: ProductType
     onBack: () => void;
-    onNext: () => void;
+    onNext: (product: ProductType) => void;
 }
 
 const typeConfig = {
@@ -72,7 +72,7 @@ export default function ExtendedProductCard({
             return
         }
         console.log("Usuário autenticado -> Solicitar aluguel:", product.id)
-        onNext();
+        onNext(product);
     }
 
     const formatPrice = (price: number) => {
@@ -99,10 +99,10 @@ export default function ExtendedProductCard({
                     <div className="space-y-2">
                         <div className="flex gap-2 max-[430px]:flex-col max-[300px]:items-start">
                             <div className={`${config.color} flex items-center gap-1 p-1 rounded-full max-w-fit`}>
-                                <IconComponent className="h-3 w-3" />
+                                <IconComponent className="h-3 w-3 shrink-0" />
                                 {config.label}
                             </div>
-                            <div className="p-1 rounded-full border max-w-fit">
+                            <div className="p-1 rounded-full border max-w-fit truncate">
                                 {product.category}
                             </div>
                         </div>
@@ -110,7 +110,7 @@ export default function ExtendedProductCard({
                             {product.title}
                         </h2>
                         <p className="text-gray-600 flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
+                            <MapPin className="h-4 w-4 shrink-0" />
                             {product.owner.address.street}, {product.owner.address.number} -  {product.owner.address.neighborhood} - {product.owner.address.city}, {product.owner.address.state}
                         </p>
                     </div>
@@ -317,7 +317,7 @@ export default function ExtendedProductCard({
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
                                     <div className="flex items-center gap-2 text-gray-600">
-                                        <Clock className="h-4 w-4" />
+                                        <Clock className="h-4 w-4 shrink-0" />
                                         <span className="font-medium">Por hora</span>
                                     </div>
                                     <span className="font-semibold text-lg text-gray-900">{formatPrice(product.hourlyPrice)}</span>
@@ -325,7 +325,7 @@ export default function ExtendedProductCard({
 
                                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
                                     <div className="flex items-center gap-2 text-gray-600">
-                                        <Calendar className="h-4 w-4" />
+                                        <Calendar className="h-4 w-4 shrink-0" />
                                         <span className="font-medium">Por dia</span>
                                     </div>
                                     <span className="font-semibold text-gray-900">
