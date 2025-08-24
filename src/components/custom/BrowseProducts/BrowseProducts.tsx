@@ -45,8 +45,8 @@ export default function BrowseProducts() {
         const matchesSearchTerm = searchTerm
             ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
             : true;
-        const matchesCategory = category ? product.category === category : true;
-        const matchesType = type ? product.type === type : true;
+        const matchesCategory = category && category !== "ALL" ? product.category === category : true;
+        const matchesType = type && type !== "ALL" ? product.type === type : true;
 
         return matchesSearchTerm && matchesCategory && matchesType;
     })
@@ -81,6 +81,7 @@ export default function BrowseProducts() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectItem value="ALL">Todos</SelectItem>
                                     <SelectItem value="SPACE">Espaço</SelectItem>
                                     <SelectItem value="SERVICE">Serviço</SelectItem>
                                     <SelectItem value="EQUIPMENT">Equipamento</SelectItem>
@@ -93,6 +94,7 @@ export default function BrowseProducts() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectItem value="ALL">Todos</SelectItem>
                                     <SelectItem value="Sala de aula">Sala de aula</SelectItem>
                                     <SelectItem value="Auditório">Auditório</SelectItem>
                                     <SelectItem value="Laboratório">Laboratório</SelectItem>
