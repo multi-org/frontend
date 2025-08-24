@@ -159,6 +159,8 @@ const CardLogin: React.FC = () => {
                   placeholder="Seu E-mail"
                   autoComplete="email"
                   {...register('email')}
+                  className={errors.email ? 'border-red-500 focus:ring-red-500' : 'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'}
+
                 />
                 {errors.email && (
                   <p className="text-red-500 text-xs">
@@ -176,6 +178,7 @@ const CardLogin: React.FC = () => {
                     type={isVisible ? 'text' : 'password'}
                     autoComplete="current-password"
                     {...register('password')}
+                    className={errors.password ? 'border-red-500 focus:ring-red-500' :     'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'}
                   />
                   <button
                     onClick={handlePasswordVisibility}
