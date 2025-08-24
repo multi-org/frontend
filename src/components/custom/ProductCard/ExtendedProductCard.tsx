@@ -320,7 +320,12 @@ export default function ExtendedProductCard({
                                         <Clock className="h-4 w-4 shrink-0" />
                                         <span className="font-medium">Por hora</span>
                                     </div>
-                                    <span className="font-semibold text-lg text-gray-900">{formatPrice(product.hourlyPrice)}</span>
+                                    <span className="font-semibold text-lg text-gray-900">
+                                        {product.hourlyPrice > 0
+                                            ? formatPrice(product.hourlyPrice)
+                                            : "Indisponível"
+                                        }
+                                    </span>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">

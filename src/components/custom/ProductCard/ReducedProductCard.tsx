@@ -102,7 +102,10 @@ export default function ReducedProductCard({
                             <span className="text-sm font-medium">Por hora</span>
                         </div>
                         <span className="font-semibold text-gray-900">
-                            {formatPrice(product?.hourlyPrice ?? "...Carregando")}
+                            {product.hourlyPrice > 0
+                                ? formatPrice(product?.hourlyPrice ?? "")
+                                : "Indisponível"
+                            }
                         </span>
                     </div>
 

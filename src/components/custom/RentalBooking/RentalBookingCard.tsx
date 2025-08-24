@@ -58,7 +58,7 @@ export default function RentalBookingCard({
     const [endDate, setEndDate] = useState<Date>()
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
-    const [rentalType, setRentalType] = useState<"hora" | "dia">("dia")
+    const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA">("POR_DIA")
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
 
@@ -76,7 +76,7 @@ export default function RentalBookingCard({
     const calculateTotal = () => {
         if (!startDate || !endDate) return 0
 
-        if (rentalType === "dia") {
+        if (chargingType === "POR_DIA") {
             const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
             return diffDays * product.dailyPrice
@@ -103,9 +103,9 @@ export default function RentalBookingCard({
             productId: product.id,
             startDate,
             endDate,
-            startTime: rentalType === "hora" ? startTime : undefined,
-            endTime: rentalType === "hora" ? endTime : undefined,
-            rentalType,
+            startTime: chargingType === "POR_HORA" ? startTime : undefined,
+            endTime: chargingType === "POR_HORA" ? endTime : undefined,
+            chargingType,
             activityTitle,
             activityDescription,
             totalPrice: calculateTotal(),
@@ -116,7 +116,7 @@ export default function RentalBookingCard({
 
     const isFormValid = () => {
         const hasBasicInfo = startDate && endDate && activityTitle && activityDescription
-        const hasTimeInfo = rentalType === "dia" || (startTime && endTime)
+        const hasTimeInfo = chargingType === "POR_DIA" || (startTime && endTime)
         return hasBasicInfo && hasTimeInfo
     }
 
@@ -246,8 +246,8 @@ export default function RentalBookingCard({
                         <div className="space-y-2">
                             <Label>Tipo de Aluguel</Label>
                             <Select
-                                value={rentalType}
-                                onValueChange={(value: "hora" | "dia") => setRentalType(value)}
+                                value={chargingType}
+                                onValueChange={(value: "POR_HORA" | "POR_DIA") => setChargingType(value)}
                             >
                                 <SelectTrigger className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
                                     <SelectValue placeholder="Selecione o modelo de cobrança" />
@@ -305,7 +305,7 @@ export default function RentalBookingCard({
                         </div>
 
                         {/* Seleção de Horários (apenas se for por hora) */}
-                        {rentalType === "hora" && (
+                        {chargingType === "POR_HORA" && (
                             <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
                                 <div className="space-y-2">
                                     <Label>Horário de Início</Label>
@@ -379,7 +379,7 @@ export default function RentalBookingCard({
                             <div className="space-y-1 text-sm">
                                 <div className="flex justify-between">
                                     <span>Tipo:</span>
-                                    <span className="capitalize">{rentalType === "hora" ? "Por hora" : "Por dia"}</span>
+                                    <span className="capitalize">{chargingType === "POR_HORA" ? "Por hora" : "Por dia"}</span>
                                 </div>
                                 {startDate && endDate && (
                                     <div className="flex justify-between">
@@ -389,7 +389,7 @@ export default function RentalBookingCard({
                                         </span>
                                     </div>
                                 )}
-                                {rentalType === "hora" && startTime && endTime && (
+                                {chargingType === "POR_HORA" && startTime && endTime && (
                                     <div className="flex justify-between">
                                         <span>Horário:</span>
                                         <span>
