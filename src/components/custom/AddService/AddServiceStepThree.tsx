@@ -15,6 +15,7 @@ type AddServiceStepThreeProps = {
         category: string;
         images: File[];
         chargingModel: string;
+        discountPercentage?: number;
         hourlyPrice?: number;
         weekdayHourStart: string;
         weekdayHourEnd: string;
@@ -64,6 +65,8 @@ export default function AddServiceStepThree({
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2
                             })}`} />
+
+                        <SummaryItem label="Desconto do associado" value={`${data.discountPercentage}%`} />
 
                         <div className="flex flex-col gap-4">
                             {data.weekdayHourStart && data.weekdayHourEnd && (

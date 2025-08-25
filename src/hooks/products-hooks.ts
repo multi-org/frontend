@@ -50,6 +50,7 @@ export const useProducts = () => {
     category: string,
     images?: File[],
     chargingModel: string,
+    discountPercentage?: number,
     hourlyPrice?: number,
     dailyPrice?: number,
     weeklyAvailability: Record<string, {
