@@ -58,6 +58,16 @@ export default function BrowseProducts() {
         currentPage * productsPerPage
     )
 
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchTerm, category, type])
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(1)
+        }
+    }, [totalPages, currentPage])
+
     return (
         <>
             {bookingStep === 0 && (
@@ -184,7 +194,11 @@ export default function BrowseProducts() {
                                             onClick={() => setCurrentPage(page)}
                                             className={`px-3 py-1 ${page === currentPage ? "font-extrabold" : ""}`}
                                         >
-                                            <PaginationLink href="#">{page}</PaginationLink>
+                                            <PaginationLink
+                                                className={page === currentPage ? "bg-gray-100" : ""}
+                                                href="#">
+                                                {page}
+                                            </PaginationLink>
                                         </button>
                                     </PaginationItem>
                                 ))}

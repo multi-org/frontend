@@ -1,4 +1,4 @@
-import { Clock, Calendar, MapPin, Wrench, Users } from "lucide-react"
+import { Clock, Calendar, MapPin, Wrench, Users, TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ProductType } from "@/types/Product"
@@ -32,7 +32,11 @@ export default function ReducedProductCard({
 }: ReducedProductCardProps) {
 
     console.log("product.type recebido:", product?.type ?? "") // em teste
-    const config = typeConfig[product?.type ?? ""]
+    const config = typeConfig[product?.type as keyof typeof typeConfig] ?? {
+        label: "Indefinido",
+        icon: TriangleAlert,
+        color: "bg-gray-100 text-gray-800",
+    }
     const IconComponent = config.icon
 
     const handleRent = () => {

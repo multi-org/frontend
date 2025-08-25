@@ -104,7 +104,7 @@ export function Home() {
           </p>
           <Button
             className="mt-6 h-10 w-44 bg-yellowDark"
-            onClick={() => (window.location.href = '/produtos')}
+            onClick={() => (window.location.href = '/products')}
           >
             Comece agora
           </Button>
