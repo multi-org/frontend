@@ -130,7 +130,7 @@ export default function RentalBookingCard({
 
             <CardContent className="space-y-6">
                 {/* Resumo do Produto */}
-                <div className="flex max-[680px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="flex max-[725px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
                     <div className="relative flex items-center justify-center bg-gray-200 w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         {product?.imagesUrls?.length > 0 ? (
                             <img
@@ -161,7 +161,7 @@ export default function RentalBookingCard({
                             <MapPin className="h-3 w-3 shrink-0" />
                             {product?.owner?.address?.street ?? "...Carregando"}, {product?.owner?.address?.number ?? ""} - {product?.owner?.address?.neighborhood ?? ""} - {product?.owner?.address?.city ?? ""}, {product?.owner?.address?.state ?? ""}
                         </p>
-                        <div className="flex max-[300px]:flex-col gap-4 text-sm text-gray-600">
+                        <div className="flex max-[535px]:flex-col gap-4 text-sm text-gray-600">
                             {product.type === "SPACE" && (product.spaceProduct?.capacity || product.spaceProduct?.area) && (
                                 <>
                                     {product.spaceProduct.capacity && (
@@ -224,13 +224,22 @@ export default function RentalBookingCard({
                             )}
                         </div>
                     </div>
-                    <div className="text-right max-[680px]:text-left space-y-1">
+                    <div className="text-right max-[725px]:text-left space-y-1">
                         <p className="text-sm text-gray-600">
                             Por hora: {formatPrice(product.hourlyPrice)}
                         </p>
                         <p className="text-sm text-gray-600">
                             Por dia: {formatPrice(product.dailyPrice)}
                         </p>
+                        {product.discountPercentage && product.discountPercentage > 0 ? (
+                            <p className="text-sm text-green-600">
+                                Desconto de associado: {formatPrice(product.discountPercentage)}%
+                            </p>
+                        ) : (
+                            <p className="text-sm text-gray-600">
+                                Sem desconto para associado
+                            </p>
+                        )}
                     </div>
                 </div>
 

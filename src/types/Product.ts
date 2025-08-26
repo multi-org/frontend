@@ -72,6 +72,7 @@ export interface ProductType { // em teste
   category: string,
   imagesUrls: string[],
   chargingModel: string,
+  discountPercentage?: number,
   hourlyPrice: number,
   dailyPrice: number,
   spaceProduct?: {
@@ -99,7 +100,7 @@ export interface ProductType { // em teste
   }
 }
 
-export type GetProductsResponse = { // em teste
+export type GetProductsResponse = {
   success: boolean
   message: string
   data: ProductType[]

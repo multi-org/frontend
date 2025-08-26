@@ -13,7 +13,8 @@ import {
     PackageSearch,
     Layers,
     ListChecks,
-    Loader
+    Loader,
+    CircleDollarSign
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -336,6 +337,21 @@ export default function ExtendedProductCard({
                                     <span className="font-semibold text-gray-900">
                                         {product.dailyPrice
                                             ? formatPrice(product.dailyPrice)
+                                            : "Indisponível"
+                                        }
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg max-[300px]:flex-col">
+                                    <div className="flex items-center gap-2 text-gray-600">
+                                        <CircleDollarSign className={product.discountPercentage ? "h-4 w-4 shrink-0 text-green-600" : "h-4 w-4 shrink-0"} />
+                                        <span className={product.discountPercentage ?"font-medium text-green-600" : "font-medium"}>
+                                            Desconto de associado
+                                        </span>
+                                    </div>
+                                    <span className={product.discountPercentage ?"font-semibold text-green-600" : "font-semibold text-gray-900"}>
+                                        {product.discountPercentage && product.discountPercentage > 0
+                                            ? `${formatPrice(product.dailyPrice)}%`
                                             : "Indisponível"
                                         }
                                     </span>
