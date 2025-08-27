@@ -28,10 +28,10 @@ type companyRegisterRequestProps = {
 }
 
 const companyRegisterRequestSchema = z.object({
-    popularName: z.string().min(1, 'Nome da instituição é obrigatório.'),
-    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido"),
+    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
+    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
     description: z.string().min(1, 'Descrição é obrigatória.'),
-    cnpj: z.string().min(18, "CNPJ precisa ter 18 caracteres"),
+    cnpj: z.string().min(14, "CNPJ precisa ter 14 caracteres e ser válido"),
     zipCode: z.string().min(8, 'CEP precisa ter 8 números'),
     street: z.string().min(1, "Rua é pbrigatória"),
     number: z.string().min(1, "Número é obrigatóriio"),
@@ -76,9 +76,55 @@ export default function CompanyRegisterRequest({
     })
 
     const cep = useWatch({ control: form.control, name: 'zipCode' })
+    const cnpj = useWatch({ control: form.control, name: 'cnpj' })
+
+    useEffect(() => {
+        const InstitutionCNPJ = cnpj?.replace(/\D/g, '')
+
+        if (!InstitutionCNPJ) {
+            form.reset({
+                popularName: "",
+                legalName: "",
+                description: "",
+            })
+            return
+        }
+
+        if (InstitutionCNPJ?.length !== 14) return
+
+        fetch(`https://brasilapi.com.br/api/cnpj/v1/${InstitutionCNPJ}`)
+            .then(async (res) => {
+                if (!res.ok) {
+                    form.reset({
+                        cnpj: "",
+                    })
+                    return
+                }
+                return res.json()
+            })
+            .then((data) => {
+                if (data.erro) return
+                form.setValue("popularName", data.nome_fantasia || '')
+                form.setValue("legalName", data.razao_social || '')
+                form.setValue("description", data.cnae_fiscal_descricao || '')
+            })
+            .catch((err) => console.error("Erro ao buscar CNPJ:", err))
+    }, [cnpj, form])
 
     useEffect(() => {
         const cleanCep = cep?.replace(/\D/g, '')
+
+        if (!cleanCep) {
+            form.reset({
+                street: "",
+                complement: "",
+                neighborhood: "",
+                city: "",
+                state: "",
+            })
+            return
+        }
+
         if (cleanCep?.length !== 8) return
 
         fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
@@ -318,6 +364,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: Av. Getúlio Vargas"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -356,7 +403,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
-                                                                    placeholder="Ex.: Casa"
+                                                                    placeholder="Ex.: Prédio A, sala 101"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -375,6 +422,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: Centro"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -391,6 +439,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: Patos"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -409,6 +458,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: PB"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -425,6 +475,7 @@ export default function CompanyRegisterRequest({
                                                             <FormControl>
                                                                 <Input
                                                                     className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: Brasil"
                                                                     {...field} />
                                                             </FormControl>
                                                         </FormItem>
@@ -439,7 +490,9 @@ export default function CompanyRegisterRequest({
                                                     name="email"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Email</FormLabel>
+                                                            <FormLabel className="text-black">
+                                                                Email
+                                                            </FormLabel>
                                                             <FormControl>
                                                                 <Input
                                                                     className="focus-visible:ring-blueLight"
@@ -457,7 +510,9 @@ export default function CompanyRegisterRequest({
                                                     name="phone"
                                                     render={({ field }) => (
                                                         <FormItem>
-                                                            <FormLabel>Telefone</FormLabel>
+                                                            <FormLabel className="text-black">
+                                                                Telefone
+                                                            </FormLabel>
                                                             <FormControl>
                                                                 <MaskedInput
                                                                     className="focus-visible:ring-blueLight"
