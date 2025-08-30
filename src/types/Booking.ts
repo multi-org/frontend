@@ -1,0 +1,22 @@
+export interface BookingType {
+    productId: string,
+    productTitle: string,
+    productAddress: {
+        street: string,
+        number: string,
+        neighborhood: string,
+        city: string,
+        state: string,
+    },
+    productType: "SPACE" | "EQUIPMENT" | "SERVICE",
+    productCategory: string,
+    productImage: string[],
+    startDate: Date | undefined,
+    endDate: Date | undefined,
+    startTime: string | undefined,
+    endTime: string | undefined,
+    chargingType: "POR_HORA" | "POR_DIA" | null,
+    activityTitle: string,
+    activityDescription: string,
+    totalAmount: number,
+}

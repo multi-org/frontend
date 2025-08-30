@@ -12,10 +12,11 @@ import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ProductType } from "@/types/Product"
+import { BookingType } from "@/types/Booking"
 
 interface RentalBookingCardProps {
     product: ProductType
-    onPayment: (bookingData: any) => void
+    onPayment: (bookingData: BookingType) => void
     onBack: () => void;
     onNext: () => void;
 }
@@ -49,7 +50,7 @@ const generateTimeSlots = () => {
 
 export default function RentalBookingCard({
     product,
-    onPayment = (data: any) => console.log("Dados do pagamento:", data),
+    onPayment,
     onBack,
     onNext,
 }: RentalBookingCardProps) {
@@ -58,7 +59,7 @@ export default function RentalBookingCard({
     const [endDate, setEndDate] = useState<Date>()
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
-    const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA">("POR_DIA")
+    const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA" | null>(null)
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
 
@@ -101,6 +102,17 @@ export default function RentalBookingCard({
     const handlePayment = () => {
         const bookingData = {
             productId: product.id,
+            productTitle: product.title,
+            productAddress: {
+                street: product.owner.address.street,
+                number: product.owner.address.number,
+                neighborhood: product.owner.address.neighborhood,
+                city: product.owner.address.city,
+                state: product.owner.address.state,
+            },
+            productType: product.type,
+            productCategory: product.category,
+            productImage: product.imagesUrls,
             startDate,
             endDate,
             startTime: chargingType === "POR_HORA" ? startTime : undefined,
@@ -108,9 +120,10 @@ export default function RentalBookingCard({
             chargingType,
             activityTitle,
             activityDescription,
-            totalPrice: calculateTotal(),
+            totalAmount: calculateTotal(),
         }
         onPayment(bookingData);
+        console.log(bookingData); // em teste
         onNext();
     }
 
@@ -226,20 +239,23 @@ export default function RentalBookingCard({
                     </div>
                     <div className="text-right max-[725px]:text-left space-y-1">
                         <p className="text-sm text-gray-600">
-                            Por hora: {formatPrice(product.hourlyPrice)}
+                            {product.hourlyPrice > 0
+                                ? `Por hora: ${formatPrice(product.hourlyPrice)}`
+                                : "Preço por hora Indisponível"
+                            }
                         </p>
                         <p className="text-sm text-gray-600">
-                            Por dia: {formatPrice(product.dailyPrice)}
+                            {product.dailyPrice > 0
+                                ? `Por dia: ${formatPrice(product.dailyPrice)}`
+                                : "Preço por dia Indisponível"
+                            }
                         </p>
-                        {product.discountPercentage && product.discountPercentage > 0 ? (
-                            <p className="text-sm text-green-600">
-                                Desconto de associado: {formatPrice(product.discountPercentage)}%
-                            </p>
-                        ) : (
-                            <p className="text-sm text-gray-600">
-                                Sem desconto para associado
-                            </p>
-                        )}
+                        <p className={product.discountPercentage ? "text-sm text-green-600" : "text-sm text-gray-600"}>
+                            {product.discountPercentage && product.discountPercentage > 0
+                                ? `Desconto de associado: ${formatPrice(product.discountPercentage)}%`
+                                : "Sem desconto para associado"
+                            }
+                        </p>
                     </div>
                 </div>
 
@@ -255,15 +271,19 @@ export default function RentalBookingCard({
                         <div className="space-y-2">
                             <Label>Tipo de Aluguel</Label>
                             <Select
-                                value={chargingType}
+                                value={chargingType ?? undefined}
                                 onValueChange={(value: "POR_HORA" | "POR_DIA") => setChargingType(value)}
                             >
                                 <SelectTrigger className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
-                                    <SelectValue placeholder="Selecione o modelo de cobrança" />
+                                    <SelectValue placeholder="Selecione a forma de aluguel" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="dia">Por dia</SelectItem>
-                                    <SelectItem value="hora">Por hora</SelectItem>
+                                    {product.dailyPrice && product.dailyPrice > 0 &&
+                                        <SelectItem value="POR_DIA">Por dia</SelectItem>
+                                    }
+                                    {product.hourlyPrice && product.hourlyPrice > 0 &&
+                                        <SelectItem value="POR_HORA">Por hora</SelectItem>
+                                    }
                                 </SelectContent>
                             </Select>
                         </div>

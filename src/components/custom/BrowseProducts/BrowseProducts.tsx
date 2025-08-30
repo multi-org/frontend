@@ -21,6 +21,7 @@ import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
 import { Search } from 'lucide-react'
 import { BookingConfirmationCard, PaymentCard, RentalBookingCard } from '../RentalBooking'
+import { BookingType } from '@/types/Booking'
 
 export default function BrowseProducts() {
 
@@ -30,6 +31,7 @@ export default function BrowseProducts() {
     const [category, setCategory] = useState<string>('')
     const [bookingStep, setBookingStep] = useState<number>(0)
     const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
+    const [rentalBookingData, setRentalBookingData] = useState<BookingType>(null as any);
     const [currentPage, setCurrentPage] = useState(1)
     const productsPerPage = 6
 
@@ -233,7 +235,10 @@ export default function BrowseProducts() {
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <RentalBookingCard
                         product={selectedProduct}
-                        onPayment={(data: any) => console.log("Dados do pagamento:", data)}
+                        onPayment={(booking) => {
+                            setRentalBookingData(booking)
+                            console.log("Dados do pagamento:", booking)
+                        }}
                         onBack={() => setBookingStep(1)}
                         onNext={() => setBookingStep(3)}
                     />
@@ -242,20 +247,7 @@ export default function BrowseProducts() {
             {bookingStep === 3 && (
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <PaymentCard
-                        bookingData={{
-                            productId: "ESP-001",
-                            productName: "Auditório Premium",
-                            productType: "espaco",
-                            productCategory: "Auditório",
-                            productImage: "/src/assets/multi-prod-serv.png",
-                            productLocation: "Campus Central - São Paulo",
-                            startDate: new Date(2024, 11, 20),
-                            endDate: new Date(2024, 11, 22),
-                            rentalType: "dia",
-                            activityTitle: "Palestra sobre Inovação Tecnológica",
-                            activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
-                            totalPrice: 3600.0,
-                        }}
+                        bookingData={rentalBookingData}
                         onBack={() => setBookingStep(1)}
                         onNext={() => setBookingStep(4)}
                     />

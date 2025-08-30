@@ -335,7 +335,7 @@ export default function ExtendedProductCard({
                                         <span className="font-medium">Por dia</span>
                                     </div>
                                     <span className="font-semibold text-gray-900">
-                                        {product.dailyPrice
+                                        {product.dailyPrice > 0
                                             ? formatPrice(product.dailyPrice)
                                             : "Indisponível"
                                         }
@@ -349,9 +349,9 @@ export default function ExtendedProductCard({
                                             Desconto de associado
                                         </span>
                                     </div>
-                                    <span className={product.discountPercentage ?"font-semibold text-green-600" : "font-semibold text-gray-900"}>
+                                    <span className={product.discountPercentage ? "font-semibold text-green-600" : "font-semibold text-gray-900"}>
                                         {product.discountPercentage && product.discountPercentage > 0
-                                            ? `${formatPrice(product.dailyPrice)}%`
+                                            ? `${formatPrice(product.discountPercentage)}%`
                                             : "Indisponível"
                                         }
                                     </span>
