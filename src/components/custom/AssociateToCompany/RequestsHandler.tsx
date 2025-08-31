@@ -10,7 +10,6 @@ import CompanyRegisterForm from "./CompanyRegisterForm";
 import { Button } from "@/components/ui/button";
 import { SquarePen } from "lucide-react";
 import { useEffect, useState } from "react";
-import LegalResponsibleUserForm from "./LegalResponsibleUserForm";
 import AssociateToCompanyCard from "./AssociateToCompanyCard";
 import LegalResponsibleUserRequestCard from "./LegalResponsibleUserRequestCard";
 import { useCompanies } from "@/hooks/companies-hooks";
@@ -32,12 +31,15 @@ export default function RequestsHandler({
     } = useCompanies()
     const {
         associateToCompanyRequests,
+        legalResponsibleUserRequests,
         getAssociateToCompanyRequests,
+        getLegalResponsibleUserRequests,
     } = useAssociateToCompany()
 
     useEffect(() => {
         getCompanyRegisterRequests()
         getAssociateToCompanyRequests()
+        getLegalResponsibleUserRequests()
     }, [])
 
     return (
@@ -71,11 +73,11 @@ export default function RequestsHandler({
                     <TabsContent value="associate">
                         {associateToCompanyRequests.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2">
-                                {associateToCompanyRequests.map((request) => {
+                                {associateToCompanyRequests.map((associateToCompanyRequest) => {
                                     return (
                                         <AssociateToCompanyCard
-                                            key={request.customisedId}
-                                            associateToCompanyRequest={request}
+                                            key={associateToCompanyRequest.customisedId}
+                                            associateToCompanyRequest={associateToCompanyRequest}
                                         />
                                     )
                                 })}
@@ -103,12 +105,12 @@ export default function RequestsHandler({
                                 </div>
                                 {companyRegisterRequests.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2">
-                                        {companyRegisterRequests.map((request) => {
+                                        {companyRegisterRequests.map((companyRegisterRequest) => {
                                             // const uniqueKey = `${request.cnpj}-${request.email}`;
                                             return (
                                                 <CompanyRegisterRequestCard
-                                                    key={request.customisedId}
-                                                    company={request}
+                                                    key={companyRegisterRequest.customisedId}
+                                                    company={companyRegisterRequest}
                                                 />
                                             )
                                         })}
@@ -125,20 +127,28 @@ export default function RequestsHandler({
                         {companyRegisterStep === 1 && (
                             <CompanyRegisterForm
                                 onBack={() => setCompanyRegisterStep(0)}
-                                onNext={() => setCompanyRegisterStep(2)}
-                            />
-                        )}
-                        {companyRegisterStep === 2 && (
-                            <LegalResponsibleUserForm
-                                onBack={() => setCompanyRegisterStep(0)}
                             />
                         )}
                     </TabsContent>
                     <TabsContent value="legalResponsibleUser">
-                        <div className="grid grid-cols-1 sm:grid-cols-2">
-                            <LegalResponsibleUserRequestCard />
-                            <LegalResponsibleUserRequestCard />
-                        </div>
+                        {legalResponsibleUserRequests.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2">
+                                {legalResponsibleUserRequests.map((legalResponsibleUserRequest) => {
+                                    return (
+                                        <LegalResponsibleUserRequestCard
+                                            key={legalResponsibleUserRequest.customisedId}
+                                            legalResponsibleUserRequest={legalResponsibleUserRequest}
+                                        />
+                                    )
+                                })}
+                            </div>
+                        ) : (
+                            <div className="flex justify-center w-full text-center py-4">
+                                <p>
+                                    Nenhuma solicitação de responsável legal por instituição no momemnto
+                                </p>
+                            </div>
+                        )}
                     </TabsContent>
                 </Tabs>
             </div>

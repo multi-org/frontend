@@ -48,15 +48,21 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
         } = stepTwoData;
 
         // Montar disponibilidade semanal no formato esperado
-        const weeklyAvailability = {
+        const weeklyAvailability: Record<string, { start: string; end: string }> = {
             monday: { start: weekdayHourStart, end: weekdayHourEnd },
             tuesday: { start: weekdayHourStart, end: weekdayHourEnd },
             wednesday: { start: weekdayHourStart, end: weekdayHourEnd },
             thursday: { start: weekdayHourStart, end: weekdayHourEnd },
             friday: { start: weekdayHourStart, end: weekdayHourEnd },
-            saturday: { start: saturdayHourStart ?? "", end: saturdayHourEnd ?? "" },
-            sunday: { start: sundayHourStart ?? "", end: sundayHourEnd ?? "" },
         };
+
+        if (saturdayHourStart && saturdayHourEnd) {
+            weeklyAvailability.saturday = { start: saturdayHourStart, end: saturdayHourEnd };
+        }
+
+        if (sundayHourStart && sundayHourEnd) {
+            weeklyAvailability.sunday = { start: sundayHourStart, end: sundayHourEnd };
+        }
 
         const {
             capacity,
@@ -77,7 +83,7 @@ export default function AddSpaceStepZero({ onChosenProduct }: AddSpaceStepZeroPr
             hourlyPrice: restStepTwo.hourlyPrice ?? 0,
             dailyPrice: restStepTwo.dailyPrice ?? 0,
             weeklyAvailability,
-            imagesFiles: stepOneData?.imagesFiles as File, // garante que image é do tipo File
+            images: stepOneData?.images as File[], // garante que image é do tipo File
         };
 
         console.log("Dados enviados:", fullData);

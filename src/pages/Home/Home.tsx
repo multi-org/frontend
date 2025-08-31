@@ -7,23 +7,16 @@ import {
   HammerIcon,
   CheckedClipboard,
 } from '@/components/custom-icons'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel'
-import { faqCarouselItems } from './Home.helpers'
 import { Footer } from '@/components/custom/Footer'
-import { FrequentlyAskedQuestions } from '@/components/custom/AskedQuestions'
+import { AskedQuestion } from '@/components/custom/AskedQuestions'
+import { Accordion } from '@/components/ui/accordion'
 
 
 export function Home() {
   return (
     <>
       <Header />
-      <div className="flex w-full flex-col items-center">
+      <div className="flex w-full flex-col items-center overflow-x-hidden">
         {/* HERO */}
         <div
           id="home"
@@ -32,7 +25,9 @@ export function Home() {
           <div className="flex flex-col items-center justify-center text-grayLight text-center">
             <h1 className="text-5xl font-bold sm:text-6xl">MULTI</h1>
             <h1 className="text-2xl font-bold sm:text-3xl">UEPB</h1>
-            <p className="mt-6 w-64 text-sm">Um breve slogan do projeto</p>
+            <p className="mt-6 text-lg">
+              Gestão de recursos simples e acessível para instituições públicas e privadas
+            </p>
           </div>
         </div>
 
@@ -111,7 +106,7 @@ export function Home() {
           </p>
           <Button
             className="mt-6 h-10 w-44 bg-yellowDark"
-            onClick={() => (window.location.href = '/produtos')}
+            onClick={() => (window.location.href = '/products')}
           >
             Comece agora
           </Button>
@@ -119,16 +114,21 @@ export function Home() {
 
         {/* FAQ */}
         <div id="faq" className="mb-28 mt-20 px-4 pb-20  flex flex-col items-center">
-          
-            <div id="faq" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
-
-
-          <FrequentlyAskedQuestions onNext={() => console.log("Abrir formulário")} />
-        </div>
-
-
-
-
+          <div id="faq" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
+            <h1 className="text-3xl font-bold text-center">
+              Perguntas frequentes
+            </h1>
+            <div className="m-16 p-8 bg-gray-100 rounded-lg">
+              <Accordion
+                type="single"
+                collapsible
+                className="w-full"
+                defaultValue="item-1"
+              >
+                <AskedQuestion />
+              </Accordion>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />

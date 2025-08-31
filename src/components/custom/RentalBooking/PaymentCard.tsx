@@ -6,42 +6,26 @@ import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-
-interface BookingData {
-    productId: string
-    productName: string
-    productType: "espaco" | "equipamento" | "servico"
-    productCategory: string
-    productImage: string
-    productLocation?: string
-    startDate: Date
-    endDate: Date
-    startTime?: string
-    endTime?: string
-    rentalType: "hora" | "dia"
-    activityTitle: string
-    activityDescription: string
-    totalPrice: number
-}
+import { BookingType } from "@/types/Booking"
 
 interface PaymentCardProps {
-    bookingData: BookingData
-    onNext: () => void
+    bookingData: BookingType
+    onNext: (bookingData: BookingType) => void
     onBack: () => void
 }
 
-const tipoConfig = {
-    espaco: {
+const typeConfig = {
+    SPACE: {
         label: "Espaço",
         icon: MapPin,
         color: "bg-blue-100 text-blue-800",
     },
-    equipamento: {
+    EQUIPMENT: {
         label: "Equipamento",
         icon: Wrench,
         color: "bg-green-100 text-green-800",
     },
-    servico: {
+    SERVICE: {
         label: "Serviço",
         icon: Users,
         color: "bg-purple-100 text-purple-800",
@@ -49,20 +33,7 @@ const tipoConfig = {
 }
 
 export default function PaymentCard({
-    bookingData = {
-        productId: "ESP-001",
-        productName: "Auditório Premium",
-        productType: "espaco",
-        productCategory: "Auditório",
-        productImage: "/placeholder.svg?height=80&width=80",
-        productLocation: "Campus Central - São Paulo",
-        startDate: new Date(2024, 11, 20),
-        endDate: new Date(2024, 11, 22),
-        rentalType: "dia",
-        activityTitle: "Palestra sobre Inovação Tecnológica",
-        activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
-        totalPrice: 3600.0,
-    },
+    bookingData,
     onNext,
     onBack,
 }: PaymentCardProps) {
@@ -71,7 +42,7 @@ export default function PaymentCard({
     const [pixCopied, setPixCopied] = useState(false)
     const [paymentStatus, setPaymentStatus] = useState<"pending" | "checking" | "confirmed">("pending")
 
-    const config = tipoConfig[bookingData.productType]
+    const config = typeConfig[bookingData?.productType]
     const IconComponent = config.icon
 
     // Código PIX simulado (normalmente viria da API de pagamento)
@@ -83,6 +54,14 @@ export default function PaymentCard({
             style: "currency",
             currency: "BRL",
         }).format(price)
+    }
+
+    const calculateDiscount = (percentage: number) => {
+        return (bookingData.totalAmount * percentage) / 100
+    }
+
+    const calculateFinalAmount = (price: number, percentage: number) => {
+        return price - calculateDiscount(percentage)
     }
 
     const formatTime = (seconds: number) => {
@@ -101,7 +80,7 @@ export default function PaymentCard({
 
     const onPaymentConfirmed = () => {
         console.log("Pagamento confirmado");
-        onNext();
+        onNext(bookingData);
     }
 
     const copyPixCode = async () => {
@@ -171,9 +150,9 @@ export default function PaymentCard({
                     <div className="flex gap-4 max-[400px]:flex-col">
                         <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                                src={bookingData.productImage || "/placeholder.svg"}
-                                alt={bookingData.productName}
-                                className="object-cover h-full"
+                                src={bookingData?.productImage[0] || "/placeholder.svg"}
+                                alt={bookingData?.productTitle}
+                                className="object-cover h-full w-full"
                             />
                         </div>
                         <div className="flex-1 space-y-2">
@@ -182,15 +161,13 @@ export default function PaymentCard({
                                     <IconComponent className="h-3 w-3" />
                                     {config.label}
                                 </div>
-                                <div className="border p-1 rounded-full">{bookingData.productCategory}</div>
+                                <div className="border p-1 rounded-full">{bookingData?.productCategory}</div>
                             </div>
-                            <h4 className="font-semibold">{bookingData.productName}</h4>
-                            {bookingData.productLocation && (
-                                <p className="text-sm text-gray-600 flex items-center gap-1">
-                                    <MapPin className="h-3 w-3 shrink-0" />
-                                    {bookingData.productLocation}
-                                </p>
-                            )}
+                            <h4 className="font-semibold">{bookingData?.productTitle}</h4>
+                            <p className="text-sm text-gray-600 flex items-center gap-1">
+                                <MapPin className="h-3 w-3 shrink-0" />
+                                {bookingData?.productAddress?.street}, {bookingData?.productAddress?.number} - {bookingData?.productAddress?.neighborhood} - {bookingData?.productAddress?.city}, {bookingData?.productAddress?.state}
+                            </p>
                         </div>
                     </div>
 
@@ -199,13 +176,19 @@ export default function PaymentCard({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                             <p className="font-medium text-gray-700">Atividade:</p>
-                            <p className="text-gray-600">{bookingData.activityTitle}</p>
+                            <p className="text-gray-600">{bookingData?.activityTitle}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium text-gray-700">Descrição:</p>
+                            <p className="text-gray-600">{bookingData?.activityDescription}</p>
                         </div>
                         <div>
                             <p className="font-medium text-gray-700">Período:</p>
                             <p className="text-gray-600">
-                                {format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                                {format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}
+                                {bookingData.startDate && bookingData.endDate
+                                    ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
+                                    : "Data não definida"
+                                }
                             </p>
                             {bookingData.startTime && bookingData.endTime && (
                                 <p className="text-gray-600">
@@ -216,10 +199,36 @@ export default function PaymentCard({
                     </div>
 
                     <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
-                        <span className="font-semibold">Total a Pagar:</span>
+                        <span className="font-semibold">Valor total:</span>
                         <span className="text-xl font-medium text-green-600">
-                            {formatPrice(bookingData.totalPrice)}
+                            {formatPrice(bookingData?.totalAmount)}
                         </span>
+                    </div>
+                    {bookingData?.productDiscount > 0 ? (
+                        <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                            <span className="font-semibold">Desconto:</span>
+                            <span className="text-xl font-medium text-green-600">
+                                - {calculateDiscount(bookingData?.productDiscount)}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                            <span className="font-semibold">Desconto:</span>
+                            <span className="font-semibold">Sem desconto</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                        <span className="font-semibold">Valor final:</span>
+                        {bookingData?.totalAmount > 0 && bookingData?.productDiscount > 0 ?
+                            (
+                                <span className="text-xl font-medium text-green-600">
+                                    {calculateFinalAmount(bookingData?.totalAmount, bookingData?.productDiscount)}
+                                </span>
+                            ) : (
+                                <span className="text-xl font-medium text-green-600">
+                                    {formatPrice(bookingData?.totalAmount)}
+                                </span>
+                            )}
                     </div>
                 </div>
 

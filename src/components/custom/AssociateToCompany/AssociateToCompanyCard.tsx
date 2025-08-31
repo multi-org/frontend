@@ -48,16 +48,16 @@ export default function AssociateToCompanyCard({
             requiredAt,
             ...associateToCompanyRequestData
         } = associateToCompanyRequest
+        console.log("Dados enviados:", associateToCompanyRequestData) //teste temporário
         try {
             const result = await confirmAssociateToCompanyRequest(associateToCompanyRequestData)
             if (result) {
                 console.log("Solicitação de associação com instituição aprovada!")
-                console.log("Dados enviados:", associateToCompanyRequestData) //teste temporário
                 toast({
                     description: (
                         <div className="flex items-center gap-2">
                             <CircleCheck className="text-white" size={20} />
-                            Instituição cadastrada com sucesso
+                            Associação com instituição cadastrada com sucesso
                         </div>
                     ),
                     variant: 'default',
@@ -125,7 +125,7 @@ export default function AssociateToCompanyCard({
         <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
             <Card className="w-full max-w-2xl mx-auto overflow-hidden">
                 <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between max-[400px]:flex-col">
+                    <div className="flex items-center justify-between max-[950px]:flex-col">
                         <div className="flex items-center gap-2">
                             <SquareUser className="h-5 w-5 text-blueDark shrink-0" />
                             <CardTitle
@@ -163,7 +163,7 @@ export default function AssociateToCompanyCard({
                                     Nome
                                 </label>
                                 <p
-                                    className="text-sm text-gray-900">
+                                    className="text-sm text-gray-900 sm:truncate">
                                     {/* João Silva */}
                                     {associateToCompanyRequest?.userId?.name ?? "...Carregando"}
                                 </p>
@@ -187,7 +187,7 @@ export default function AssociateToCompanyCard({
                                 <p
                                     className="text-sm text-gray-900">
                                     {/* Universidade Estadual da Paraíba - UEPB */}
-                                    {associateToCompanyRequest?.companyId?.name ?? "...Carregando"}
+                                    {associateToCompanyRequest?.companyId?.legalName ?? "...Carregando"}
                                 </p>
                             </div>
                             <div className="space-y-1">
@@ -253,7 +253,10 @@ export default function AssociateToCompanyCard({
                             onClick={handleReject}
                             className="bg-red-600 hover:bg-red-500 text-grayLight"
                         >
-                            Confirmar
+                            {loading
+                                ? <Loader />
+                                : "Confirmar"
+                            }
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

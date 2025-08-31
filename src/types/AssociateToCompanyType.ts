@@ -11,7 +11,7 @@ export interface AssociateToCompanyType {
     companyId: {
         alert: string,
         id: string,
-        name: string,
+        legalName: string,
         status: string,
     },
     documentUrl: string,

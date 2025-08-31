@@ -28,10 +28,13 @@ type AddServiceStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addServiceStepTwoSchema>
 
-const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
-
 const addServiceStepTwoSchema = z.object({
-    pricePerHour: z.number().optional(),
+    chargingModel: z.enum(['POR_HORA']),
+    discountPercentage: z.number()
+        .min(1, "Porcentagem de desconto deve ser maior que 1")
+        .max(100, "O valor máximo de desconte não deve ser maior que 100%")
+        .optional(),
+    hourlyPrice: z.number().optional(),
     weekdayHourStart: z.string().min(1),
     weekdayHourEnd: z.string().min(1),
     saturdayHourStart: z.string().optional(),
@@ -50,8 +53,8 @@ const addServiceStepTwoSchema = z.object({
         const end = data[endKey]
 
         if (start && end) {
-            const startNum = hourStringToNumber(start)
-            const endNum = hourStringToNumber(end)
+            const startNum = start
+            const endNum = end
 
             if (startNum >= endNum) {
                 ctx.addIssue({
@@ -62,6 +65,15 @@ const addServiceStepTwoSchema = z.object({
             }
         }
     })
+
+    // Validação de preços
+    if (data.chargingModel === "POR_HORA" && data.hourlyPrice === undefined) {
+        ctx.addIssue({
+            path: ["hourlyPrice"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por hora",
+        })
+    }
 })
 
 export default function AddServiceStepTwo({
@@ -73,7 +85,9 @@ export default function AddServiceStepTwo({
 
     const form = useForm<z.infer<typeof addServiceStepTwoSchema>>({
         resolver: zodResolver(addServiceStepTwoSchema),
-        defaultValues: {},
+        defaultValues: {
+            chargingModel: 'POR_HORA',
+        },
     })
 
     function onSubmit(data: z.infer<typeof addServiceStepTwoSchema>) {
@@ -112,7 +126,7 @@ export default function AddServiceStepTwo({
                                     <div className="grid gap-3">
                                         <FormField
                                             control={form.control}
-                                            name="pricePerHour"
+                                            name="hourlyPrice"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="text-grayLight">Preço por hora</FormLabel>
@@ -120,6 +134,31 @@ export default function AddServiceStepTwo({
                                                         <Input
                                                             className="text-black focus-visible:ring-blueLight"
                                                             placeholder="Ex.: R$ 50"
+                                                            type="number"
+                                                            value={field.value ?? ""}
+                                                            onChange={(e) =>
+                                                                field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value))
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="discountPercentage"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">
+                                                        Desconto do associado (%)
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-orangeLight"
+                                                            placeholder="Ex.: 10%"
                                                             type="number"
                                                             value={field.value ?? ""}
                                                             onChange={(e) =>
@@ -151,7 +190,11 @@ export default function AddServiceStepTwo({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>

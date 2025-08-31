@@ -19,14 +19,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { PDFUploader } from "../PDFUploader"
-import { ArrowLeft, CircleCheck, Search } from "lucide-react"
+import { ArrowLeft, CircleCheck, CircleX, Loader, Search } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { MaskedInput } from "../MaskedInput.tsx"
 import { maskCPF, maskPhone } from "@/utils/masks.ts"
 import { useEffect, useState } from "react"
 import { useCompanies } from "@/hooks/companies-hooks.ts"
 import { debounce } from "@/utils/debounce.ts"
-import { useLegalResponsibleUser } from "@/hooks/LegalResponsibleUser-hooks.ts"
+import { useAssociateToCompany } from "@/hooks/associateToCompany-hooks.ts"
 
 type InstitutionOption = {
     id: string
@@ -73,8 +73,8 @@ export default function LegalResponsibleUserRequest({
     ...props
 }: legalResponsibleUserRequestProps) {
 
-    const { getCompanies, companies } = useCompanies()
-    const { createLegalResponsibleUserRequest, error, loading} = useLegalResponsibleUser()
+    const { getCompanies } = useCompanies()
+    const { createResponsibleUser, loading } = useAssociateToCompany()
     const [query, setQuery] = useState("")
     const [filteredInstitutions, setFilteredInstitutions] = useState<InstitutionOption[]>([])
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
@@ -121,51 +121,73 @@ export default function LegalResponsibleUserRequest({
     const onSubmit = async (data: z.infer<typeof legalResponsibleUserRequestSchema>) => {
         if (!selectedCompanyId) {
             toast({
-                title: "Selecione uma instituição válida.",
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        Selecione uma instituição válida.
+                    </div>
+                ),
                 variant: "destructive"
             });
             return;
         }
         if (!data.document || !Array.isArray(data.document) || data.document.length !== 1) {
             toast({
-                title: "Você deve enviar 1 documento PDF.",
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        Você deve enviar 1 documento PDF.
+                    </div>
+                ),
                 variant: "destructive"
             });
             return;
         }
         const finalData = {
-            name: data.name,
             userCpf: data.userCpf,
-            email: data.email,
-            phoneNumber: data.phoneNumber,
-            companyName: data.companyName,
-            companyId: selectedCompanyId,
-            position: data.position,
             document: data.document[0] as File,
+            userId: {
+                name: data.name,
+                phoneNumber: data.phoneNumber,
+            },
+            companyId: {
+                id: selectedCompanyId,
+                legalName: data.companyName,
+            },
+            position: data.position,
         };
         try {
             console.log("dados enviados:", finalData)
-            const result = await createLegalResponsibleUserRequest(finalData)
+            const result = await createResponsibleUser(finalData)
             console.log("Resposta da requisição:", result)
+            if (result) {
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Solicitação de usuário responsável legal enviada com sucesso
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                });
+                form.reset();
+            }
         } catch (err) {
-
+            const message = err instanceof Error ? err.message : "Erro inesperado"
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
+                variant: 'destructive'
+            });
         }
-        console.log("Dados enviados:", data)
-        form.reset();
-        toast({
-            description: (
-                <div className="flex items-center gap-2">
-                    <CircleCheck className="text-white" size={20} />
-                    Solicitação de associação enviada com sucesso
-                </div>
-            ),
-            variant: 'default',
-            style: {
-                backgroundColor: "#4E995E",
-                color: "#FFFFFF",
-            },
-        })
-        form.reset();
     }
 
     return (
@@ -356,7 +378,10 @@ export default function LegalResponsibleUserRequest({
                                             </div>
                                         </div>
                                         <Button type="submit" className="w-full bg-blueNormal hover:bg-blueLight">
-                                            Prosseguir
+                                            {loading
+                                                ? <Loader className="animate-spin" />
+                                                : "Prosseguir"
+                                            }
                                         </Button>
                                     </div>
                                     <div className="flex justify-end text-center text-sm ">

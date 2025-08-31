@@ -10,12 +10,14 @@ import { Loader } from "lucide-react";
 type AddSpaceStepThreeProps = {
     data: {
         title: string;
+        companyName: string,
         description: string;
         capacity: number;
         area: number;
         category: string;
-        imagesFiles: File[];
+        images: File[];
         chargingModel: string;
+        discountPercentage?: number;
         hourlyPrice?: number;
         dailyPrice?: number;
         weekdayHourStart: string;
@@ -54,6 +56,7 @@ export default function AddSpaceStepThree({
 
                     <div className="grid gap-4 text-grayLight">
                         <SummaryItem label="Título" value={data.title} />
+                        <SummaryItem label="Instituição" value={data.companyName} />
                         <SummaryItem label="Descrição" value={data.description} />
                         <SummaryItem label="Capacidade" value={`${data.capacity} pessoas`} />
                         <SummaryItem label="Área (m²)" value={`${data.area} m²`} />
@@ -77,6 +80,8 @@ export default function AddSpaceStepThree({
                                 })}`} />
                         ) : null}
 
+                        <SummaryItem label="Desconto do associado" value={`${data.discountPercentage}%`} />
+
                         <div className="flex flex-col gap-4">
                             {data.weekdayHourStart && data.weekdayHourEnd && (
                                 <SummaryItem label="Seg à Sex" value={`${data.weekdayHourStart} às ${data.weekdayHourEnd}`} />
@@ -89,7 +94,7 @@ export default function AddSpaceStepThree({
                             )}
                         </div>
 
-                        <SummaryItem label="Imagens" value={`${data.imagesFiles?.length ?? 0} selecionada(s)`} />
+                        <SummaryItem label="Imagens" value={`${data.images?.length ?? 0} selecionada(s)`} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

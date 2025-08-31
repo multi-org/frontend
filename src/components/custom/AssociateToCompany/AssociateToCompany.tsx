@@ -140,7 +140,7 @@ export default function AssociateToCompany({
             document: data.document[0] as File,
             companyId: {
                 id: selectedCompanyId,
-                name: data.companyName,
+                legalName: data.companyName,
             },
         };
         try {

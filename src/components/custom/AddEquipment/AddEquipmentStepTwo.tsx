@@ -35,12 +35,14 @@ type AddEquipmentStepTwoProps = {
 
 export type StepTwoData = z.infer<typeof addquipmentStepTwoSchema>
 
-const hourStringToNumber = (hour: string) => parseInt(hour.replace("h", ""))
-
 const addquipmentStepTwoSchema = z.object({
-    chargingModel: z.enum(['por_hora', 'por_dia', 'ambos']),
-    pricePerHour: z.number().optional(),
-    pricePerDay: z.number().optional(),
+    chargingModel: z.enum(['POR_HORA', 'POR_DIA', 'AMBOS']),
+    discountPercentage: z.number()
+        .min(1, "Porcentagem de desconto deve ser maior que 1")
+        .max(100, "O valor máximo de desconte não deve ser maior que 100%")
+        .optional(),
+    hourlyPrice: z.number().optional(),
+    dailyPrice: z.number().optional(),
     weekdayHourStart: z.string().min(1),
     weekdayHourEnd: z.string().min(1),
     saturdayHourStart: z.string().optional(),
@@ -49,64 +51,55 @@ const addquipmentStepTwoSchema = z.object({
     sundayHourEnd: z.string().optional(),
 }).superRefine((data, ctx) => {
     const intervals = [
-      ["weekdayHourStart", "weekdayHourEnd"],
-      ["saturdayHourStart", "saturdayHourEnd"],
-      ["sundayHourStart", "sundayHourEnd"],
+        ["weekdayHourStart", "weekdayHourEnd"],
+        ["saturdayHourStart", "saturdayHourEnd"],
+        ["sundayHourStart", "sundayHourEnd"],
     ] as const
 
     intervals.forEach(([startKey, endKey]) => {
-      const start = data[startKey]
-      const end = data[endKey]
+        const start = data[startKey]
+        const end = data[endKey]
 
-      if (start && end) {
-        const startNum = hourStringToNumber(start)
-        const endNum = hourStringToNumber(end)
+        if (start && end) {
+            const startNum = start
+            const endNum = end
 
-        if (startNum >= endNum) {
-          ctx.addIssue({
-            path: [endKey],
-            code: z.ZodIssueCode.custom,
-            message: "O horário de término deve ser maior que o de início",
-          })
+            if (startNum >= endNum) {
+                ctx.addIssue({
+                    path: [endKey],
+                    code: z.ZodIssueCode.custom,
+                    message: "O horário de término deve ser maior que o de início",
+                })
+            }
         }
-      }
     })
 
     // Validação de preços
-    if (data.chargingModel === "por_hora" && data.pricePerHour === undefined) {
-      ctx.addIssue({
-        path: ["pricePerHour"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe o preço por hora",
-      })
+    if (data.chargingModel === "POR_HORA" && data.hourlyPrice === undefined) {
+        ctx.addIssue({
+            path: ["pricePerHour"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por hora",
+        })
     }
-    if (data.chargingModel === "por_dia" && data.pricePerDay === undefined) {
-      ctx.addIssue({
-        path: ["pricePerDay"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe o preço por dia",
-      })
+    if (data.chargingModel === "POR_DIA" && data.dailyPrice === undefined) {
+        ctx.addIssue({
+            path: ["pricePerDay"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe o preço por dia",
+        })
     }
     if (
-      data.chargingModel === "ambos" &&
-      (data.pricePerHour === undefined || data.pricePerDay === undefined)
+        data.chargingModel === "AMBOS" &&
+        (data.hourlyPrice === undefined || data.dailyPrice === undefined)
     ) {
-      ctx.addIssue({
-        path: ["pricePerHour"],
-        code: z.ZodIssueCode.custom,
-        message: "Informe os dois preços para o modelo 'ambos'",
-      })
+        ctx.addIssue({
+            path: ["pricePerHour"],
+            code: z.ZodIssueCode.custom,
+            message: "Informe os dois preços para o modelo 'ambos'",
+        })
     }
-  })
-// .refine((data) => {
-//     if (data.chargingModel === 'por_hora') return data.pricePerHour !== undefined
-//     if (data.chargingModel === 'por_dia') return data.pricePerDay !== undefined
-//     if (data.chargingModel === 'ambos') return data.pricePerHour && data.pricePerDay
-//     return true
-// }, {
-//     message: 'Informe os preços corretos para o modelo de cobrança.',
-//     path: ['pricePerHour']
-// })
+})
 
 export default function AddEquipmentStepTwo({
     onNext,
@@ -165,9 +158,9 @@ export default function AddEquipmentStepTwo({
                                                             <SelectValue placeholder="Selecione o modelo de cobrança" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="por_hora">Por hora</SelectItem>
-                                                            <SelectItem value="por_dia">Por dia</SelectItem>
-                                                            <SelectItem value="ambos">Ambos</SelectItem>
+                                                            <SelectItem value="POR_HORA">Por hora</SelectItem>
+                                                            <SelectItem value="POR_DIA">Por dia</SelectItem>
+                                                            <SelectItem value="AMBOS">Ambos</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage className="text-grayLight" />
@@ -175,11 +168,11 @@ export default function AddEquipmentStepTwo({
                                             )}
                                         />
                                     </div>
-                                    {form.watch("chargingModel") === "por_hora" || form.watch("chargingModel") === "ambos" ? (
+                                    {form.watch("chargingModel") === "POR_HORA" || form.watch("chargingModel") === "AMBOS" ? (
                                         <div className="grid gap-3">
                                             <FormField
                                                 control={form.control}
-                                                name="pricePerHour"
+                                                name="hourlyPrice"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-grayLight">Preço por hora</FormLabel>
@@ -200,11 +193,11 @@ export default function AddEquipmentStepTwo({
                                             />
                                         </div>
                                     ) : null}
-                                    {form.watch("chargingModel") === "por_dia" || form.watch("chargingModel") === "ambos" ? (
+                                    {form.watch("chargingModel") === "POR_DIA" || form.watch("chargingModel") === "AMBOS" ? (
                                         <div className="grid gap-3">
                                             <FormField
                                                 control={form.control}
-                                                name="pricePerDay"
+                                                name="dailyPrice"
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel className="text-grayLight">Preço por dia</FormLabel>
@@ -225,6 +218,31 @@ export default function AddEquipmentStepTwo({
                                             />
                                         </div>
                                     ) : null}
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="discountPercentage"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">
+                                                        Desconto do associado (%)
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-orangeLight"
+                                                            placeholder="Ex.: 10%"
+                                                            type="number"
+                                                            value={field.value ?? ""}
+                                                            onChange={(e) =>
+                                                                field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value))
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                     <div className="grid gap-2">
                                         <h2 className="text-lg font-semibold text-grayLight">Disponibilidade</h2>
                                         <AvailabilityIntervalSelect
@@ -244,7 +262,11 @@ export default function AddEquipmentStepTwo({
                                             Voltar
                                         </Button>
                                         <Button type="submit" className="w-full bg-success hover:bg-successLight">
-                                            Próximo
+                                            {
+                                                form.formState.isSubmitting
+                                                    ? "Salvando..."
+                                                    : "Próximo"
+                                            }
                                         </Button>
                                     </div>
                                 </div>
