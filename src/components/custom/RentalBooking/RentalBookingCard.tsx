@@ -101,6 +101,7 @@ export default function RentalBookingCard({
 
     const handlePayment = () => {
         const bookingData = {
+            id: "",
             productId: product.id,
             productTitle: product.title,
             productAddress: {
@@ -111,16 +112,31 @@ export default function RentalBookingCard({
                 state: product.owner.address.state,
             },
             productType: product.type,
+            spaceProduct: product.spaceProduct,
+            equipmentProduct: product.equipamentProduct,
+            serviceProduct: product.servicesProduct,
             productCategory: product.category,
             productImage: product.imagesUrls,
+            productDiscount: product.discountPercentage || 0,
+            institution: {
+                email: "",
+                phone: "",
+            },
             startDate,
             endDate,
             startTime: chargingType === "POR_HORA" ? startTime : undefined,
             endTime: chargingType === "POR_HORA" ? endTime : undefined,
+            client: {
+                name: "",
+                email: "",
+                phone: "",
+            },
             chargingType,
             activityTitle,
             activityDescription,
             totalAmount: calculateTotal(),
+            finalAmount: calculateTotal(),
+            paymentDate: new Date(),
         }
         onPayment(bookingData);
         console.log(bookingData); // em teste

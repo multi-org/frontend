@@ -16,7 +16,7 @@ export function Home() {
   return (
     <>
       <Header />
-      <div className="flex w-full flex-col items-center">
+      <div className="flex w-full flex-col items-center overflow-x-hidden">
         {/* HERO */}
         <div
           id="home"
@@ -25,7 +25,9 @@ export function Home() {
           <div className="flex flex-col items-center justify-center text-grayLight text-center">
             <h1 className="text-5xl font-bold sm:text-6xl">MULTI</h1>
             <h1 className="text-2xl font-bold sm:text-3xl">UEPB</h1>
-            <p className="mt-6 w-64 text-sm">Um breve slogan do projeto</p>
+            <p className="mt-6 text-lg">
+              Gestão de recursos simples e acessível para instituições públicas e privadas
+            </p>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ import { BookingType } from "@/types/Booking"
 
 interface PaymentCardProps {
     bookingData: BookingType
-    onNext: () => void
+    onNext: (bookingData: BookingType) => void
     onBack: () => void
 }
 
@@ -42,7 +42,7 @@ export default function PaymentCard({
     const [pixCopied, setPixCopied] = useState(false)
     const [paymentStatus, setPaymentStatus] = useState<"pending" | "checking" | "confirmed">("pending")
 
-    const config = typeConfig[bookingData.productType]
+    const config = typeConfig[bookingData?.productType]
     const IconComponent = config.icon
 
     // Código PIX simulado (normalmente viria da API de pagamento)
@@ -54,6 +54,14 @@ export default function PaymentCard({
             style: "currency",
             currency: "BRL",
         }).format(price)
+    }
+
+    const calculateDiscount = (percentage: number) => {
+        return (bookingData.totalAmount * percentage) / 100
+    }
+
+    const calculateFinalAmount = (price: number, percentage: number) => {
+        return price - calculateDiscount(percentage)
     }
 
     const formatTime = (seconds: number) => {
@@ -72,7 +80,7 @@ export default function PaymentCard({
 
     const onPaymentConfirmed = () => {
         console.log("Pagamento confirmado");
-        onNext();
+        onNext(bookingData);
     }
 
     const copyPixCode = async () => {
@@ -142,8 +150,8 @@ export default function PaymentCard({
                     <div className="flex gap-4 max-[400px]:flex-col">
                         <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                                src={bookingData.productImage[0] || "/placeholder.svg"}
-                                alt={bookingData.productTitle}
+                                src={bookingData?.productImage[0] || "/placeholder.svg"}
+                                alt={bookingData?.productTitle}
                                 className="object-cover h-full w-full"
                             />
                         </div>
@@ -153,12 +161,12 @@ export default function PaymentCard({
                                     <IconComponent className="h-3 w-3" />
                                     {config.label}
                                 </div>
-                                <div className="border p-1 rounded-full">{bookingData.productCategory}</div>
+                                <div className="border p-1 rounded-full">{bookingData?.productCategory}</div>
                             </div>
-                            <h4 className="font-semibold">{bookingData.productTitle}</h4>
+                            <h4 className="font-semibold">{bookingData?.productTitle}</h4>
                             <p className="text-sm text-gray-600 flex items-center gap-1">
                                 <MapPin className="h-3 w-3 shrink-0" />
-                                {bookingData.productAddress.street}, {bookingData.productAddress.number} - {bookingData.productAddress.neighborhood} - {bookingData.productAddress.city}, {bookingData.productAddress.state}
+                                {bookingData?.productAddress?.street}, {bookingData?.productAddress?.number} - {bookingData?.productAddress?.neighborhood} - {bookingData?.productAddress?.city}, {bookingData?.productAddress?.state}
                             </p>
                         </div>
                     </div>
@@ -168,18 +176,19 @@ export default function PaymentCard({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                             <p className="font-medium text-gray-700">Atividade:</p>
-                            <p className="text-gray-600">{bookingData.activityTitle}</p>
+                            <p className="text-gray-600">{bookingData?.activityTitle}</p>
                         </div>
                         <div>
                             <p className="font-medium text-gray-700">Descrição:</p>
-                            <p className="text-gray-600">{bookingData.activityDescription}</p>
+                            <p className="text-gray-600">{bookingData?.activityDescription}</p>
                         </div>
                         <div>
                             <p className="font-medium text-gray-700">Período:</p>
                             <p className="text-gray-600">
                                 {bookingData.startDate && bookingData.endDate
                                     ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
-                                    : "Data não definida"}
+                                    : "Data não definida"
+                                }
                             </p>
                             {bookingData.startTime && bookingData.endTime && (
                                 <p className="text-gray-600">
@@ -190,10 +199,36 @@ export default function PaymentCard({
                     </div>
 
                     <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
-                        <span className="font-semibold">Total a Pagar:</span>
+                        <span className="font-semibold">Valor total:</span>
                         <span className="text-xl font-medium text-green-600">
-                            {formatPrice(bookingData.totalAmount)}
+                            {formatPrice(bookingData?.totalAmount)}
                         </span>
+                    </div>
+                    {bookingData?.productDiscount > 0 ? (
+                        <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                            <span className="font-semibold">Desconto:</span>
+                            <span className="text-xl font-medium text-green-600">
+                                - {calculateDiscount(bookingData?.productDiscount)}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                            <span className="font-semibold">Desconto:</span>
+                            <span className="font-semibold">Sem desconto</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
+                        <span className="font-semibold">Valor final:</span>
+                        {bookingData?.totalAmount > 0 && bookingData?.productDiscount > 0 ?
+                            (
+                                <span className="text-xl font-medium text-green-600">
+                                    {calculateFinalAmount(bookingData?.totalAmount, bookingData?.productDiscount)}
+                                </span>
+                            ) : (
+                                <span className="text-xl font-medium text-green-600">
+                                    {formatPrice(bookingData?.totalAmount)}
+                                </span>
+                            )}
                     </div>
                 </div>
 
