@@ -21,6 +21,7 @@ import { ProductType } from '@/types/Product'
 import { useProducts } from '@/hooks/products-hooks'
 import { Search } from 'lucide-react'
 import { BookingConfirmationCard, PaymentCard, RentalBookingCard } from '../RentalBooking'
+import { BookingType } from '@/types/Booking'
 
 export default function BrowseProducts() {
 
@@ -30,6 +31,7 @@ export default function BrowseProducts() {
     const [category, setCategory] = useState<string>('')
     const [bookingStep, setBookingStep] = useState<number>(0)
     const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
+    const [rentalBookingData, setRentalBookingData] = useState<BookingType | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
     const productsPerPage = 6
 
@@ -45,8 +47,8 @@ export default function BrowseProducts() {
         const matchesSearchTerm = searchTerm
             ? product.title.toLowerCase().includes(searchTerm.toLowerCase())
             : true;
-        const matchesCategory = category ? product.category === category : true;
-        const matchesType = type ? product.type === type : true;
+        const matchesCategory = category && category !== "ALL" ? product.category === category : true;
+        const matchesType = type && type !== "ALL" ? product.type === type : true;
 
         return matchesSearchTerm && matchesCategory && matchesType;
     })
@@ -57,6 +59,16 @@ export default function BrowseProducts() {
         (currentPage - 1) * productsPerPage,
         currentPage * productsPerPage
     )
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchTerm, category, type])
+
+    useEffect(() => {
+        if (currentPage > totalPages) {
+            setCurrentPage(1)
+        }
+    }, [totalPages, currentPage])
 
     return (
         <>
@@ -81,6 +93,7 @@ export default function BrowseProducts() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectItem value="ALL">Todos</SelectItem>
                                     <SelectItem value="SPACE">Espaço</SelectItem>
                                     <SelectItem value="SERVICE">Serviço</SelectItem>
                                     <SelectItem value="EQUIPMENT">Equipamento</SelectItem>
@@ -93,6 +106,7 @@ export default function BrowseProducts() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
+                                    <SelectItem value="ALL">Todos</SelectItem>
                                     <SelectItem value="Sala de aula">Sala de aula</SelectItem>
                                     <SelectItem value="Auditório">Auditório</SelectItem>
                                     <SelectItem value="Laboratório">Laboratório</SelectItem>
@@ -182,7 +196,11 @@ export default function BrowseProducts() {
                                             onClick={() => setCurrentPage(page)}
                                             className={`px-3 py-1 ${page === currentPage ? "font-extrabold" : ""}`}
                                         >
-                                            <PaginationLink href="#">{page}</PaginationLink>
+                                            <PaginationLink
+                                                className={page === currentPage ? "bg-gray-100" : ""}
+                                                href="#">
+                                                {page}
+                                            </PaginationLink>
                                         </button>
                                     </PaginationItem>
                                 ))}
@@ -217,58 +235,28 @@ export default function BrowseProducts() {
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <RentalBookingCard
                         product={selectedProduct}
-                        onPayment={(data: any) => console.log("Dados do pagamento:", data)}
+                        onPayment={(booking) => setRentalBookingData(booking)}
                         onBack={() => setBookingStep(1)}
                         onNext={() => setBookingStep(3)}
                     />
                 </div>
             )}
-            {bookingStep === 3 && (
+            {bookingStep === 3 && rentalBookingData && (
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <PaymentCard
-                        bookingData={{
-                            productId: "ESP-001",
-                            productName: "Auditório Premium",
-                            productType: "espaco",
-                            productCategory: "Auditório",
-                            productImage: "/src/assets/multi-prod-serv.png",
-                            productLocation: "Campus Central - São Paulo",
-                            startDate: new Date(2024, 11, 20),
-                            endDate: new Date(2024, 11, 22),
-                            rentalType: "dia",
-                            activityTitle: "Palestra sobre Inovação Tecnológica",
-                            activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
-                            totalPrice: 3600.0,
-                        }}
+                        bookingData={rentalBookingData}
                         onBack={() => setBookingStep(1)}
-                        onNext={() => setBookingStep(4)}
+                        onNext={(booking) => {
+                            setRentalBookingData(booking)
+                            setBookingStep(4)
+                        }}
                     />
                 </div>
             )}
-            {bookingStep === 4 && (
+            {bookingStep === 4 && rentalBookingData && (
                 <div className='p-6 max-[500px]:w-96 max-[430px]:w-80 max-[370px]:w-full'>
                     <BookingConfirmationCard
-                        bookingData={{
-                            confirmationNumber: "RES-2024-001234",
-                            productId: "ESP-001",
-                            productName: "Auditório Premium",
-                            productType: "espaco",
-                            productCategory: "Auditório",
-                            productImage: "/src/assets/multi-prod-serv.png",
-                            productLocation: "Campus Central - São Paulo",
-                            capacidade: 150,
-                            area: 200,
-                            startDate: new Date(2024, 11, 20),
-                            endDate: new Date(2024, 11, 22),
-                            rentalType: "dia",
-                            activityTitle: "Palestra sobre Inovação Tecnológica",
-                            activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
-                            totalPrice: 3600.0,
-                            paymentDate: new Date(),
-                            customerName: "João Silva",
-                            customerEmail: "joao.silva@email.com",
-                            customerPhone: "(11) 99999-9999",
-                        }}
+                        bookingData={rentalBookingData}
                         onBack={() => setBookingStep(0)}
                     />
                 </div>

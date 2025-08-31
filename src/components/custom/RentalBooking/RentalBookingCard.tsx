@@ -12,10 +12,11 @@ import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ProductType } from "@/types/Product"
+import { BookingType } from "@/types/Booking"
 
 interface RentalBookingCardProps {
     product: ProductType
-    onPayment: (bookingData: any) => void
+    onPayment: (bookingData: BookingType) => void
     onBack: () => void;
     onNext: () => void;
 }
@@ -49,7 +50,7 @@ const generateTimeSlots = () => {
 
 export default function RentalBookingCard({
     product,
-    onPayment = (data: any) => console.log("Dados do pagamento:", data),
+    onPayment,
     onBack,
     onNext,
 }: RentalBookingCardProps) {
@@ -58,7 +59,7 @@ export default function RentalBookingCard({
     const [endDate, setEndDate] = useState<Date>()
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
-    const [rentalType, setRentalType] = useState<"hora" | "dia">("dia")
+    const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA" | null>(null)
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
 
@@ -76,7 +77,7 @@ export default function RentalBookingCard({
     const calculateTotal = () => {
         if (!startDate || !endDate) return 0
 
-        if (rentalType === "dia") {
+        if (chargingType === "POR_DIA") {
             const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
             return diffDays * product.dailyPrice
@@ -100,23 +101,51 @@ export default function RentalBookingCard({
 
     const handlePayment = () => {
         const bookingData = {
+            id: "",
             productId: product.id,
+            productTitle: product.title,
+            productAddress: {
+                street: product.owner.address.street,
+                number: product.owner.address.number,
+                neighborhood: product.owner.address.neighborhood,
+                city: product.owner.address.city,
+                state: product.owner.address.state,
+            },
+            productType: product.type,
+            spaceProduct: product.spaceProduct,
+            equipmentProduct: product.equipamentProduct,
+            serviceProduct: product.servicesProduct,
+            productCategory: product.category,
+            productImage: product.imagesUrls,
+            productDiscount: product.discountPercentage || 0,
+            institution: {
+                email: "",
+                phone: "",
+            },
             startDate,
             endDate,
-            startTime: rentalType === "hora" ? startTime : undefined,
-            endTime: rentalType === "hora" ? endTime : undefined,
-            rentalType,
+            startTime: chargingType === "POR_HORA" ? startTime : undefined,
+            endTime: chargingType === "POR_HORA" ? endTime : undefined,
+            client: {
+                name: "",
+                email: "",
+                phone: "",
+            },
+            chargingType,
             activityTitle,
             activityDescription,
-            totalPrice: calculateTotal(),
+            totalAmount: calculateTotal(),
+            finalAmount: calculateTotal(),
+            paymentDate: new Date(),
         }
         onPayment(bookingData);
+        console.log(bookingData); // em teste
         onNext();
     }
 
     const isFormValid = () => {
         const hasBasicInfo = startDate && endDate && activityTitle && activityDescription
-        const hasTimeInfo = rentalType === "dia" || (startTime && endTime)
+        const hasTimeInfo = chargingType === "POR_DIA" || (startTime && endTime)
         return hasBasicInfo && hasTimeInfo
     }
 
@@ -130,7 +159,7 @@ export default function RentalBookingCard({
 
             <CardContent className="space-y-6">
                 {/* Resumo do Produto */}
-                <div className="flex max-[680px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
+                <div className="flex max-[725px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
                     <div className="relative flex items-center justify-center bg-gray-200 w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         {product?.imagesUrls?.length > 0 ? (
                             <img
@@ -161,7 +190,7 @@ export default function RentalBookingCard({
                             <MapPin className="h-3 w-3 shrink-0" />
                             {product?.owner?.address?.street ?? "...Carregando"}, {product?.owner?.address?.number ?? ""} - {product?.owner?.address?.neighborhood ?? ""} - {product?.owner?.address?.city ?? ""}, {product?.owner?.address?.state ?? ""}
                         </p>
-                        <div className="flex max-[300px]:flex-col gap-4 text-sm text-gray-600">
+                        <div className="flex max-[535px]:flex-col gap-4 text-sm text-gray-600">
                             {product.type === "SPACE" && (product.spaceProduct?.capacity || product.spaceProduct?.area) && (
                                 <>
                                     {product.spaceProduct.capacity && (
@@ -224,12 +253,24 @@ export default function RentalBookingCard({
                             )}
                         </div>
                     </div>
-                    <div className="text-right max-[680px]:text-left space-y-1">
+                    <div className="text-right max-[725px]:text-left space-y-1">
                         <p className="text-sm text-gray-600">
-                            Por hora: {formatPrice(product.hourlyPrice)}
+                            {product.hourlyPrice > 0
+                                ? `Por hora: ${formatPrice(product.hourlyPrice)}`
+                                : "Preço por hora Indisponível"
+                            }
                         </p>
                         <p className="text-sm text-gray-600">
-                            Por dia: {formatPrice(product.dailyPrice)}
+                            {product.dailyPrice > 0
+                                ? `Por dia: ${formatPrice(product.dailyPrice)}`
+                                : "Preço por dia Indisponível"
+                            }
+                        </p>
+                        <p className={product.discountPercentage ? "text-sm text-green-600" : "text-sm text-gray-600"}>
+                            {product.discountPercentage && product.discountPercentage > 0
+                                ? `Desconto de associado: ${formatPrice(product.discountPercentage)}%`
+                                : "Sem desconto para associado"
+                            }
                         </p>
                     </div>
                 </div>
@@ -246,15 +287,19 @@ export default function RentalBookingCard({
                         <div className="space-y-2">
                             <Label>Tipo de Aluguel</Label>
                             <Select
-                                value={rentalType}
-                                onValueChange={(value: "hora" | "dia") => setRentalType(value)}
+                                value={chargingType ?? undefined}
+                                onValueChange={(value: "POR_HORA" | "POR_DIA") => setChargingType(value)}
                             >
                                 <SelectTrigger className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
-                                    <SelectValue placeholder="Selecione o modelo de cobrança" />
+                                    <SelectValue placeholder="Selecione a forma de aluguel" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="dia">Por dia</SelectItem>
-                                    <SelectItem value="hora">Por hora</SelectItem>
+                                    {product.dailyPrice && product.dailyPrice > 0 &&
+                                        <SelectItem value="POR_DIA">Por dia</SelectItem>
+                                    }
+                                    {product.hourlyPrice && product.hourlyPrice > 0 &&
+                                        <SelectItem value="POR_HORA">Por hora</SelectItem>
+                                    }
                                 </SelectContent>
                             </Select>
                         </div>
@@ -305,7 +350,7 @@ export default function RentalBookingCard({
                         </div>
 
                         {/* Seleção de Horários (apenas se for por hora) */}
-                        {rentalType === "hora" && (
+                        {chargingType === "POR_HORA" && (
                             <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
                                 <div className="space-y-2">
                                     <Label>Horário de Início</Label>
@@ -379,7 +424,7 @@ export default function RentalBookingCard({
                             <div className="space-y-1 text-sm">
                                 <div className="flex justify-between">
                                     <span>Tipo:</span>
-                                    <span className="capitalize">{rentalType === "hora" ? "Por hora" : "Por dia"}</span>
+                                    <span className="capitalize">{chargingType === "POR_HORA" ? "Por hora" : "Por dia"}</span>
                                 </div>
                                 {startDate && endDate && (
                                     <div className="flex justify-between">
@@ -389,7 +434,7 @@ export default function RentalBookingCard({
                                         </span>
                                     </div>
                                 )}
-                                {rentalType === "hora" && startTime && endTime && (
+                                {chargingType === "POR_HORA" && startTime && endTime && (
                                     <div className="flex justify-between">
                                         <span>Horário:</span>
                                         <span>

@@ -34,7 +34,7 @@ export function Header() {
       <div className="hidden md:flex items-center gap-5">
         <Link
           to={'/products'}
-          className="rounded-md bg-yellowNormal px-6 py-2 font-inter font-semibold text-gray-100 transition duration-500 hover:bg-yellowDark"
+          className="rounded-md bg-yellowNormal px-6 py-2 font-inter font-semibold text-gray-100 transition duration-500 hover:bg-yellowDark max-[810px]:hidden"
         >
           Comece agora
         </Link>

@@ -17,6 +17,7 @@ type AddSpaceStepThreeProps = {
         category: string;
         images: File[];
         chargingModel: string;
+        discountPercentage?: number;
         hourlyPrice?: number;
         dailyPrice?: number;
         weekdayHourStart: string;
@@ -78,6 +79,8 @@ export default function AddSpaceStepThree({
                                     maximumFractionDigits: 2
                                 })}`} />
                         ) : null}
+
+                        <SummaryItem label="Desconto do associado" value={`${data.discountPercentage}%`} />
 
                         <div className="flex flex-col gap-4">
                             {data.weekdayHourStart && data.weekdayHourEnd && (

@@ -22,7 +22,9 @@ export const useProducts = () => {
       const response = await api.get<GetProductsResponse>('/products/all')
       setProducts(response.data.data)
     } catch (err) {
-      setError('Erro ao buscar produtos')
+      const message = "Erro na tentativa de criar instituição";
+      setError(message)
+      throw new Error(message)
     } finally {
       setLoading(false)
     }
@@ -50,6 +52,7 @@ export const useProducts = () => {
     category: string,
     images?: File[],
     chargingModel: string,
+    discountPercentage?: number,
     hourlyPrice?: number,
     dailyPrice?: number,
     weeklyAvailability: Record<string, {
@@ -127,7 +130,9 @@ export const useProducts = () => {
       create(response.data)
       return response.data
     } catch (err) {
-      setError('Erro ao criar produto')
+      const message = "Erro na tentativa de criar instituição";
+      setError(message)
+      throw new Error(message)
     } finally {
       setLoading(false)
     }

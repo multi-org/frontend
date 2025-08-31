@@ -37,6 +37,10 @@ export type StepTwoData = z.infer<typeof addSpaceStepTwoSchema>
 
 const addSpaceStepTwoSchema = z.object({
     chargingModel: z.enum(['POR_HORA', 'POR_DIA', 'AMBOS']),
+    discountPercentage: z.number()
+        .min(1, "Porcentagem de desconto deve ser maior que 1")
+        .max(100, "O valor máximo de desconte não deve ser maior que 100%")
+        .optional(),
     hourlyPrice: z.number().optional(),
     dailyPrice: z.number().optional(),
     weekdayHourStart: z.string().min(1),
@@ -214,6 +218,31 @@ export default function AddSpaceStepTwo({
                                             />
                                         </div>
                                     ) : null}
+                                    <div className="grid gap-3">
+                                        <FormField
+                                            control={form.control}
+                                            name="discountPercentage"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="text-grayLight">
+                                                        Desconto do associado (%)
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-black focus-visible:ring-orangeLight"
+                                                            placeholder="Ex.: 10%"
+                                                            type="number"
+                                                            value={field.value ?? ""}
+                                                            onChange={(e) =>
+                                                                field.onChange(e.target.value === "" ? undefined : parseFloat(e.target.value))
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-grayLight" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                     <div className="grid gap-2">
                                         <h2 className="text-lg font-semibold text-grayLight">Disponibilidade</h2>
                                         <AvailabilityIntervalSelect

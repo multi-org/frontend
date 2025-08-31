@@ -13,6 +13,11 @@ import {
     Copy,
     User,
     Maximize,
+    ListChecks,
+    Tag,
+    Package,
+    PackageSearch,
+    Layers,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,48 +34,25 @@ import {
 import { useState } from "react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
-
-interface BookingConfirmationData {
-    confirmationNumber: string
-    productId: string
-    productName: string
-    productType: "espaco" | "equipamento" | "servico"
-    productCategory: string
-    productImage: string
-    productLocation?: string
-    capacidade?: number
-    area?: number
-    startDate: Date
-    endDate: Date
-    startTime?: string
-    endTime?: string
-    rentalType: "hora" | "dia"
-    activityTitle: string
-    activityDescription: string
-    totalPrice: number
-    paymentDate: Date
-    customerName: string
-    customerEmail: string
-    customerPhone: string
-}
+import { BookingType } from "@/types/Booking"
 
 interface BookingConfirmationCardProps {
-    bookingData: BookingConfirmationData
+    bookingData: BookingType
     onBack: () => void;
 }
 
-const tipoConfig = {
-    espaco: {
+const typeConfig = {
+    SPACE: {
         label: "Espaço",
         icon: MapPin,
         color: "bg-blue-100 text-blue-800",
     },
-    equipamento: {
+    EQUIPMENT: {
         label: "Equipamento",
         icon: Wrench,
         color: "bg-green-100 text-green-800",
     },
-    servico: {
+    SERVICE: {
         label: "Serviço",
         icon: Users,
         color: "bg-purple-100 text-purple-800",
@@ -78,33 +60,13 @@ const tipoConfig = {
 }
 
 export default function BookingConfirmationCard({
-    bookingData = {
-        confirmationNumber: "RES-2024-001234",
-        productId: "ESP-001",
-        productName: "Auditório Premium",
-        productType: "espaco",
-        productCategory: "Auditório",
-        productImage: "/placeholder.svg?height=100&width=100",
-        productLocation: "Campus Central - São Paulo",
-        capacidade: 150,
-        area: 200,
-        startDate: new Date(2024, 11, 20),
-        endDate: new Date(2024, 11, 22),
-        rentalType: "dia",
-        activityTitle: "Palestra sobre Inovação Tecnológica",
-        activityDescription: "Evento corporativo com apresentações sobre as últimas tendências em tecnologia",
-        totalPrice: 3600.0,
-        paymentDate: new Date(),
-        customerName: "João Silva",
-        customerEmail: "joao.silva@email.com",
-        customerPhone: "(11) 99999-9999",
-    },
+    bookingData,
     onBack,
 }: BookingConfirmationCardProps) {
 
     const [confirmationCopied, setConfirmationCopied] = useState(false)
 
-    const config = tipoConfig[bookingData.productType]
+    const config = typeConfig[bookingData?.productType]
     const IconComponent = config.icon
 
     const formatPrice = (price: number) => {
@@ -116,7 +78,7 @@ export default function BookingConfirmationCard({
 
     const copyConfirmationNumber = async () => {
         try {
-            await navigator.clipboard.writeText(bookingData.confirmationNumber)
+            await navigator.clipboard.writeText(bookingData?.id)
             setConfirmationCopied(true)
             setTimeout(() => setConfirmationCopied(false), 2000)
         } catch (err) {
@@ -159,7 +121,7 @@ export default function BookingConfirmationCard({
                     <AlertDescription className="flex items-center justify-between">
                         <div className="max-w-[90%] truncate">
                             <span className="text-green-800 font-medium">Número de Confirmação: </span>
-                            <span className="font-mono font-bold text-green-900">{bookingData.confirmationNumber}</span>
+                            <span className="font-mono font-bold text-green-900">{bookingData?.id}</span>
                         </div>
                         <Button
                             variant="ghost"
@@ -180,9 +142,9 @@ export default function BookingConfirmationCard({
                     <div className="flex max-[400px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
                         <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                                src={bookingData.productImage || "/placeholder.svg"}
-                                alt={bookingData.productName}
-                                className="object-cover h-full"
+                                src={bookingData?.productImage[0] || "/placeholder.svg"}
+                                alt={bookingData?.productTitle}
+                                className="object-cover h-full w-full"
                             />
                         </div>
                         <div className="flex-1 space-y-2">
@@ -192,28 +154,58 @@ export default function BookingConfirmationCard({
                                     {config.label}
                                 </div>
                                 <div className="p-1 rounded-full border">
-                                    {bookingData.productCategory}
+                                    {bookingData?.productCategory}
                                 </div>
                             </div>
-                            <h3 className="font-semibold text-lg">{bookingData.productName}</h3>
-                            {bookingData.productLocation && (
-                                <p className="text-sm text-gray-600 flex items-center gap-1">
-                                    <MapPin className="h-3 w-3 shrink-0" />
-                                    {bookingData.productLocation}
-                                </p>
-                            )}
+                            <h3 className="font-semibold text-lg">{bookingData?.productTitle}</h3>
+                            <p className="text-sm text-gray-600 flex items-center gap-1">
+                                <MapPin className="h-3 w-3 shrink-0" />
+                                {bookingData?.productAddress?.street}, {bookingData?.productAddress?.number} - {bookingData?.productAddress?.neighborhood} - {bookingData?.productAddress?.city}, {bookingData?.productAddress?.state}
+                            </p>
                             <div className="flex max-[400px]:flex-col gap-4 text-sm text-gray-600">
-                                {bookingData.capacidade && (
-                                    <span className="flex items-center gap-1">
-                                        <User className="h-3 w-3 shrink-0" />
-                                        {bookingData.capacidade} pessoas
-                                    </span>
+                                {bookingData.productType === "SPACE" && (bookingData.spaceProduct?.capacity || bookingData.spaceProduct?.area) && (
+                                    <>
+                                        <span className="flex items-center gap-1">
+                                            <User className="h-3 w-3 shrink-0" />
+                                            {bookingData.spaceProduct.capacity} pessoas
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Maximize className="h-3 w-3 shrink-0" />
+                                            {bookingData.spaceProduct.area} m²
+                                        </span>
+                                    </>
                                 )}
-                                {bookingData.area && (
-                                    <span className="flex items-center gap-1">
-                                        <Maximize className="h-3 w-3 shrink-0" />
-                                        {bookingData.area} m²
-                                    </span>
+                                {bookingData.productType === "SERVICE" && (bookingData.serviceProduct?.durationMinutes || bookingData.serviceProduct?.requirements) && (
+                                    <>
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="h-3 w-3 shrink-0" />
+                                            {bookingData.serviceProduct.durationMinutes} minutos
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <ListChecks className="h-3 w-3 shrink-0" />
+                                            {bookingData.serviceProduct.requirements}
+                                        </span>
+                                    </>
+                                )}
+                                {bookingData.productType === "EQUIPMENT" && (bookingData.equipmentProduct?.brand || bookingData.equipmentProduct?.model || bookingData.equipmentProduct?.specifications || bookingData.equipmentProduct?.stock) && (
+                                    <>
+                                        <span className="flex items-center gap-1">
+                                            <Tag className="h-3 w-3 shrink-0" />
+                                            {bookingData.equipmentProduct.brand}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Package className="h-3 w-3 shrink-0" />
+                                            {bookingData.equipmentProduct.model}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <PackageSearch className="h-3 w-3 shrink-0" />
+                                            {bookingData.equipmentProduct.specifications}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <Layers className="h-3 w-3 shrink-0" />
+                                            {bookingData.equipmentProduct.stock}
+                                        </span>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -229,8 +221,10 @@ export default function BookingConfirmationCard({
                                     <div>
                                         <p className="text-sm text-gray-600">Período</p>
                                         <p className="font-medium">
-                                            {format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                                            {format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}
+                                            {bookingData.startDate && bookingData.endDate
+                                                ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
+                                                : "Data não definida"
+                                            }
                                         </p>
                                     </div>
                                 </div>
@@ -248,11 +242,11 @@ export default function BookingConfirmationCard({
                                 )}
 
                                 <div className="flex items-center gap-3">
-                                    <div className="w-4 h-4 bg-yellowDark rounded-full flex-shrink-0"></div>
+                                    <div className={bookingData.chargingType === "POR_HORA" ? "w-4 h-4 bg-yellowDark rounded-full flex-shrink-0" : "w-4 h-4 bg-blueLight rounded-full flex-shrink-0"}></div>
                                     <div>
                                         <p className="text-sm text-gray-600">Tipo de Aluguel</p>
                                         <p className="font-medium capitalize">
-                                            {bookingData.rentalType === "hora" ? "Por hora" : "Por dia"}
+                                            {bookingData.chargingType === "POR_HORA" ? "Por hora" : "Por dia"}
                                         </p>
                                     </div>
                                 </div>
@@ -264,11 +258,11 @@ export default function BookingConfirmationCard({
                             <div className="space-y-3">
                                 <div>
                                     <p className="text-sm text-gray-600">Título</p>
-                                    <p className="font-medium">{bookingData.activityTitle}</p>
+                                    <p className="font-medium">{bookingData?.activityTitle}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Descrição</p>
-                                    <p className="text-sm text-gray-800">{bookingData.activityDescription}</p>
+                                    <p className="text-sm text-gray-800">{bookingData?.activityDescription}</p>
                                 </div>
                             </div>
                         </div>
@@ -282,8 +276,8 @@ export default function BookingConfirmationCard({
                             <h3 className="font-semibold text-lg">Informações de Pagamento</h3>
                             <div className="space-y-2">
                                 <div className="flex max-[400px]:flex-col justify-between">
-                                    <span className="text-gray-600">Valor Total:</span>
-                                    <span className="font-semibold">{formatPrice(bookingData.totalPrice)}</span>
+                                    <span className="text-gray-600">Valor Pago:</span>
+                                    <span className="font-semibold">{formatPrice(bookingData?.finalAmount)}</span>
                                 </div>
                                 <div className="flex max-[400px]:flex-col justify-between">
                                     <span className="text-gray-600">Método de Pagamento:</span>
@@ -309,15 +303,33 @@ export default function BookingConfirmationCard({
                             <div className="space-y-2">
                                 <div>
                                     <p className="text-sm text-gray-600">Nome</p>
-                                    <p className="font-medium">{bookingData.customerName}</p>
+                                    <p className="font-medium">
+                                        {bookingData.client.name ? (
+                                            `${bookingData.client.name}`
+                                        ) : (
+                                            "indisponível"
+                                        )}
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">E-mail</p>
-                                    <p className="font-medium max-w-[90%] truncate">{bookingData.customerEmail}</p>
+                                    <p className="font-medium max-w-[90%] truncate">
+                                        {bookingData.client.email ? (
+                                            `${bookingData.client?.email}`
+                                        ) : (
+                                            "indisponível"
+                                        )}
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Telefone</p>
-                                    <p className="font-medium">{bookingData.customerPhone}</p>
+                                    <p className="font-medium">
+                                        {bookingData.client.phone ? (
+                                            `${bookingData.client.phone}`
+                                        ) : (
+                                            "indisponível"
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -331,11 +343,23 @@ export default function BookingConfirmationCard({
                         <div className="flex justify-between max-[500px]:flex-col gap-4 text-sm">
                             <div className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-gray-500 shrink-0" />
-                                <span>(11) 3000-0000</span>
+                                <span>
+                                    {bookingData.institution.phone ? (
+                                        `${bookingData.institution.phone}`
+                                    ) : (
+                                        "Indisponível"
+                                    )}
+                                </span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-gray-500 shrink-0" />
-                                <span className="max-w-[90%] truncate">suporte@instituicao.edu.br</span>
+                                <span className="max-w-[90%] truncate">
+                                    {bookingData.institution.email ? (
+                                        `${bookingData.institution.email}`
+                                    ) : (
+                                        "Indisponível"
+                                    )}
+                                </span>
                             </div>
                         </div>
                     </div>

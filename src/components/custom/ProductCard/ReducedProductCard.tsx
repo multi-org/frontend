@@ -1,4 +1,4 @@
-import { Clock, Calendar, MapPin, Wrench, Users } from "lucide-react"
+import { Clock, Calendar, MapPin, Wrench, Users, TriangleAlert, CircleDollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ProductType } from "@/types/Product"
@@ -31,13 +31,16 @@ export default function ReducedProductCard({
     onNext,
 }: ReducedProductCardProps) {
 
-    console.log("product.type recebido:", product?.type ?? "") // em teste
-    const config = typeConfig[product?.type ?? ""]
+    // console.log("product.type recebido:", product?.type ?? "")
+    const config = typeConfig[product?.type as keyof typeof typeConfig] ?? {
+        label: "Indefinido",
+        icon: TriangleAlert,
+        color: "bg-gray-100 text-gray-800",
+    }
     const IconComponent = config.icon
 
     const handleRent = () => {
-        console.log("Solicitar aluguel do produto:", product.id)
-        // implementari lógica de aluguel
+        console.log("Solicitar aluguel do produto:", product.id) // em teste
         onNext(product);
     }
 
@@ -98,22 +101,40 @@ export default function ReducedProductCard({
                 <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-2 text-gray-600">
-                            <Clock className="h-4 w-4" />
+                            <Clock className="h-4 w-4 shrink-0" />
                             <span className="text-sm font-medium">Por hora</span>
                         </div>
                         <span className="font-semibold text-gray-900">
-                            {formatPrice(product?.hourlyPrice ?? "...Carregando")}
+                            {product.hourlyPrice > 0
+                                ? formatPrice(product?.hourlyPrice ?? "")
+                                : "Indisponível"
+                            }
                         </span>
                     </div>
 
                     <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-2 text-gray-600">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar className="h-4 w-4 shrink-0" />
                             <span className="text-sm font-medium">Por dia</span>
                         </div>
                         <span className="font-semibold text-gray-900">
                             {product.dailyPrice
                                 ? formatPrice(product?.dailyPrice ?? "")
+                                : "Indisponível"
+                            }
+                        </span>
+                    </div>
+
+                    <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-gray-600">
+                            <CircleDollarSign className={product.discountPercentage ? "h-4 w-4 shrink-0 text-green-600" : "h-4 w-4 shrink-0"} />
+                            <span className={product.discountPercentage ? "text-sm font-medium text-green-600" : "text-sm font-medium"}>
+                                Desconto de associado
+                            </span>
+                        </div>
+                        <span className={product.discountPercentage ? "font-semibold text-green-600" : "font-semibold text-gray-900"}>
+                            {product.discountPercentage && product.discountPercentage > 0
+                                ? `${formatPrice(product?.discountPercentage ?? "")}%`
                                 : "Indisponível"
                             }
                         </span>
