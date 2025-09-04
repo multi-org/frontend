@@ -183,7 +183,7 @@ export default function PaymentCard({
                             <p className="text-gray-600">{bookingData?.activityDescription}</p>
                         </div>
                         <div>
-                            <p className="font-medium text-gray-700">Período:</p>
+                            {/* <p className="font-medium text-gray-700">Período:</p>
                             <p className="text-gray-600">
                                 {bookingData.startDate && bookingData.endDate
                                     ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
@@ -194,7 +194,7 @@ export default function PaymentCard({
                                 <p className="text-gray-600">
                                     {bookingData.startTime} - {bookingData.endTime}
                                 </p>
-                            )}
+                            )} */}
                         </div>
                     </div>
 

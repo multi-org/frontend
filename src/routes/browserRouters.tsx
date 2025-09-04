@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { Home } from '../pages/Home'
 import { Products } from '../pages/Products'
-import { Product } from '../pages/Product'
 import { ErrorPage } from '../pages/Error'
 import Login from '../pages/Login/Login'
 import Register from '../pages/Register/index'
@@ -19,15 +18,11 @@ export const defaultRoutes = createBrowserRouter([
     element: <Products />,
   },
   {
-    path: '/produtos/:id',
-    element: <Product />,
-  },
-  {
     path: '/login',
     element: <Login />,
   },
   {
-    path: '/cadastro',
+    path: '/sign-up',
     element: <Register />,
   },
   {
@@ -39,5 +34,3 @@ export const defaultRoutes = createBrowserRouter([
     ),
   }
 ])
-
-// export const loggedUserRoutes = createBrowserRouter([])

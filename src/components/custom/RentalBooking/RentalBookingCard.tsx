@@ -55,11 +55,12 @@ export default function RentalBookingCard({
     onNext,
 }: RentalBookingCardProps) {
 
-    const [startDate, setStartDate] = useState<Date>()
-    const [endDate, setEndDate] = useState<Date>()
-    const [startTime, setStartTime] = useState("")
-    const [endTime, setEndTime] = useState("")
+    // const [startDate, setStartDate] = useState<Date>()
+    // const [endDate, setEndDate] = useState<Date>()
+    // const [startTime, setStartTime] = useState("")
+    // const [endTime, setEndTime] = useState("")
     const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA" | null>(null)
+    const [reservations, setReservations] = useState<{ date: Date; hours: string[] }[]>([]);
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
 
@@ -74,30 +75,40 @@ export default function RentalBookingCard({
         }).format(price)
     }
 
-    const calculateTotal = () => {
-        if (!startDate || !endDate) return 0
+    // const calculateTotal = () => {
+    //     if (!startDate || !endDate) return 0
 
+    //     if (chargingType === "POR_DIA") {
+    //         const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
+    //         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+    //         return diffDays * product.dailyPrice
+    //     } else {
+    //         if (!startTime || !endTime) return 0
+
+    //         const [startHour] = startTime.split(":").map(Number)
+    //         const [endHour] = endTime.split(":").map(Number)
+
+    //         // Diferença em horas no mesmo dia
+    //         const hoursPerDay = endHour - startHour
+    //         if (hoursPerDay <= 0) return 0
+
+    //         // Diferença em dias (contando o último dia também)
+    //         const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
+    //         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+
+    //         return diffDays * hoursPerDay * product.hourlyPrice
+    //     }
+    // }
+
+    const calculateTotal = () => { // em teste
         if (chargingType === "POR_DIA") {
-            const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-            return diffDays * product.dailyPrice
-        } else {
-            if (!startTime || !endTime) return 0
-
-            const [startHour] = startTime.split(":").map(Number)
-            const [endHour] = endTime.split(":").map(Number)
-
-            // Diferença em horas no mesmo dia
-            const hoursPerDay = endHour - startHour
-            if (hoursPerDay <= 0) return 0
-
-            // Diferença em dias (contando o último dia também)
-            const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-
-            return diffDays * hoursPerDay * product.hourlyPrice
+            return reservations.length * product.dailyPrice;
         }
-    }
+        if (chargingType === "POR_HORA") {
+            return reservations.reduce((total, r) => total + r.hours.length * product.hourlyPrice, 0);
+        }
+        return 0;
+    };
 
     const handlePayment = () => {
         const bookingData = {
@@ -122,16 +133,20 @@ export default function RentalBookingCard({
                 email: "",
                 phone: "",
             },
-            startDate,
-            endDate,
-            startTime: chargingType === "POR_HORA" ? startTime : undefined,
-            endTime: chargingType === "POR_HORA" ? endTime : undefined,
+            // startDate,
+            // endDate,
+            // startTime: chargingType === "POR_HORA" ? startTime : undefined,
+            // endTime: chargingType === "POR_HORA" ? endTime : undefined,
             client: {
                 name: "",
                 email: "",
                 phone: "",
             },
             chargingType,
+            reservations: reservations.map(r => ({
+                date: format(r.date, "yyyy-MM-dd"),
+                hours: chargingType === "POR_HORA" ? r.hours : []
+            })),
             activityTitle,
             activityDescription,
             totalAmount: calculateTotal(),
@@ -144,8 +159,8 @@ export default function RentalBookingCard({
     }
 
     const isFormValid = () => {
-        const hasBasicInfo = startDate && endDate && activityTitle && activityDescription
-        const hasTimeInfo = chargingType === "POR_DIA" || (startTime && endTime)
+        const hasBasicInfo = reservations && activityTitle && activityDescription
+        const hasTimeInfo = chargingType === "POR_DIA" || reservations.some(r => r.hours.length > 0)
         return hasBasicInfo && hasTimeInfo
     }
 
@@ -306,7 +321,7 @@ export default function RentalBookingCard({
 
                         {/* Seleção de Datas */}
                         <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <Label>Data de Início</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -325,24 +340,38 @@ export default function RentalBookingCard({
                                         />
                                     </PopoverContent>
                                 </Popover>
-                            </div>
+                            </div> */}
 
                             <div className="space-y-2">
-                                <Label>Data de Fim</Label>
+                                <Label>Data(s)</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent truncate">
                                             <CalendarDays className="mr-2 h-4 w-4 text-blueDark" />
-                                            {endDate ? format(endDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"}
+                                            {/* {endDate ? format(endDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"} */}
+                                            Selecionar data
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
-                                        <CalendarComponent
+                                        {/* <CalendarComponent
                                             mode="single"
                                             selected={endDate}
                                             onSelect={setEndDate}
                                             disabled={(date) => date < new Date() || (startDate ? date < startDate : false)}
                                             initialFocus
+                                        /> */}
+                                        <CalendarComponent
+                                            mode="multiple"
+                                            selected={reservations.map(r => r.date)}
+                                            onSelect={(dates) => { // em teste
+                                                if (!dates) return;
+                                                // Atualiza as reservas com novas datas, mantendo os horários já escolhidos
+                                                setReservations((prev) => {
+                                                    const existing = new Map(prev.map(r => [r.date.toDateString(), r]));
+                                                    return dates.map((d) => existing.get(d.toDateString()) || { date: d, hours: [] });
+                                                });
+                                            }}
+                                            disabled={(date) => date < new Date()}
                                         />
                                     </PopoverContent>
                                 </Popover>
@@ -350,7 +379,7 @@ export default function RentalBookingCard({
                         </div>
 
                         {/* Seleção de Horários (apenas se for por hora) */}
-                        {chargingType === "POR_HORA" && (
+                        {/* {chargingType === "POR_HORA" && (
                             <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
                                 <div className="space-y-2">
                                     <Label>Horário de Início</Label>
@@ -384,7 +413,42 @@ export default function RentalBookingCard({
                                     </Select>
                                 </div>
                             </div>
-                        )}
+                        )} */}
+                        {chargingType === "POR_HORA" && reservations.map((reservation, idx) => (
+                            <div key={idx} className="space-y-2 border p-3 rounded-md">
+                                <p className="font-medium">
+                                    {format(reservation.date, "dd/MM/yyyy", { locale: ptBR })}
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {timeSlots.map((time) => {
+                                        const isSelected = reservation.hours.includes(time);
+                                        return (
+                                            <Button
+                                                key={time}
+                                                size="sm"
+                                                variant={isSelected ? "default" : "outline"}
+                                                onClick={() => {
+                                                    setReservations((prev) =>
+                                                        prev.map((r, i) =>
+                                                            i === idx
+                                                                ? { // em teste
+                                                                    ...r,
+                                                                    hours: isSelected
+                                                                        ? r.hours.filter((h) => h !== time)
+                                                                        : [...r.hours, time],
+                                                                }
+                                                                : r
+                                                        )
+                                                    );
+                                                }}
+                                            >
+                                                {time}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Coluna Direita - Atividade */}
@@ -420,25 +484,44 @@ export default function RentalBookingCard({
 
                         {/* Resumo do Preço */}
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 truncate">
-                            <h4 className="font-semibold text-blueDark mb-2">Resumo do Pagamento</h4>
+                            <h4 className="font-semibold text-blueDark mb-2">
+                                Resumo do Pagamento
+                            </h4>
                             <div className="space-y-1 text-sm">
                                 <div className="flex justify-between">
                                     <span>Tipo:</span>
-                                    <span className="capitalize">{chargingType === "POR_HORA" ? "Por hora" : "Por dia"}</span>
+                                    <span className="capitalize">
+                                        {chargingType === "POR_HORA" ? "Por hora" : "Por dia"}
+                                    </span>
                                 </div>
-                                {startDate && endDate && (
+                                {reservations.length > 0 && (
                                     <div className="flex justify-between">
-                                        <span>Período:</span>
-                                        <span>
-                                            {format(startDate, "dd/MM", { locale: ptBR })} - {format(endDate, "dd/MM", { locale: ptBR })}
+                                        <span className="mr-2">Dias:</span>
+                                        <span className="flex flex-wrap gap-x-4">
+                                            {reservations.map((r, index) => (
+                                                <div key={index} className="flex flex-wrap gap-x-2">
+                                                    <span>
+                                                        {format(r.date, "dd/MM", { locale: ptBR })}
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </span>
                                     </div>
                                 )}
-                                {chargingType === "POR_HORA" && startTime && endTime && (
+                                {chargingType === "POR_HORA" && reservations.length > 0 && (
                                     <div className="flex justify-between">
-                                        <span>Horário:</span>
-                                        <span>
-                                            {startTime} - {endTime}
+                                        <span className="mr-2">Horários:</span>
+                                        <span className="flex flex-wrap gap-x-4">
+                                            {reservations.map((r, index) => (
+                                                <div key={index} className="flex flex-wrap gap-x-2">
+                                                    <span className="font-semibold">
+                                                        dia {format(r.date, "dd/MM", { locale: ptBR })}:
+                                                    </span>
+                                                    {r.hours.map((hour, i) => (
+                                                        <span key={i}>{hour}</span>
+                                                    ))}
+                                                </div>
+                                            ))}
                                         </span>
                                     </div>
                                 )}

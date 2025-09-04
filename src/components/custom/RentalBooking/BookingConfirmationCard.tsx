@@ -220,16 +220,16 @@ export default function BookingConfirmationCard({
                                     <Calendar className="h-4 w-4 text-gray-500 shrink-0" />
                                     <div>
                                         <p className="text-sm text-gray-600">Período</p>
-                                        <p className="font-medium">
+                                        {/* <p className="font-medium">
                                             {bookingData.startDate && bookingData.endDate
                                                 ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
                                                 : "Data não definida"
                                             }
-                                        </p>
+                                        </p> */}
                                     </div>
                                 </div>
 
-                                {bookingData.startTime && bookingData.endTime && (
+                                {/* {bookingData.startTime && bookingData.endTime && (
                                     <div className="flex items-center gap-3">
                                         <Clock className="h-4 w-4 text-gray-500" />
                                         <div>
@@ -239,7 +239,7 @@ export default function BookingConfirmationCard({
                                             </p>
                                         </div>
                                     </div>
-                                )}
+                                )} */}
 
                                 <div className="flex items-center gap-3">
                                     <div className={bookingData.chargingType === "POR_HORA" ? "w-4 h-4 bg-yellowDark rounded-full flex-shrink-0" : "w-4 h-4 bg-blueLight rounded-full flex-shrink-0"}></div>
