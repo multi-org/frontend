@@ -39,7 +39,11 @@ export interface BookingType {
         name: string,
         email: string,
         phone: string,
-    }
+    },
+    reservations: {
+        date: string,
+        hours: string[],
+    }[],
     activityTitle: string,
     activityDescription: string,
     chargingType: "POR_HORA" | "POR_DIA" | null,

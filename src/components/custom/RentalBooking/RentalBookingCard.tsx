@@ -13,6 +13,7 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { ProductType } from "@/types/Product"
 import { BookingType } from "@/types/Booking"
+import { useProducts } from "@/hooks/products-hooks"
 
 interface RentalBookingCardProps {
     product: ProductType
@@ -39,34 +40,44 @@ const typeConfig = {
     },
 }
 
-// Gerar horários de 8h às 22h
-const generateTimeSlots = () => {
-    const slots = []
-    for (let hour = 8; hour <= 22; hour++) {
-        slots.push(`${hour.toString().padStart(2, "0")}:00`)
-    }
-    return slots
-}
-
 export default function RentalBookingCard({
     product,
     onPayment,
     onBack,
     onNext,
 }: RentalBookingCardProps) {
-
-    // const [startDate, setStartDate] = useState<Date>()
-    // const [endDate, setEndDate] = useState<Date>()
-    // const [startTime, setStartTime] = useState("")
-    // const [endTime, setEndTime] = useState("")
+    const { getProductAvailableDays, getProductAvailableHours } = useProducts()
     const [chargingType, setChargingType] = useState<"POR_HORA" | "POR_DIA" | null>(null)
     const [reservations, setReservations] = useState<{ date: Date; hours: string[] }[]>([]);
     const [activityTitle, setActivityTitle] = useState("")
     const [activityDescription, setActivityDescription] = useState("")
+    const [availableDays, setAvailableDays] = useState<Date[]>([])
+    const [availableHours, setAvailableHours] = useState<Record<string, string[]>>({})
+    const [loadingDays, setLoadingDays] = useState(false)
+    const [loadingHours, setLoadingHours] = useState(false)
 
     const config = typeConfig[product.type]
     const IconComponent = config.icon
-    const timeSlots = generateTimeSlots()
+
+    const handleChargingTypeChange = async (type: "POR_HORA" | "POR_DIA") => {
+        setChargingType(type)
+        setReservations([]) // reseta reservas ao mudar tipo
+
+        try {
+            setLoadingDays(true)
+            const days = await getProductAvailableDays(product.id)
+            const parsed = days.map((d) => {
+                const [year, month, day] = d.split("-").map(Number)
+                return new Date(year, month - 1, day, 12, 0, 0) // sempre meio-dia local
+            })
+            setAvailableDays(parsed)
+            console.log(availableDays)
+        } catch (err) {
+            console.error("Erro ao buscar dias disponíveis", err)
+        } finally {
+            setLoadingDays(false)
+        }
+    }
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("pt-BR", {
@@ -75,32 +86,35 @@ export default function RentalBookingCard({
         }).format(price)
     }
 
-    // const calculateTotal = () => {
-    //     if (!startDate || !endDate) return 0
+    const handleSelectDates = async (dates: Date[] | undefined) => {
+        if (!dates) return
 
-    //     if (chargingType === "POR_DIA") {
-    //         const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
-    //         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-    //         return diffDays * product.dailyPrice
-    //     } else {
-    //         if (!startTime || !endTime) return 0
+        setReservations((prev) => {
+            const existing = new Map(prev.map(r => [r.date.toDateString(), r]))
+            return dates.map((d) => existing.get(d.toDateString()) || { date: d, hours: [] })
+        })
 
-    //         const [startHour] = startTime.split(":").map(Number)
-    //         const [endHour] = endTime.split(":").map(Number)
+        // só busca horários se for por hora
+        if (chargingType === "POR_HORA") {
+            for (const d of dates) {
+                const dateStr = format(d, "yyyy-MM-dd")
+                if (!availableHours[dateStr]) {
+                    try {
+                        setLoadingHours(true)
+                        const hours = await getProductAvailableHours(product.id, dateStr)
+                        setAvailableHours((prev) => ({ ...prev, [dateStr]: hours }))
+                        console.log(availableHours) // em teste
+                    } catch (err) {
+                        console.error("Erro ao buscar horários disponíveis", err)
+                    } finally {
+                        setLoadingHours(false)
+                    }
+                }
+            }
+        }
+    }
 
-    //         // Diferença em horas no mesmo dia
-    //         const hoursPerDay = endHour - startHour
-    //         if (hoursPerDay <= 0) return 0
-
-    //         // Diferença em dias (contando o último dia também)
-    //         const diffTime = Math.abs(endDate.getTime() - startDate.getTime())
-    //         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
-
-    //         return diffDays * hoursPerDay * product.hourlyPrice
-    //     }
-    // }
-
-    const calculateTotal = () => { // em teste
+    const calculateTotal = () => {
         if (chargingType === "POR_DIA") {
             return reservations.length * product.dailyPrice;
         }
@@ -133,10 +147,6 @@ export default function RentalBookingCard({
                 email: "",
                 phone: "",
             },
-            // startDate,
-            // endDate,
-            // startTime: chargingType === "POR_HORA" ? startTime : undefined,
-            // endTime: chargingType === "POR_HORA" ? endTime : undefined,
             client: {
                 name: "",
                 email: "",
@@ -303,7 +313,7 @@ export default function RentalBookingCard({
                             <Label>Tipo de Aluguel</Label>
                             <Select
                                 value={chargingType ?? undefined}
-                                onValueChange={(value: "POR_HORA" | "POR_DIA") => setChargingType(value)}
+                                onValueChange={handleChargingTypeChange}
                             >
                                 <SelectTrigger className="text-black ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
                                     <SelectValue placeholder="Selecione a forma de aluguel" />
@@ -320,135 +330,80 @@ export default function RentalBookingCard({
                         </div>
 
                         {/* Seleção de Datas */}
-                        <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
-                            {/* <div className="space-y-2">
-                                <Label>Data de Início</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent truncate">
-                                            <CalendarDays className="mr-2 h-4 w-4 text-blueDark" />
-                                            {startDate ? format(startDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <CalendarComponent
-                                            mode="single"
-                                            selected={startDate}
-                                            onSelect={setStartDate}
-                                            disabled={(date) => date < new Date()}
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </div> */}
 
-                            <div className="space-y-2">
-                                <Label>Data(s)</Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent truncate">
-                                            <CalendarDays className="mr-2 h-4 w-4 text-blueDark" />
-                                            {/* {endDate ? format(endDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecionar data"} */}
-                                            Selecionar data
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        {/* <CalendarComponent
-                                            mode="single"
-                                            selected={endDate}
-                                            onSelect={setEndDate}
-                                            disabled={(date) => date < new Date() || (startDate ? date < startDate : false)}
-                                            initialFocus
-                                        /> */}
-                                        <CalendarComponent
-                                            mode="multiple"
-                                            selected={reservations.map(r => r.date)}
-                                            onSelect={(dates) => { // em teste
-                                                if (!dates) return;
-                                                // Atualiza as reservas com novas datas, mantendo os horários já escolhidos
-                                                setReservations((prev) => {
-                                                    const existing = new Map(prev.map(r => [r.date.toDateString(), r]));
-                                                    return dates.map((d) => existing.get(d.toDateString()) || { date: d, hours: [] });
-                                                });
-                                            }}
-                                            disabled={(date) => date < new Date()}
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
+                        <div className="space-y-2">
+                            <Label>Data(s)</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="outline" className="w-full justify-start text-left font-normal bg-transparent truncate">
+                                        <CalendarDays className="mr-2 h-4 w-4 text-blueDark" />
+                                        Selecionar data
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <CalendarComponent
+                                        mode="multiple"
+                                        selected={reservations.map(r => r.date)}
+                                        onSelect={handleSelectDates}
+                                        disabled={(date) => // em teste
+                                            date < new Date() || !availableDays.some(d => d.toDateString() === date.toDateString())
+                                        }
+                                        classNames={{
+                                            day_selected: "bg-blueLight text-white hover:bg-blueLight hover:text-white",
+                                        }}
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </div>
 
-                        {/* Seleção de Horários (apenas se for por hora) */}
-                        {/* {chargingType === "POR_HORA" && (
-                            <div className="grid grid-cols-2 gap-4 max-[440px]:grid-cols-1">
-                                <div className="space-y-2">
-                                    <Label>Horário de Início</Label>
-                                    <Select value={startTime} onValueChange={setStartTime}>
-                                        <SelectTrigger className="ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
-                                            <SelectValue placeholder="Selecionar horário" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {timeSlots.map((time) => (
-                                                <SelectItem key={time} value={time}>
-                                                    {time}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <Label>Horário de Fim</Label>
-                                    <Select value={endTime} onValueChange={setEndTime}>
-                                        <SelectTrigger className="ring-1 ring-transparent focus:ring-2 focus:ring-blueLight focus:ring-offset-2">
-                                            <SelectValue placeholder="Selecionar horário" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {timeSlots.map((time) => (
-                                                <SelectItem key={time} value={time}>
-                                                    {time}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                        {/* Seleção de Horários (apenas se for por hora) */}
+
+                        {chargingType === "POR_HORA" && reservations.map((reservation, idx) => {
+                            const dateStr = format(reservation.date, "yyyy-MM-dd")
+                            const hours = availableHours[dateStr] || []
+
+                            return (
+                                <div key={idx} className="space-y-2 border p-3 rounded-md">
+                                    <span className="text-sm">
+                                        Dia {format(reservation.date, "dd/MM/yyyy", { locale: ptBR })}
+                                    </span>
+                                    {loadingHours && !hours.length ? (
+                                        <p>Carregando horários...</p>
+                                    ) : (
+                                        <div className="flex flex-wrap gap-2">
+                                            {hours.map((time) => {
+                                                const isSelected = reservation.hours.includes(time)
+                                                return (
+                                                    <Button
+                                                        key={time}
+                                                        size="sm"
+                                                        variant={isSelected ? "default" : "outline"}
+                                                        className={isSelected ? "bg-blueLight text-white hover:bg-blueDark" : ""}
+                                                        onClick={() => {
+                                                            setReservations((prev) =>
+                                                                prev.map((r, i) =>
+                                                                    i === idx
+                                                                        ? {
+                                                                            ...r,
+                                                                            hours: isSelected
+                                                                                ? r.hours.filter((h) => h !== time)
+                                                                                : [...r.hours, time],
+                                                                        }
+                                                                        : r
+                                                                )
+                                                            )
+                                                        }}
+                                                    >
+                                                        {time}
+                                                    </Button>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        )} */}
-                        {chargingType === "POR_HORA" && reservations.map((reservation, idx) => (
-                            <div key={idx} className="space-y-2 border p-3 rounded-md">
-                                <p className="font-medium">
-                                    {format(reservation.date, "dd/MM/yyyy", { locale: ptBR })}
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                    {timeSlots.map((time) => {
-                                        const isSelected = reservation.hours.includes(time);
-                                        return (
-                                            <Button
-                                                key={time}
-                                                size="sm"
-                                                variant={isSelected ? "default" : "outline"}
-                                                onClick={() => {
-                                                    setReservations((prev) =>
-                                                        prev.map((r, i) =>
-                                                            i === idx
-                                                                ? { // em teste
-                                                                    ...r,
-                                                                    hours: isSelected
-                                                                        ? r.hours.filter((h) => h !== time)
-                                                                        : [...r.hours, time],
-                                                                }
-                                                                : r
-                                                        )
-                                                    );
-                                                }}
-                                            >
-                                                {time}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
 
                     {/* Coluna Direita - Atividade */}
@@ -494,36 +449,44 @@ export default function RentalBookingCard({
                                         {chargingType === "POR_HORA" ? "Por hora" : "Por dia"}
                                     </span>
                                 </div>
+
                                 {reservations.length > 0 && (
-                                    <div className="flex justify-between">
-                                        <span className="mr-2">Dias:</span>
-                                        <span className="flex flex-wrap gap-x-4">
-                                            {reservations.map((r, index) => (
-                                                <div key={index} className="flex flex-wrap gap-x-2">
-                                                    <span>
-                                                        {format(r.date, "dd/MM", { locale: ptBR })}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </span>
-                                    </div>
+                                    <>
+                                        <Separator className="my-2" />
+                                        <div className="flex justify-between">
+                                            <span className="mr-2">Dias:</span>
+                                            <span className="flex flex-wrap gap-x-4">
+                                                {reservations.map((r, index) => (
+                                                    <div key={index} className="flex flex-wrap gap-x-2">
+                                                        <span>
+                                                            {format(r.date, "dd/MM", { locale: ptBR })}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    </>
                                 )}
+
                                 {chargingType === "POR_HORA" && reservations.length > 0 && (
-                                    <div className="flex justify-between">
-                                        <span className="mr-2">Horários:</span>
-                                        <span className="flex flex-wrap gap-x-4">
-                                            {reservations.map((r, index) => (
-                                                <div key={index} className="flex flex-wrap gap-x-2">
-                                                    <span className="font-semibold">
-                                                        dia {format(r.date, "dd/MM", { locale: ptBR })}:
-                                                    </span>
-                                                    {r.hours.map((hour, i) => (
-                                                        <span key={i}>{hour}</span>
-                                                    ))}
-                                                </div>
-                                            ))}
-                                        </span>
-                                    </div>
+                                    <>
+                                        <Separator className="my-2" />
+                                        <div className="flex justify-between">
+                                            <span className="mr-2">Horários:</span>
+                                            <span className="flex flex-wrap gap-x-4">
+                                                {reservations.map((r, index) => (
+                                                    <div key={index} className="flex flex-wrap gap-x-2">
+                                                        <span className="font-semibold">
+                                                            dia {format(r.date, "dd/MM", { locale: ptBR })}:
+                                                        </span>
+                                                        {r.hours.map((hour, i) => (
+                                                            <span key={i}>{hour}</span>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </span>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                             <Separator className="my-2" />

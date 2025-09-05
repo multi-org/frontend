@@ -30,6 +30,47 @@ export const useProducts = () => {
     }
   }
 
+  const getProductAvailableDays = async (productId: string): Promise<string[]> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get(`/availability/${productId}`)
+      console.log("Resposta do available days:", response.data)
+
+      // extrai apenas os dias realmente disponíveis
+      const available = response.data.data
+        .filter((d: any) => d.isAvailability)
+        .map((d: any) => d.date)
+
+      return available
+    } catch (err) {
+      const message = "Erro na tentativa de buscar dias disponíveis"
+      setError(message)
+      throw new Error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getProductAvailableHours = async (
+    productId: string,
+    date: string,
+  ): Promise<string[]> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get(`/availability/hours/${productId}/${date}`)
+      console.log("Resposta do available hours:", response.data)
+      return response.data?.data ?? []   // <-- agora retorna só o array
+    } catch (err) {
+      const message = "Erro na tentativa de buscar horários disponíveis"
+      setError(message)
+      throw new Error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const createProduct = async (product: {
     companyId: string,
     type: string,
@@ -194,5 +235,7 @@ export const useProducts = () => {
     updateProduct,
     deleteProductById,
     getProducts,
+    getProductAvailableDays,
+    getProductAvailableHours,
   }
 }

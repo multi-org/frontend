@@ -220,26 +220,39 @@ export default function BookingConfirmationCard({
                                     <Calendar className="h-4 w-4 text-gray-500 shrink-0" />
                                     <div>
                                         <p className="text-sm text-gray-600">Período</p>
-                                        {/* <p className="font-medium">
-                                            {bookingData.startDate && bookingData.endDate
-                                                ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
-                                                : "Data não definida"
-                                            }
-                                        </p> */}
+                                        <span className="mr-2">Dias:</span>
+                                        <span className="flex flex-wrap gap-x-4">
+                                            {bookingData.reservations.map((r, index) => (
+                                                <div key={index} className="flex flex-wrap gap-x-2">
+                                                    <span>
+                                                        {format(r.date, "dd/MM", { locale: ptBR })}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </span>
                                     </div>
                                 </div>
 
-                                {/* {bookingData.startTime && bookingData.endTime && (
+                                {bookingData?.chargingType === "POR_HORA" && bookingData?.reservations.length > 0 && (
                                     <div className="flex items-center gap-3">
                                         <Clock className="h-4 w-4 text-gray-500" />
                                         <div>
-                                            <p className="text-sm text-gray-600">Horário</p>
-                                            <p className="font-medium">
-                                                {bookingData.startTime} - {bookingData.endTime}
-                                            </p>
+                                            <p className="mr-2">Horários:</p>
+                                            <span className="flex flex-wrap gap-x-4">
+                                                {bookingData.reservations.map((r, index) => (
+                                                    <div key={index} className="flex flex-wrap gap-x-2">
+                                                        <span className="font-semibold">
+                                                            dia {format(r.date, "dd/MM", { locale: ptBR })}:
+                                                        </span>
+                                                        {r.hours.map((hour, i) => (
+                                                            <span key={i}>{hour}</span>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </span>
                                         </div>
                                     </div>
-                                )} */}
+                                )}
 
                                 <div className="flex items-center gap-3">
                                     <div className={bookingData.chargingType === "POR_HORA" ? "w-4 h-4 bg-yellowDark rounded-full flex-shrink-0" : "w-4 h-4 bg-blueLight rounded-full flex-shrink-0"}></div>
