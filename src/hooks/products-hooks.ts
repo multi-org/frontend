@@ -22,7 +22,7 @@ export const useProducts = () => {
       const response = await api.get<GetProductsResponse>('/products/all')
       setProducts(response.data.data)
     } catch (err) {
-      const message = "Erro na tentativa de criar instituição";
+      const message = "Erro na tentativa de buscar produtos";
       setError(message)
       throw new Error(message)
     } finally {
