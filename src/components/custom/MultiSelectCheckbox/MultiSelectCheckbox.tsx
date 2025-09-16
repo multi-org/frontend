@@ -20,7 +20,6 @@ export default function MultiSelectCheckbox<T extends string>({
     onChange,
     placeholder = "Selecione...",
     checkboxColor,
-    label
 }: MultiSelectCheckboxProps<T>) {
 
     const checkboxColors: Record<string, string> = {
