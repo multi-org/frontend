@@ -206,7 +206,7 @@ const CardLogin: React.FC = () => {
                   {loading ? 'Entrando...' : 'Entrar'}
                 </Button>
 
-                <Link to="/cadastro">
+                <Link to="/sign-up">
                   <Button
                     variant="link"
                     className="text-blueLight hover:text-yellowDark hover:no-underline"

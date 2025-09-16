@@ -22,7 +22,48 @@ export const useProducts = () => {
       const response = await api.get<GetProductsResponse>('/products/all')
       setProducts(response.data.data)
     } catch (err) {
-      const message = "Erro na tentativa de criar instituição";
+      const message = "Erro na tentativa de buscar produtos";
+      setError(message)
+      throw new Error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getProductAvailableDays = async (productId: string): Promise<string[]> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get(`/availability/${productId}`)
+      console.log("Resposta do available days:", response.data)
+
+      // extrai apenas os dias realmente disponíveis
+      const available = response.data.data
+        .filter((d: any) => d.isAvailability)
+        .map((d: any) => d.date)
+
+      return available
+    } catch (err) {
+      const message = "Erro na tentativa de buscar dias disponíveis"
+      setError(message)
+      throw new Error(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getProductAvailableHours = async (
+    productId: string,
+    date: string,
+  ): Promise<string[]> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await api.get(`/availability/hours/${productId}/${date}`)
+      console.log("Resposta do available hours:", response.data)
+      return response.data?.data ?? []   // <-- agora retorna só o array
+    } catch (err) {
+      const message = "Erro na tentativa de buscar horários disponíveis"
       setError(message)
       throw new Error(message)
     } finally {
@@ -71,10 +112,15 @@ export const useProducts = () => {
       formData.append("description", product.description)
       formData.append("category", product.category)
       formData.append("chargingModel", product.chargingModel)
+      formData.append("chargingModel", product.chargingModel)
       formData.append(
         "weeklyAvailability",
         JSON.stringify(product.weeklyAvailability)
       )
+
+      if (product.discountPercentage !== undefined) {
+        formData.append("discountPercentage", product.discountPercentage.toString());
+      }
 
       if (product.hourlyPrice !== undefined) {
         formData.append("hourlyPrice", product.hourlyPrice.toString());
@@ -194,5 +240,7 @@ export const useProducts = () => {
     updateProduct,
     deleteProductById,
     getProducts,
+    getProductAvailableDays,
+    getProductAvailableHours,
   }
 }

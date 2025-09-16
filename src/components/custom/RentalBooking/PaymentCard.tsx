@@ -183,17 +183,37 @@ export default function PaymentCard({
                             <p className="text-gray-600">{bookingData?.activityDescription}</p>
                         </div>
                         <div>
-                            <p className="font-medium text-gray-700">Período:</p>
-                            <p className="text-gray-600">
-                                {bookingData.startDate && bookingData.endDate
-                                    ? `${format(bookingData.startDate, "dd/MM/yyyy", { locale: ptBR })} - ${format(bookingData.endDate, "dd/MM/yyyy", { locale: ptBR })}`
-                                    : "Data não definida"
-                                }
-                            </p>
-                            {bookingData.startTime && bookingData.endTime && (
-                                <p className="text-gray-600">
-                                    {bookingData.startTime} - {bookingData.endTime}
-                                </p>
+                            {bookingData?.reservations?.length > 0 && (
+                                <div className="flex justify-between">
+                                    <span className="mr-2">Dias:</span>
+                                    <span className="flex flex-wrap gap-x-4">
+                                        {bookingData.reservations.map((r, index) => (
+                                            <div key={index} className="flex flex-wrap gap-x-2">
+                                                <span>
+                                                    {format(r.date, "dd/MM", { locale: ptBR })}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </span>
+                                </div>
+                            )}
+                            <Separator className="my-2" />
+                            {bookingData?.chargingType === "POR_HORA" && bookingData?.reservations.length > 0 && (
+                                <div className="flex justify-between">
+                                    <span className="mr-2">Horários:</span>
+                                    <span className="flex flex-wrap gap-x-4">
+                                        {bookingData.reservations.map((r, index) => (
+                                            <div key={index} className="flex flex-wrap gap-x-2">
+                                                <span className="font-semibold">
+                                                    dia {format(r.date, "dd/MM", { locale: ptBR })}:
+                                                </span>
+                                                {r.hours.map((hour, i) => (
+                                                    <span key={i}>{hour}</span>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </span>
+                                </div>
                             )}
                         </div>
                     </div>
