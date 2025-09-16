@@ -67,6 +67,7 @@ export default function RentalBookingCard({
 
         try {
             setLoadingDays(true)
+            console.log(loadingDays)
             const days = await getProductAvailableDays(product.id)
             const parsed = days.map((d) => {
                 const [year, month, day] = d.split("-").map(Number)
@@ -78,6 +79,7 @@ export default function RentalBookingCard({
             console.error("Erro ao buscar dias disponíveis", err)
         } finally {
             setLoadingDays(false)
+            console.log(loadingDays)
         }
     }
 

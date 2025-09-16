@@ -7,7 +7,7 @@ type ImageUploaderProps = {
   onChange?: (files: File[]) => void
 }
 
-const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ value = [], onChange }: ImageUploaderProps, ref) => {
+const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ value = [], onChange }: ImageUploaderProps) => {
   const [previews, setPreviews] = useState<string[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const MAX_FILES = 3

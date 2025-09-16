@@ -9,7 +9,6 @@ interface LegalResponsibleUserProps {
 
 export const useLegalResponsibleUserStore = create<LegalResponsibleUserProps>()((
     set,
-    get
 ) => ({
 
     legalResponsibleUserRequests: [],
