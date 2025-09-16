@@ -112,10 +112,15 @@ export const useProducts = () => {
       formData.append("description", product.description)
       formData.append("category", product.category)
       formData.append("chargingModel", product.chargingModel)
+      formData.append("chargingModel", product.chargingModel)
       formData.append(
         "weeklyAvailability",
         JSON.stringify(product.weeklyAvailability)
       )
+
+      if (product.discountPercentage !== undefined) {
+        formData.append("discountPercentage", product.discountPercentage.toString());
+      }
 
       if (product.hourlyPrice !== undefined) {
         formData.append("hourlyPrice", product.hourlyPrice.toString());

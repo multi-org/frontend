@@ -59,6 +59,8 @@ export default function RentalBookingCard({
     const config = typeConfig[product.type]
     const IconComponent = config.icon
 
+    console.log(product)
+
     const handleChargingTypeChange = async (type: "POR_HORA" | "POR_DIA") => {
         setChargingType(type)
         setReservations([]) // reseta reservas ao mudar tipo
@@ -144,8 +146,8 @@ export default function RentalBookingCard({
             productImage: product.imagesUrls,
             productDiscount: product.discountPercentage || 0,
             institution: {
-                email: "",
-                phone: "",
+                email: product.owner.email,
+                phone: product.owner.phoneNumber,
             },
             client: {
                 name: "",

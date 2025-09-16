@@ -92,18 +92,81 @@ export const useUsers = () => {
         }
     }
 
-    const updateUser = async (user: UserType) => {
+    const updateUserAvatar = async (image: File[]) => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.put<UserType>(
-                `/users/${user.id}`,
-                user,
+
+            const formData = new FormData()
+            if (image && image.length > 0) {
+                image.forEach((file, index) => {
+                    if (file instanceof File) {
+                        formData.append('image', file)
+                        console.log(`Arquivo ${index} adicionado:`, file.name, file.size)
+                    } else {
+                        console.error(`Item ${index} não é um File:`, file)
+                    }
+                })
+            }
+
+            const response = await api.put(
+                `/users/changeProfileImage`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                }
             )
             update(response.data)
             return response.data
         } catch (err) {
             setError('Erro ao atualizar produto')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const confirmUserPassword = async (
+        password: string,
+    ) => {
+        setLoading(true)
+        setError(null)
+
+        try {
+            const response = await api.post("/users/confirmPassword",
+                { password },
+                { withCredentials: true }
+            )
+            return response.data
+        } catch (err: any) {
+            setError(err?.response?.data?.message || "Erro ao tentar confirmar senha")
+            throw new Error("Erro ao tentar confirmar senha")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const updateUserPassword = async (
+        newPassword: string,
+        passwordConfirmation: string,
+    ) => {
+        setLoading(true)
+        setError(null)
+
+        try {
+            const response = await api.put("/users/changePassword",
+                { 
+                    newPassword,
+                    passwordConfirmation,
+                },
+                { withCredentials: true }
+            )
+            console.log("Resposta da API:", response.data)
+            return response.data
+        } catch (err: any) {
+            setError(err?.response?.data?.message || "Erro ao tentar alterar senha")
+            throw new Error("Erro ao tentar alterar senha")
         } finally {
             setLoading(false)
         }
@@ -116,7 +179,9 @@ export const useUsers = () => {
         userLogout,
         getUsers,
         getUserById,
-        updateUser,
+        updateUserAvatar,
+        confirmUserPassword,
+        updateUserPassword,
         loading,
         error,
         setError

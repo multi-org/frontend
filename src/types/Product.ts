@@ -10,6 +10,8 @@ export interface ProductType {
       city: string,
       state: string,
     },
+    email: string,
+    phoneNumber: string,
   },
   description: string,
   category: string,
