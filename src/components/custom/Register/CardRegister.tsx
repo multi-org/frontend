@@ -426,7 +426,7 @@ const CardRegister: React.FC = () => {
         {/* Lado da imagem */}
         <div className="w-1/2 hidden sm:flex">
           <img
-            src="src/assets/image CardRegister.png"
+            src="/assets/image CardRegister.png"
             alt="image CardRegister"
             className="w-full h-full object-cover"
           />
