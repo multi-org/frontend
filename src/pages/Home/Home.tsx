@@ -20,7 +20,7 @@ export function Home() {
         {/* HERO */}
         <div
           id="home"
-          className="flex h-[500px] w-full items-center justify-center bg-[url('/src/assets/home-bg-image.jpg')] bg-cover bg-center bg-no-repeat"
+          className="flex h-[500px] w-full items-center justify-center bg-[url('/assets/home-bg-image.jpg')] bg-cover bg-center bg-no-repeat"
         >
           <div className="flex flex-col items-center justify-center text-grayLight text-center">
             <h1 className="text-5xl font-bold sm:text-6xl">MULTI</h1>
@@ -45,7 +45,7 @@ export function Home() {
           </h1>
           <div className="mt-16 flex flex-col items-center gap-6 md:flex-row md:justify-between">
             <img
-              src="src/assets/multi-logo.jpg"
+              src="/assets/multi-logo.jpg"
               alt="Logo do Multi"
               className="h-[120px] w-[180px] object-contain"
             />

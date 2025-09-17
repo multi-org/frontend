@@ -142,7 +142,7 @@ export default function BookingConfirmationCard({
                     <div className="flex max-[400px]:flex-col gap-4 p-4 bg-gray-50 rounded-lg">
                         <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                                src={bookingData?.productImage[0] || "/placeholder.svg"}
+                                src={bookingData?.productImage[0] || "/assets/svg/image.svg"}
                                 alt={bookingData?.productTitle}
                                 className="object-cover h-full w-full"
                             />

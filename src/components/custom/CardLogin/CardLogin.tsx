@@ -132,7 +132,7 @@ const CardLogin: React.FC = () => {
       <Card className="flex flex-row h-full bg-[#F2F2F2] shadow-md rounded-l-md">
         <div className="w-[400px] h-[645px] relative hidden sm:flex">
           <img
-            src="/src/assets/imageLogin.png"
+            src="/assets/imageLogin.png"
             alt="Imagem de fundo"
             className="w-full h-full object-cover rounded-l-md"
             draggable="false"
