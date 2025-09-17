@@ -150,7 +150,7 @@ export default function PaymentCard({
                     <div className="flex gap-4 max-[400px]:flex-col">
                         <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                                src={bookingData?.productImage[0] || "/placeholder.svg"}
+                                src={bookingData?.productImage[0] || "/assets/svg/image.svg"}
                                 alt={bookingData?.productTitle}
                                 className="object-cover h-full w-full"
                             />

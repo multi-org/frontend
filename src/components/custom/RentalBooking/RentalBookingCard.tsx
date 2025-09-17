@@ -198,7 +198,7 @@ export default function RentalBookingCard({
                             />
                         ) : (
                             <img
-                                src={"/src/assets/svg/image.svg"}
+                                src={"/assets/svg/image.svg"}
                                 alt={product?.title ?? "...Carregando"}
                                 className="h-10 w-10 opacity-50"
                             />

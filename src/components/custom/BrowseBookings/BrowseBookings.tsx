@@ -17,7 +17,7 @@ export default function BrowseBookings() {
                         productName: "Auditório Premium",
                         productType: "espaco",
                         productCategory: "Auditório",
-                        productImage: "/src/assets/multi-prod-serv.png",
+                        productImage: "/assets/multi-prod-serv.png",
                         startDate: new Date(2024, 11, 20),
                         endDate: new Date(2024, 11, 22),
                         rentalType: "dia",
