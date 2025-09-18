@@ -1,6 +1,8 @@
 import { Accordion } from "@/components/ui/accordion"
 import AskedQuestion from "./AskedQuestion"
 import { Button } from "@/components/ui/button"
+import { useAskedQuestions } from "@/hooks/askedQuestions-hooks";
+import { useEffect } from "react";
 
 type FrequentlyAskedQuestionsProps = {
     onNext: () => void;
@@ -9,6 +11,14 @@ type FrequentlyAskedQuestionsProps = {
 export default function FrequentlyAskedQuestions({
     onNext
 }: FrequentlyAskedQuestionsProps) {
+
+    const { askedQuestions, getAskedQuestions } = useAskedQuestions();
+
+    useEffect(() => {
+        getAskedQuestions()
+        console.log("Dúvidas retornadas:", askedQuestions)
+    }, [])
+
     return (
         <>
             <header>
@@ -28,7 +38,20 @@ export default function FrequentlyAskedQuestions({
                     className="w-full"
                     defaultValue="item-1"
                 >
-                    <AskedQuestion />
+                    {askedQuestions.length > 0 ? (
+                        askedQuestions.map((askedQuestion) => {
+                            return (
+                                <AskedQuestion
+                                    key={askedQuestion.id}
+                                    askedQuestion={askedQuestion}
+                                />
+                            )
+                        })
+                    ) : (
+                        <p>
+                            Nenhuma dúvida registrada até o momento.
+                        </p>
+                    )}
                 </Accordion>
             </div>
             <div className="text-center text-sm">

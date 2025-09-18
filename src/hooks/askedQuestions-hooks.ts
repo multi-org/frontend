@@ -20,7 +20,7 @@ export const useAskedQuestions = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<AskedQuestionType[]>('/askedQuestions/all')
+            const response = await api.get<AskedQuestionType[]>('/faqs/all')
             setAskedQuestions(response.data)
         } catch (err) {
             const message = "Erro na tentativa de buscar perguntas frequentes";
@@ -31,21 +31,19 @@ export const useAskedQuestions = () => {
         }
     }
 
-    const createAskedQuestion = async (askedQuestion: {
-        question: string;
-        answer: string;
-    }) => {
+    const createAskedQuestion = async (question: string) => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.post(`/askedQuestions/create`,
+            const response = await api.post(`/faqs/create`,
                 {
-                    ...askedQuestion
+                    question
                 })
+            console.log("Resposta bruta do backend:", response.data);
             create(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de criar pergunta";
+            const message = "Erro na tentativa de enviar dúvida";
             setError(message)
             throw new Error(message)
         } finally {
@@ -58,13 +56,13 @@ export const useAskedQuestions = () => {
         setError(null)
         try {
             const response = await api.put<AskedQuestionType>(
-                `/askedQuestion/${askedQuestion.id}`,
-                askedQuestion,
+                `/update/answer/${askedQuestion.id}`,
+                askedQuestion.answer,
             )
             update(response.data)
             return response.data
         } catch (err) {
-            setError('Erro na tentativa de atualizar pergunta')
+            setError('Erro na tentativa de responder pergunta')
         } finally {
             setLoading(false)
         }

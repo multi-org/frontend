@@ -10,9 +10,18 @@ import {
 import { Footer } from '@/components/custom/Footer'
 import { AskedQuestion } from '@/components/custom/AskedQuestions'
 import { Accordion } from '@/components/ui/accordion'
+import { useAskedQuestions } from '@/hooks/askedQuestions-hooks'
+import { useEffect } from 'react'
 
 
 export function Home() {
+
+  const { askedQuestions, getAskedQuestions } = useAskedQuestions();
+
+  useEffect(() => {
+    getAskedQuestions()
+  }, [])
+
   return (
     <>
       <Header />
@@ -125,7 +134,20 @@ export function Home() {
                 className="w-full"
                 defaultValue="item-1"
               >
-                <AskedQuestion />
+                {askedQuestions.length > 0 ? (
+                  askedQuestions.map((askedQuestion) => {
+                    return (
+                      <AskedQuestion
+                        key={askedQuestion.id}
+                        askedQuestion={askedQuestion}
+                      />
+                    )
+                  })
+                ) : (
+                  <p>
+                    Nenhuma dúvida registrada até o momento.
+                  </p>
+                )}
               </Accordion>
             </div>
           </div>
