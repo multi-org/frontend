@@ -11,16 +11,28 @@ import { Footer } from '@/components/custom/Footer'
 import { AskedQuestion } from '@/components/custom/AskedQuestions'
 import { Accordion } from '@/components/ui/accordion'
 import { useAskedQuestions } from '@/hooks/askedQuestions-hooks'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 
 export function Home() {
 
   const { askedQuestions, getAskedQuestions } = useAskedQuestions();
+  const [storedUserRoles, setStoredUserRoles] = useState<string[]>([])
+
+  useEffect(() => {
+    const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+    setStoredUserRoles(storedUserRoles)
+  }, [])
 
   useEffect(() => {
     getAskedQuestions()
   }, [])
+
+  useEffect(() => {
+    console.log("Dúvidas retornadas:", askedQuestions)
+  }, [askedQuestions])
+
+  const isAdmin = storedUserRoles.includes("adminSystemUser");
 
   return (
     <>
@@ -128,27 +140,53 @@ export function Home() {
               Perguntas frequentes
             </h1>
             <div className="m-16 p-8 bg-gray-100 rounded-lg">
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                defaultValue="item-1"
-              >
-                {askedQuestions.length > 0 ? (
-                  askedQuestions.map((askedQuestion) => {
-                    return (
-                      <AskedQuestion
-                        key={askedQuestion.id}
-                        askedQuestion={askedQuestion}
-                      />
-                    )
-                  })
-                ) : (
-                  <p>
-                    Nenhuma dúvida registrada até o momento.
-                  </p>
-                )}
-              </Accordion>
+              {isAdmin ? (
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  defaultValue="item-1"
+                >
+                  {askedQuestions.length > 0 ? (
+                    askedQuestions.map((askedQuestion) => {
+                      return (
+                        <AskedQuestion
+                          key={askedQuestion.id}
+                          askedQuestion={askedQuestion}
+                        />
+                      )
+                    })
+                  ) : (
+                    <p>
+                      Nenhuma dúvida registrada até o momento.
+                    </p>
+                  )}
+                </Accordion>
+              ) : (
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  defaultValue="item-1"
+                >
+                  {askedQuestions.length > 0 ? (
+                    askedQuestions.map((askedQuestion) => {
+                      if (askedQuestion.answer !== null) {
+                        return (
+                          <AskedQuestion
+                            key={askedQuestion.id}
+                            askedQuestion={askedQuestion}
+                          />
+                        )
+                      }
+                    })
+                  ) : (
+                    <p>
+                      Nenhuma dúvida registrada até o momento.
+                    </p>
+                  )}
+                </Accordion>
+              )}
             </div>
           </div>
         </div>

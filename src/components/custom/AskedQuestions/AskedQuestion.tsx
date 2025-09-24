@@ -75,7 +75,7 @@ export default function AskedQuestion({
                     className="hover:no-underline hover:text-blueLight"
                 >
                     {/* Product Information */}
-                    {askedQuestion?.question || "Carregando..."}
+                    {askedQuestion?.question || ""}
                 </AccordionTrigger>
                 {isAdmin && (
                     <>
@@ -117,7 +117,7 @@ export default function AskedQuestion({
             </div>
             <AccordionContent className="flex flex-col gap-4 text-balance">
                 <p>
-                    {askedQuestion?.answer || "Carregando..."}
+                    {askedQuestion?.answer || "Não respondida até o momento."}
                 </p>
             </AccordionContent>
 

@@ -31,7 +31,7 @@ interface UpdateAskedQuestionDialogProps {
 }
 
 const updateAskedQuestionSchema = z.object({
-    answear: z.string().min(1, 'Descrição é obrigatória.'),
+    answer: z.string().min(1, 'Descrição é obrigatória.'),
 })
 
 export default function UpdateAskedQuestionDialog({
@@ -45,13 +45,13 @@ export default function UpdateAskedQuestionDialog({
     const form = useForm<z.infer<typeof updateAskedQuestionSchema>>({
         resolver: zodResolver(updateAskedQuestionSchema),
         defaultValues: {
-            answear: "",
+            answer: "",
         }
     })
 
     const handleUpdate = async (data: z.infer<typeof updateAskedQuestionSchema>) => {
         try {
-            askedQuestion.answer = data.answear;
+            askedQuestion.answer = data.answer;
             const result = await updateAskedQuestion(askedQuestion);
             console.log("Dúvida respondida com sucesso:", result);
             toast({
@@ -113,7 +113,7 @@ export default function UpdateAskedQuestionDialog({
                             <div className="grid gap-3 py-2">
                                 <FormField
                                     control={form.control}
-                                    name="answear"
+                                    name="answer"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="text-black">

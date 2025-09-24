@@ -157,7 +157,7 @@ export default function AddServiceStepTwo({
                                                     </FormLabel>
                                                     <FormControl>
                                                         <Input
-                                                            className="text-black focus-visible:ring-orangeLight"
+                                                            className="text-black focus-visible:ring-blueLight"
                                                             placeholder="Ex.: 10%"
                                                             type="number"
                                                             value={field.value ?? ""}

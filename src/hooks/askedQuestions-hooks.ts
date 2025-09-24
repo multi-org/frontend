@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AskedQuestionType } from '@/types/AskedQuestion'
+import { AskedQuestionType, GetAskedQuestionsResponse } from '@/types/AskedQuestion'
 import { useAskedQuestionStore } from '@/store/askedQuestions-store'
 import api from '@/apis/api'
 
@@ -7,7 +7,7 @@ export const useAskedQuestions = () => {
     const {
         askedQuestions,
         setAskedQuestions,
-        create,
+        // create,
         update,
         getAskedQuestionsById,
         delete: deleteAskedQuestion,
@@ -20,8 +20,9 @@ export const useAskedQuestions = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<AskedQuestionType[]>('/faqs/all')
-            setAskedQuestions(response.data)
+            const response = await api.get<GetAskedQuestionsResponse>('/faqs/all')
+            console.log("Resposta do backend:", response.data);
+            setAskedQuestions(response.data.data)
         } catch (err) {
             const message = "Erro na tentativa de buscar perguntas frequentes";
             setError(message)
@@ -40,8 +41,14 @@ export const useAskedQuestions = () => {
                     question
                 })
             console.log("Resposta bruta do backend:", response.data);
-            create(response.data)
-            return response.data
+
+            if (response.data.success) {
+                await getAskedQuestions() // recarrega a lista do backend
+                return true
+            }
+            throw new Error("Erro ao criar pergunta")
+            // create(response.data.data)
+            // return response.data
         } catch (err) {
             const message = "Erro na tentativa de enviar dúvida";
             setError(message)
@@ -56,8 +63,8 @@ export const useAskedQuestions = () => {
         setError(null)
         try {
             const response = await api.put<AskedQuestionType>(
-                `/update/answer/${askedQuestion.id}`,
-                askedQuestion.answer,
+                `/faqs/answer/${askedQuestion.id}`,
+                { answer: askedQuestion.answer },
             )
             update(response.data)
             return response.data
@@ -72,7 +79,7 @@ export const useAskedQuestions = () => {
         setLoading(true)
         setError(null)
         try {
-            await api.delete(`/askedQuestion/${id}`)
+            await api.delete(`/faqs/delete/${id}`)
             deleteAskedQuestion(id)
         } catch (err) {
             setError('Erro na tentativa de deletar pergunta')

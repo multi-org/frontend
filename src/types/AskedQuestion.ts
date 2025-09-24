@@ -3,3 +3,8 @@ export interface AskedQuestionType {
     question: string;
     answer?: string;
 }
+
+export type GetAskedQuestionsResponse = {
+  success: boolean;
+  data: AskedQuestionType[];
+};
