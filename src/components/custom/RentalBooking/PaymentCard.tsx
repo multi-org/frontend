@@ -228,7 +228,7 @@ export default function PaymentCard({
                         <div className="flex justify-between items-center mt-4 p-3 bg-white rounded-lg border max-[400px]:flex-col truncate">
                             <span className="font-semibold">Desconto:</span>
                             <span className="text-xl font-medium text-green-600">
-                                - {calculateDiscount(bookingData?.productDiscount)}
+                                - {formatPrice(calculateDiscount(bookingData?.productDiscount))}
                             </span>
                         </div>
                     ) : (
@@ -242,7 +242,7 @@ export default function PaymentCard({
                         {bookingData?.totalAmount > 0 && bookingData?.productDiscount > 0 ?
                             (
                                 <span className="text-xl font-medium text-green-600">
-                                    {calculateFinalAmount(bookingData?.totalAmount, bookingData?.productDiscount)}
+                                    {formatPrice(calculateFinalAmount(bookingData?.totalAmount, bookingData?.productDiscount))}
                                 </span>
                             ) : (
                                 <span className="text-xl font-medium text-green-600">

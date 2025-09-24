@@ -413,7 +413,10 @@ export default function AddEquipmentStepOne({
                                                 <FormItem>
                                                     <FormControl>
                                                         <ImageUploader
-                                                            {...field}
+                                                            // {...field}
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            errorColorClass="text-grayLight"
                                                         />
                                                     </FormControl>
                                                     <FormMessage className="text-grayLight" />
