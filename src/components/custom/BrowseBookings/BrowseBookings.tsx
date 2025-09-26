@@ -1,6 +1,18 @@
-import { ReducedBookingConfirmationCard } from "../RentalBooking"
+import { useBookings } from "@/hooks/bookings-hooks"
+import { BookingConfirmationCard, ReducedBookingConfirmationCard } from "../RentalBooking"
+import { useEffect, useState } from "react"
+import { BookingType } from "@/types/Booking";
 
 export default function BrowseBookings() {
+
+    const { bookings, getBookings } = useBookings();
+    const [bookingViewStep, setBookingViewStep] = useState(0);
+    const [selectedBooking, setSelectedBooking] = useState<BookingType | null>(null);
+
+    useEffect(() => {
+        getBookings()
+    }, [])
+
     return (
         <div className="max-[550px]:mx-auto">
             <header>
@@ -10,25 +22,30 @@ export default function BrowseBookings() {
                     </h1>
                 </div>
             </header>
-            <div className="p-6 max-[390px]:w-80 max-[350px]:w-64">
-                <ReducedBookingConfirmationCard
-                    booking={{
-                        confirmationNumber: "RES-2024-001234",
-                        productName: "Auditório Premium",
-                        productType: "espaco",
-                        productCategory: "Auditório",
-                        productImage: "/assets/multi-prod-serv.png",
-                        startDate: new Date(2024, 11, 20),
-                        endDate: new Date(2024, 11, 22),
-                        rentalType: "dia",
-                        totalPrice: 3600.0,
-                        status: "confirmado",
-                        activityTitle: "Palestra sobre Inovação Tecnológica",
-                    }}
-                    onViewDetails={(id: string) => console.log("Ver detalhes:", id)}
-                    onCancel={(id: string) => console.log("Cancelar:", id)}
-                    onModify={(id: string) => console.log("Modificar:", id)}
-                />
+            <div className="flex flex-col gap-4 p-6 max-[390px]:w-80 max-[350px]:w-64">
+                {bookingViewStep === 0 && bookings.length > 0 ? (
+                    bookings.map((booking) => (
+                        <ReducedBookingConfirmationCard
+                            booking={booking}
+                            onViewDetails={() => {
+                                setSelectedBooking(booking)
+                                setBookingViewStep(1)
+                            }}
+                            onCancel={(id: string) => console.log("Cancelar:", id)}
+                            onModify={(id: string) => console.log("Modificar:", id)}
+                        />
+                    ))
+                ) : (
+                    <p className='col-start-2 text-center max-[750px]:col-span-2'>
+                        Nenhuma reserva encontrada
+                    </p>
+                )}
+                {bookingViewStep === 1 && selectedBooking && (
+                    <BookingConfirmationCard
+                        bookingData={selectedBooking}
+                        onBack={() => setBookingViewStep(0)}
+                    />
+                )}
             </div>
         </div>
     )

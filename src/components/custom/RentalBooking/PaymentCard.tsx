@@ -1,4 +1,4 @@
-import { MapPin, Wrench, Users, Copy, Check, Clock, QrCode, Smartphone, CreditCard } from "lucide-react"
+import { MapPin, Wrench, Users, Copy, Check, Clock, QrCode, Smartphone, CreditCard, CircleCheck, CircleX } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -7,6 +7,8 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { BookingType } from "@/types/Booking"
+import { useBookings } from "@/hooks/bookings-hooks"
+import { toast } from "@/hooks/use-toast"
 
 interface PaymentCardProps {
     bookingData: BookingType
@@ -38,6 +40,7 @@ export default function PaymentCard({
     onBack,
 }: PaymentCardProps) {
 
+    const { createBooking } = useBookings();
     const [timeLeft, setTimeLeft] = useState(15 * 60) // 15 minutos em segundos
     const [pixCopied, setPixCopied] = useState(false)
     const [paymentStatus, setPaymentStatus] = useState<"pending" | "checking" | "confirmed">("pending")
@@ -78,8 +81,40 @@ export default function PaymentCard({
         }
     }, [timeLeft, paymentStatus])
 
-    const onPaymentConfirmed = () => {
-        console.log("Pagamento confirmado");
+    const onPaymentConfirmed = async () => {
+        try {
+            console.log("📦 bookingData enviado:", bookingData)
+            const result = await createBooking(bookingData);
+            console.log("resposta:", result)
+            bookingData = result;
+            console.log("bookingData recebido:", bookingData)
+            if (result) {
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Reserva solicitada com sucesso!
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                })
+            }
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Erro inesperado";
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
+                variant: 'destructive'
+            })
+        }
         onNext(bookingData);
     }
 
