@@ -256,7 +256,7 @@ export default function BookingConfirmationCard({
 
                                 {bookingData?.chargingType === "POR_HORA" && bookingData?.reservations.length > 0 && (
                                     <div className="flex items-center gap-3">
-                                        <Clock className="h-4 w-4 text-gray-500" />
+                                        <Clock className="h-4 w-4 text-gray-500 shrink-0" />
                                         <div>
                                             <p className="mr-2">Horários:</p>
                                             <span className="flex flex-wrap gap-x-4">
@@ -357,7 +357,7 @@ export default function BookingConfirmationCard({
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Telefone</p>
-                                    <p className="font-medium">
+                                    <p className="font-medium max-w-[90%] truncate">
                                         {bookingData.client.phone ? (
                                             `${bookingData.client.phone}`
                                         ) : (

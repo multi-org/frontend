@@ -14,7 +14,7 @@ export default function BrowseBookings() {
     }, [])
 
     return (
-        <div className="max-[550px]:mx-auto">
+        <div>
             <header>
                 <div className="flex flex-col items-center justify-center py-6">
                     <h1 className="text-3xl text-center font-bold">
@@ -23,22 +23,26 @@ export default function BrowseBookings() {
                 </div>
             </header>
             <div className="flex flex-col gap-4 p-6 max-[390px]:w-80 max-[350px]:w-64">
-                {bookingViewStep === 0 && bookings.length > 0 ? (
-                    bookings.map((booking) => (
-                        <ReducedBookingConfirmationCard
-                            booking={booking}
-                            onViewDetails={() => {
-                                setSelectedBooking(booking)
-                                setBookingViewStep(1)
-                            }}
-                            onCancel={(id: string) => console.log("Cancelar:", id)}
-                            onModify={(id: string) => console.log("Modificar:", id)}
-                        />
-                    ))
-                ) : (
-                    <p className='col-start-2 text-center max-[750px]:col-span-2'>
-                        Nenhuma reserva encontrada
-                    </p>
+                {bookingViewStep === 0 && (
+                    <>
+                        {bookings.length > 0 ? (
+                            bookings.map((booking) => (
+                                <ReducedBookingConfirmationCard
+                                    booking={booking}
+                                    onViewDetails={() => {
+                                        setSelectedBooking(booking)
+                                        setBookingViewStep(1)
+                                    }}
+                                    onCancel={(id: string) => console.log("Cancelar:", id)}
+                                    onModify={(id: string) => console.log("Modificar:", id)}
+                                />
+                            ))
+                        ) : (
+                            <p className='col-start-2 text-center max-[750px]:col-span-2'>
+                                Nenhuma reserva encontrada
+                            </p>
+                        )}
+                    </>
                 )}
                 {bookingViewStep === 1 && selectedBooking && (
                     <BookingConfirmationCard

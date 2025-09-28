@@ -1,114 +1,3 @@
-// import { BookingType } from "@/types/Booking";
-
-// export function mapBackendBookingToBookingType(data: any): BookingType {
-//   // transformar dates [{date, hour}] → reservations [{date, hours[]}]
-//   const reservations = data.dates.reduce((acc: any[], d: any) => {
-//     const existing = acc.find(r => r.date === d.date);
-//     if (existing) {
-//       existing.hours.push(d.hour);
-//     } else {
-//       acc.push({ date: d.date, hours: [d.hour] });
-//     }
-//     return acc;
-//   }, []);
-
-//   return {
-//     id: data.id,
-//     status: data.status,
-//     productId: data.product.productId,
-//     productTitle: data.product.productTitle,
-//     productAddress: {
-//       street: data.product?.address?.street ?? "",
-//       number: data.product?.address?.number ?? "",
-//       neighborhood: data.product?.address?.neighborhood ?? "",
-//       city: data.product?.address?.city ?? "",
-//       state: data.product?.address?.state ?? "",
-//     },
-//     productType: data.product.productType,
-//     spaceProduct: data.product.spaceProduct ?? undefined,
-//     equipmentProduct: data.product.equipmentProduct ?? undefined,
-//     serviceProduct: data.product.serviceProduct ?? undefined,
-//     productCategory: data.product.productCategory,
-//     productImage: data.product.productImage,
-//     institution: {
-//       email: data.companyThatOwnsProduct?.email ?? "",
-//       phone: data.companyThatOwnsProduct?.phone ?? "",
-//     },
-//     productDiscount: Number(data.product.productDiscount ?? 0),
-//     client: {
-//       name: data.client.name,
-//       email: data.client.email,
-//       phone: data.client.phone,
-//     },
-//     reservations,
-//     activityTitle: data.activityTitle,
-//     activityDescription: data.activityDescription,
-//     chargingType: data.pricing.chargingType ?? null,
-//     totalAmount: data.pricing.baseAmount,
-//     finalAmount: data.pricing.totalAmount,
-//     paymentDate: new Date(), // ou ajuste se backend devolver a data de pagamento
-//   };
-// }
-
-// import { BookingType } from "@/types/Booking";
-
-// const validStatuses = ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"] as const;
-
-// export function mapBackendBookingToBookingType(data: any): BookingType {
-//   // transformar dates [string] → reservations [{date, hours[]}]
-//   const reservations = (data.dates ?? []).reduce((acc: any[], d: string) => {
-//     const dateObj = new Date(d);
-//     const date = dateObj.toISOString().split("T")[0]; // ex: "2025-09-29"
-//     const hour = dateObj.toISOString().split("T")[1].slice(0, 5); // ex: "08:00"
-
-//     const existing = acc.find(r => r.date === date);
-//     if (existing) {
-//       existing.hours.push(hour);
-//     } else {
-//       acc.push({ date, hours: [hour] });
-//     }
-
-//     return acc;
-//   }, []);
-
-//   return {
-//     id: data.id,
-//     status: validStatuses.includes(data.status) ? data.status : "PENDING",
-//     productId: data.product.productId,
-//     productTitle: data.product.productTitle,
-//     productAddress: {
-//       street: data.product?.address?.street ?? "",
-//       number: data.product?.address?.number ?? "",
-//       neighborhood: data.product?.address?.neighborhood ?? "",
-//       city: data.product?.address?.city ?? "",
-//       state: data.product?.address?.state ?? "",
-//     },
-//     productType: data.product.productType,
-//     spaceProduct: data.product.spaceProduct ?? undefined,
-//     equipmentProduct: data.product.equipmentProduct ?? undefined,
-//     serviceProduct: data.product.serviceProduct ?? undefined,
-//     productCategory: data.product.productCategory,
-//     productImage: data.product.productImage,
-//     institution: {
-//       email: data.companyThatOwnsProduct?.email ?? "",
-//       phone: data.companyThatOwnsProduct?.phone ?? "",
-//     },
-//     productDiscount: Number(data.product.productDiscount ?? 0),
-//     client: {
-//       name: data.client?.name ?? "",
-//       email: data.client?.email ?? "",
-//       phone: data.client?.phone ?? "",
-//     },
-//     reservations,
-//     activityTitle: data.activityTitle,
-//     activityDescription: data.activityDescription,
-//     chargingType: data.pricing.chargingType ?? null,
-//     totalAmount: Number(data.pricing.baseAmount ?? 0),
-//     finalAmount: Number(data.pricing.totalAmount ?? 0),
-//     paymentDate: new Date(), // ou ajuste se backend devolver a data de pagamento
-//   };
-// }
-
 import { BookingType } from "@/types/Booking";
 
 const validStatuses = ["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"] as const;
@@ -190,11 +79,11 @@ export function mapBackendBookingToBookingType(data: any): BookingType {
     productId: data?.product?.productId ?? data?.productId ?? "",
     productTitle: data?.product?.productTitle ?? data?.productTitle ?? "",
     productAddress: {
-      street: data.product?.address?.street ?? data.productAddress?.street ?? "",
-      number: data.product?.address?.number ?? data.productAddress?.number ?? "",
-      neighborhood: data.product?.address?.neighborhood ?? data.productAddress?.neighborhood ?? "",
-      city: data.product?.address?.city ?? data.productAddress?.city ?? "",
-      state: data.product?.address?.state ?? data.productAddress?.state ?? "",
+      street: data.companyThatOwnsProduct?.Address?.street ?? data.productAddress?.street ?? "",
+      number: data.companyThatOwnsProduct?.Address?.number ?? data.productAddress?.number ?? "",
+      neighborhood: data.companyThatOwnsProduct?.Address?.neighborhood ?? data.productAddress?.neighborhood ?? "",
+      city: data.companyThatOwnsProduct?.Address?.city ?? data.productAddress?.city ?? "",
+      state: data.companyThatOwnsProduct?.Address?.state ?? data.productAddress?.state ?? "",
     },
     productType: data?.product?.productType ?? data?.productType ?? "EQUIPMENT",
     spaceProduct: data?.product?.spaceProduct ?? data?.spaceProduct ?? undefined,
