@@ -369,7 +369,10 @@ export default function AddServiceStepOne({
                                                 <FormItem>
                                                     <FormControl>
                                                         <ImageUploader
-                                                            {...field}
+                                                            // {...field}
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            errorColorClass="text-grayLight"
                                                         />
                                                     </FormControl>
                                                     <FormMessage className="text-grayLight" />

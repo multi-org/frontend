@@ -1,6 +1,7 @@
 import api from "@/apis/api"
 import { useBookingStore } from "@/store/bookings-store"
 import { BookingType } from "@/types/Booking"
+import { mapBackendBookingToBookingType } from "@/utils/bookingTypeMapper"
 import { useState } from "react"
 
 export const useBookings = () => {
@@ -17,8 +18,15 @@ export const useBookings = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<BookingType[]>('/bookings/all')
-            setBookings(response.data)
+            const response = await api.get(`rentals/my-rentals/`)
+            console.log("Resposta do getBookings:", response.data);
+            const rawBookings = response.data.rentals ?? [];
+            const mappedBookings: BookingType[] = rawBookings.map((b: any) =>
+                mapBackendBookingToBookingType(b)
+            )
+            console.log("Reservas mapeadas:", mappedBookings)
+            setBookings(mappedBookings)
+            return mappedBookings
         } catch (err) {
             const message = "Erro na tentativa de buscar reservas";
             setError(message)
@@ -28,67 +36,21 @@ export const useBookings = () => {
         }
     }
 
-    const createBooking = async (booking: {
-        productId: string,
-        productTitle: string,
-        productAddress: {
-            street: string,
-            number: string,
-            neighborhood: string,
-            city: string,
-            state: string,
-        },
-        productType: "SPACE" | "EQUIPMENT" | "SERVICE",
-        spaceProduct?: {
-            capacity: number,
-            area: number,
-        },
-        equipmentProduct?: {
-            brand: string,
-            model: string,
-            specifications: string,
-            stock: number,
-        },
-        serviceProduct?: {
-            durationMinutes: number,
-            requirements: string,
-        },
-        productCategory: string,
-        productImage: string[],
-        institution: {
-            email: string,
-            phone: string,
-        },
-        productDiscount: number,
-        // startDate: Date | undefined,
-        // endDate: Date | undefined,
-        // startTime: string | undefined,
-        // endTime: string | undefined,
-        client: {
-            name: string,
-            email: string,
-            phone: string,
-        }
-        activityTitle: string,
-        activityDescription: string,
-        chargingType: "POR_HORA" | "POR_DIA" | null,
-        totalAmount: number,
-        finalAmount: number,
-        paymentDate: Date | string,
-    }) => {
+    const createBooking = async (booking: BookingType) => {
         setLoading(true)
         setError(null)
         try {
+            const response = await api.post(`/rentals/request/${booking.productId}`, booking)
+            console.log("Resposta da requisição:", response.data)
+            const newBooking: BookingType = mapBackendBookingToBookingType(response.data.data);
+            create(newBooking)
+            return newBooking
+        } catch (err: any) {
+            console.error("Erro completo:", err)
+            console.error("Erro response:", err.response)
+            console.error("Erro response.data:", err.response?.data)
 
-            console.log('FormData entries:')
-            const response = await api.post(`/products/rents/request/${booking.productId}`,
-                {
-                    ...booking
-                })
-            create(response.data)
-            return response.data
-        } catch (err) {
-            const message = "Erro na tentativa de criar reserva";
+            const message = err.response?.data?.message || "Erro na tentativa de solicitar reserva"
             setError(message)
             throw new Error(message)
         } finally {

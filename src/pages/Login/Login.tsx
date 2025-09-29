@@ -5,7 +5,7 @@ import { Header } from '@/components/custom/Header'
 const Login: React.FC = () => {
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col overflow-x-hidden">
             <Header />
             <div className="flex-1 flex items-center justify-center">
                 <CardLogin />

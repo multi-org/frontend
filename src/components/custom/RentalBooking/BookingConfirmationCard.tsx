@@ -9,7 +9,6 @@ import {
     Mail,
     Download,
     Printer,
-    Home,
     Copy,
     User,
     Maximize,
@@ -18,6 +17,7 @@ import {
     Package,
     PackageSearch,
     Layers,
+    ArrowLeft,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -59,6 +59,25 @@ const typeConfig = {
     },
 }
 
+const statusConfig = {
+    CONFIRMED: {
+        label: "Confirmado",
+        color: "bg-green-100 text-green-800",
+    },
+    PENDING: {
+        label: "Pendente",
+        color: "bg-yellow-100 text-yellow-800",
+    },
+    CANCELLED: {
+        label: "Cancelado",
+        color: "bg-red-100 text-red-800",
+    },
+    COMPLETED: {
+        label: "Concluído",
+        color: "bg-gray-100 text-gray-800",
+    },
+}
+
 export default function BookingConfirmationCard({
     bookingData,
     onBack,
@@ -66,8 +85,13 @@ export default function BookingConfirmationCard({
 
     const [confirmationCopied, setConfirmationCopied] = useState(false)
 
-    const config = typeConfig[bookingData?.productType]
-    const IconComponent = config.icon
+    const tpConfig = typeConfig[bookingData?.productType]
+    const IconComponent = tpConfig.icon
+
+    const stConfig = statusConfig[bookingData?.status as keyof typeof statusConfig] ?? {
+        label: "Indefinido",
+        color: "bg-gray-100 text-gray-800",
+    }
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("pt-BR", {
@@ -105,11 +129,8 @@ export default function BookingConfirmationCard({
         <Card className="w-full max-w-4xl overflow-hidden mx-auto">
             <CardHeader className="text-center pb-6">
                 <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-10 h-10 text-green-600" />
-                    </div>
                     <div className="space-y-2">
-                        <h1 className="text-2xl font-bold text-green-800">Reserva Confirmada!</h1>
+                        <h1 className="text-2xl font-bold text-green-800">Reserva Processada!</h1>
                         <p className="text-gray-600">Sua solicitação de aluguel foi processada com sucesso</p>
                     </div>
                 </div>
@@ -149,9 +170,9 @@ export default function BookingConfirmationCard({
                         </div>
                         <div className="flex-1 space-y-2">
                             <div className="flex max-[400px]:flex-col items-center max-[400px]:items-start gap-2">
-                                <div className={`${config.color} flex items-center gap-1 p-1 rounded-full`}>
+                                <div className={`${tpConfig.color} flex items-center gap-1 p-1 rounded-full`}>
                                     <IconComponent className="h-3 w-3 shrink-0" />
-                                    {config.label}
+                                    {tpConfig.label}
                                 </div>
                                 <div className="p-1 rounded-full border">
                                     {bookingData?.productCategory}
@@ -235,7 +256,7 @@ export default function BookingConfirmationCard({
 
                                 {bookingData?.chargingType === "POR_HORA" && bookingData?.reservations.length > 0 && (
                                     <div className="flex items-center gap-3">
-                                        <Clock className="h-4 w-4 text-gray-500" />
+                                        <Clock className="h-4 w-4 text-gray-500 shrink-0" />
                                         <div>
                                             <p className="mr-2">Horários:</p>
                                             <span className="flex flex-wrap gap-x-4">
@@ -304,8 +325,8 @@ export default function BookingConfirmationCard({
                                 </div>
                                 <div className="flex max-[400px]:flex-col justify-between">
                                     <span className="text-gray-600">Status:</span>
-                                    <div className="text-sm bg-green-100 text-green-800 rounded-full w-fit p-1">
-                                        Confirmado
+                                    <div className={`${stConfig.color} text-sm rounded-full w-fit p-1`}>
+                                        {stConfig.label}
                                     </div>
                                 </div>
                             </div>
@@ -336,7 +357,7 @@ export default function BookingConfirmationCard({
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-600">Telefone</p>
-                                    <p className="font-medium">
+                                    <p className="font-medium max-w-[90%] truncate">
                                         {bookingData.client.phone ? (
                                             `${bookingData.client.phone}`
                                         ) : (
@@ -400,8 +421,8 @@ export default function BookingConfirmationCard({
                     onClick={onBackToHome}
                     className="flex-1 w-full bg-yellowDark hover:bg-yellowNormal truncate"
                 >
-                    <Home className="mr-2 h-4 w-4" />
-                    Voltar ao Início
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Voltar
                 </Button>
             </CardFooter>
         </Card>
