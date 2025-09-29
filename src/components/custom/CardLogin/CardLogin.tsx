@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { CircleCheck, Eye, EyeOff } from 'lucide-react'
+import { CircleCheck, Eye, EyeOff, Loader } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
 import api from '@/apis/api'
@@ -83,10 +83,7 @@ const CardLogin: React.FC = () => {
         },
       })
 
-      // Redirecionamento
-      setTimeout(() => {
-        navigate('/user')
-      }, 1000)
+      navigate('/user')
 
     } catch (error: any) {
       console.error('❌ ERRO NO LOGIN:')
@@ -178,7 +175,7 @@ const CardLogin: React.FC = () => {
                     type={isVisible ? 'text' : 'password'}
                     autoComplete="current-password"
                     {...register('password')}
-                    className={errors.password ? 'border-red-500 focus:ring-red-500' :     'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'}
+                    className={errors.password ? 'border-red-500 focus:ring-red-500' : 'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'}
                   />
                   <button
                     onClick={handlePasswordVisibility}
@@ -203,7 +200,7 @@ const CardLogin: React.FC = () => {
                   className="w-full mt-4 bg-[#36858E] hover:bg-[#5fb7c1] text-grayLight"
                   disabled={loading}
                 >
-                  {loading ? 'Entrando...' : 'Entrar'}
+                  {loading ? <Loader className='animate-spin'/> : 'Login'}
                 </Button>
 
                 <Link to="/sign-up">

@@ -17,10 +17,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, CircleCheck } from "lucide-react"
+import { ArrowLeft, CircleCheck, Loader } from "lucide-react"
 import { toast } from '@/hooks/use-toast'
 import { cn } from "@/lib/utils"
 import { useState } from "react"
+import { useAskedQuestions } from "@/hooks/askedQuestions-hooks"
 
 type AddAskedQuestionProps = {
     onBack: () => void;
@@ -31,7 +32,6 @@ const addAskedQuestionSchema = z.object({
     question: z.string()
         .min(1, 'Descrição da dúvida é obrigatória.')
         .max(400, 'A dúvida deve ter no máximo 400 caracteres.'),
-    answer: z.string().min(0),
 })
 
 export default function AddAskedQuestion({
@@ -40,33 +40,51 @@ export default function AddAskedQuestion({
     ...props
 }: AddAskedQuestionProps) {
 
-    const [sentQustion, setSentQuestion] = useState(false);
+    const { loading, createAskedQuestion } = useAskedQuestions();
+    const [sentQuestion, setSentQuestion] = useState(false);
 
     const form = useForm<z.infer<typeof addAskedQuestionSchema>>({
         resolver: zodResolver(addAskedQuestionSchema),
         defaultValues: {
             question: '',
-            answer: '',
         },
     })
 
-    function onSubmit(data: z.infer<typeof addAskedQuestionSchema>) {
-        console.log("Dados enviados:", data)
-        form.reset();
-        setSentQuestion(true);
-        toast({
-            description: (
-                <div className="flex items-center gap-2">
-                    <CircleCheck className="text-white" size={20} />
-                    Sua dúvida foi registrada com sucesso.
-                </div>
-            ),
-            variant: 'default',
-            style: {
-                backgroundColor: "#4E995E",
-                color: "#FFFFFF",
-            },
-        })
+    const onSubmit = async (data: z.infer<typeof addAskedQuestionSchema>) => {
+        try {
+            console.log("Dados enviados:", data); // em teste
+            const result = await createAskedQuestion(data.question);
+            console.log("Resposta:", result) // em teste
+            if (result) {
+                console.log("Dúvida foi registrada com sucesso!")
+                toast({
+                    description: (
+                        <div className="flex items-center gap-2">
+                            <CircleCheck className="text-white" size={20} />
+                            Sua dúvida foi registrada com sucesso.
+                        </div>
+                    ),
+                    variant: 'default',
+                    style: {
+                        backgroundColor: "#4E995E",
+                        color: "#FFFFFF",
+                    },
+                })
+                setSentQuestion(true);
+                form.reset();
+            }
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Erro inesperado";
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleCheck className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
+                variant: 'destructive'
+            })
+        }
     }
 
     return (
@@ -83,7 +101,7 @@ export default function AddAskedQuestion({
             </header>
             <div className={cn("flex flex-col gap-6", className)} {...props}>
                 <Card className="m-6 bg-gray-100 overflow-hidden">
-                    {sentQustion ? (
+                    {sentQuestion ? (
                         <>
                             <CardContent>
                                 <FormProvider  {...form}>
@@ -157,7 +175,7 @@ export default function AddAskedQuestion({
                                                     />
                                                 </div>
                                                 <Button type="submit" className="w-full bg-blueNormal hover:bg-blueLight">
-                                                    Enviar
+                                                    {loading ? <Loader /> : "Enviar"}
                                                 </Button>
                                             </div>
                                             <div className="flex justify-end text-center text-sm ">

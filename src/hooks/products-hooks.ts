@@ -37,7 +37,6 @@ export const useProducts = () => {
       const response = await api.get(`/availability/${productId}`)
       console.log("Resposta do available days:", response.data)
 
-      // extrai apenas os dias realmente disponíveis
       const available = response.data.data
         .filter((d: any) => d.isAvailability)
         .map((d: any) => d.date)
@@ -61,7 +60,7 @@ export const useProducts = () => {
     try {
       const response = await api.get(`/availability/hours/${productId}/${date}`)
       console.log("Resposta do available hours:", response.data)
-      return response.data?.data ?? []   // <-- agora retorna só o array
+      return response.data?.data ?? []
     } catch (err) {
       const message = "Erro na tentativa de buscar horários disponíveis"
       setError(message)
@@ -111,7 +110,6 @@ export const useProducts = () => {
       formData.append("title", product.title)
       formData.append("description", product.description)
       formData.append("category", product.category)
-      formData.append("chargingModel", product.chargingModel)
       formData.append("chargingModel", product.chargingModel)
       formData.append(
         "weeklyAvailability",

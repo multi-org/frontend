@@ -131,6 +131,7 @@ export default function RentalBookingCard({
     const handlePayment = () => {
         const bookingData = {
             id: "",
+            status: "PENDING" as BookingType["status"],
             productId: product.id,
             productTitle: product.title,
             productAddress: {

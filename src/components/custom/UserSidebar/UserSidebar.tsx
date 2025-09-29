@@ -127,7 +127,7 @@ export default function UserSidebar({
                 >
                     <div className="text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                         <img
-                            src="/src/assets/logo multi.png"
+                            src="/assets/logo multi.png"
                             alt="Logo UEPB MULTI"
                             className="size-8"
                         />

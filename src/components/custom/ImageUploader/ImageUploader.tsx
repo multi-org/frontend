@@ -5,9 +5,14 @@ import { Label } from "@/components/ui/label"
 type ImageUploaderProps = {
   value?: File[]
   onChange?: (files: File[]) => void
+  errorColorClass?: string
 }
 
-const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ value = [], onChange }: ImageUploaderProps) => {
+const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ 
+  value = [], 
+  onChange,
+  errorColorClass = "text-red-500"
+}: ImageUploaderProps) => {
   const [previews, setPreviews] = useState<string[]>([])
   const [errors, setErrors] = useState<string[]>([])
   const MAX_FILES = 3
@@ -61,7 +66,7 @@ const ImageUploader = React.forwardRef<HTMLDivElement, ImageUploaderProps>(({ va
         className="text-gray-500 hover:cursor-pointer hover:text-gray-900"
       />
       {errors.length > 0 && (
-        <ul className="text-red-500 text-sm space-y-1">
+        <ul className={`${errorColorClass} text-sm space-y-1`}>
           {errors.map((error, index) => (
             <li key={index}>• {error}</li>
           ))}
