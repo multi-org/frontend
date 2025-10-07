@@ -11,17 +11,20 @@ export const intervals = [
     start: "weekdayHourStart",
     end: "weekdayHourEnd",
     optional: false,
+    required: true,
   },
   {
     label: "Sábado (opcional)",
     start: "saturdayHourStart",
     end: "saturdayHourEnd",
     optional: true,
+    required: false,
   },
   {
     label: "Domingo (opcional)",
     start: "sundayHourStart",
     end: "sundayHourEnd",
     optional: true,
+    required: false,
   },
 ] as const

@@ -59,12 +59,15 @@ export default function RentalBookingCard({
     const config = typeConfig[product.type]
     const IconComponent = config.icon
 
+    console.log(product)
+
     const handleChargingTypeChange = async (type: "POR_HORA" | "POR_DIA") => {
         setChargingType(type)
         setReservations([]) // reseta reservas ao mudar tipo
 
         try {
             setLoadingDays(true)
+            console.log(loadingDays)
             const days = await getProductAvailableDays(product.id)
             const parsed = days.map((d) => {
                 const [year, month, day] = d.split("-").map(Number)
@@ -76,6 +79,7 @@ export default function RentalBookingCard({
             console.error("Erro ao buscar dias disponíveis", err)
         } finally {
             setLoadingDays(false)
+            console.log(loadingDays)
         }
     }
 
@@ -127,6 +131,7 @@ export default function RentalBookingCard({
     const handlePayment = () => {
         const bookingData = {
             id: "",
+            status: "PENDING" as BookingType["status"],
             productId: product.id,
             productTitle: product.title,
             productAddress: {
@@ -144,8 +149,8 @@ export default function RentalBookingCard({
             productImage: product.imagesUrls,
             productDiscount: product.discountPercentage || 0,
             institution: {
-                email: "",
-                phone: "",
+                email: product.owner.email,
+                phone: product.owner.phoneNumber,
             },
             client: {
                 name: "",
@@ -194,7 +199,7 @@ export default function RentalBookingCard({
                             />
                         ) : (
                             <img
-                                src={"/src/assets/svg/image.svg"}
+                                src={"/assets/svg/image.svg"}
                                 alt={product?.title ?? "...Carregando"}
                                 className="h-10 w-10 opacity-50"
                             />

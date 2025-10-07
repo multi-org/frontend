@@ -16,7 +16,7 @@ function Calendar({
 }: CalendarProps & {
   disponibilidade?: { data: Date; horario: string; _id: string }[]
 }) {
-  const disabledDays = disponibilidade.map((item) => new Date(item.data))
+  // const disabledDays = disponibilidade.map((item) => new Date(item.data))
 
   return (
     <DayPicker
@@ -57,8 +57,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

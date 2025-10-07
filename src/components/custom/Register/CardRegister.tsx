@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -16,7 +16,6 @@ import ConfirmationOfValidation from './stpes/EmailValidation/ConfirmationOfVali
 import AddressAutoFillForm from './stpes/SetpAddressAutoFillForm';
 import api from '@/apis/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { format } from 'path';
 export enum AssociationType {
   local = 1,
   equipment = 2,
@@ -313,7 +312,7 @@ const CardRegister: React.FC = () => {
       const response = await api.post("/users/validate-email", {
         code: formData.code,
       });
-
+      console.log(response)
       toast({ description: "Código validado com sucesso!" });
       setFormData((prev) => ({ ...prev, isEmailVerified: true }));
       next();
@@ -427,7 +426,7 @@ const CardRegister: React.FC = () => {
         {/* Lado da imagem */}
         <div className="w-1/2 hidden sm:flex">
           <img
-            src="src/assets/image CardRegister.png"
+            src="/assets/image CardRegister.png"
             alt="image CardRegister"
             className="w-full h-full object-cover"
           />

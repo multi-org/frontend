@@ -124,7 +124,7 @@ export default function AddSpaceStepTwo({
                     <CardContent className="grid p-0 md:grid-cols-2">
                         <div className="relative hidden md:flex min-h-[600px] flex-1 items-center justify-center bg-muted">
                             <img
-                                src="/src/assets/multi-prod-esp-orange.png"
+                                src="/assets/multi-prod-esp-orange.png"
                                 alt="Imagem exemplo de espaço"
                                 className="absolute inset-0 h-full w-full object-cover"
                             />

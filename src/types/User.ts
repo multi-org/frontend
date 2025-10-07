@@ -5,6 +5,7 @@ export interface UserType {
     email: string,
     password: string,
     phoneNumber: string,
+    profile: string,
     cpf: string,
     birthDate: string,
     isEmailVerified: boolean,

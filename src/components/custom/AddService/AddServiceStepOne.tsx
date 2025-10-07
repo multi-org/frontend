@@ -161,7 +161,7 @@ export default function AddServiceStepOne({
                     <CardContent className="grid p-0 md:grid-cols-2">
                         <div className="relative hidden md:flex min-h-[600px] flex-1 items-center justify-center bg-muted">
                             <img
-                                src="/src/assets/multi-prod-serv-blue.png"
+                                src="/assets/multi-prod-serv-blue.png"
                                 alt="Imagem exemplo de serviço"
                                 className="absolute inset-0 h-full w-full object-cover"
                             />
@@ -369,7 +369,10 @@ export default function AddServiceStepOne({
                                                 <FormItem>
                                                     <FormControl>
                                                         <ImageUploader
-                                                            {...field}
+                                                            // {...field}
+                                                            value={field.value}
+                                                            onChange={field.onChange}
+                                                            errorColorClass="text-grayLight"
                                                         />
                                                     </FormControl>
                                                     <FormMessage className="text-grayLight" />

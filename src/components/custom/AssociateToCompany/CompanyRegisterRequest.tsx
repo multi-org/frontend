@@ -204,6 +204,52 @@ export default function CompanyRegisterRequest({
                                             <div>
                                                 <FormField
                                                     control={form.control}
+                                                    name="cnpj"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-black">
+                                                                CNPJ
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <MaskedInput
+                                                                    className="text-black focus-visible:ring-blueLight"
+                                                                    placeholder="Ex.: 00.000.000/0000-00"
+                                                                    mask={maskCNPJ}
+                                                                    {...field}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage className="text-red-500" />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <div>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="isMicroenterprise"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex items-center justify-between space-y-0 rounded-md border py-2 px-4 mt-8 bg-white overflow-hidden">
+                                                            <FormLabel
+                                                                className="text-black max-w-[60%] truncate"
+                                                            >
+                                                                Microempresa?
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Switch
+                                                                    className="data-[state=checked]:bg-blueLight"
+                                                                    checked={field.value}
+                                                                    onCheckedChange={field.onChange}
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <FormField
+                                                    control={form.control}
                                                     name="popularName"
                                                     render={({ field }) => (
                                                         <FormItem>
@@ -285,52 +331,6 @@ export default function CompanyRegisterRequest({
                                                     )
                                                 }}
                                             />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <FormField
-                                                    control={form.control}
-                                                    name="cnpj"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-black">
-                                                                CNPJ
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <MaskedInput
-                                                                    className="text-black focus-visible:ring-blueLight"
-                                                                    placeholder="Ex.: 00.000.000/0000-00"
-                                                                    mask={maskCNPJ}
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage className="text-red-500" />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                            <div>
-                                                <FormField
-                                                    control={form.control}
-                                                    name="isMicroenterprise"
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex items-center justify-between space-y-0 rounded-md border py-2 px-4 mt-8 bg-white overflow-hidden">
-                                                            <FormLabel
-                                                                className="text-black max-w-[60%] truncate"
-                                                            >
-                                                                Microempresa?
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Switch
-                                                                    className="data-[state=checked]:bg-blueLight"
-                                                                    checked={field.value}
-                                                                    onCheckedChange={field.onChange}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>

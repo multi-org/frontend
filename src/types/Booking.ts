@@ -1,5 +1,6 @@
 export interface BookingType {
     id: string,
+    status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED",
     productId: string,
     productTitle: string,
     productAddress: {
@@ -31,10 +32,6 @@ export interface BookingType {
         phone: string,
     },
     productDiscount: number,
-    // startDate: Date | undefined,
-    // endDate: Date | undefined,
-    // startTime: string | undefined,
-    // endTime: string | undefined,
     client: {
         name: string,
         email: string,

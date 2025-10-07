@@ -1,6 +1,6 @@
 import api from "@/apis/api"
 import { useLegalResponsibleUserStore } from "@/store/useLegalResponsibleUserStore"
-import { LegalResponsibleUserRequestType } from "@/types/LegalResponsibleUserType"
+import { LegalResponsibleUserType } from "@/types/LegalResponsibleUserType"
 import { useState } from "react"
 
 export const useLegalResponsibleUser = () => {
@@ -61,7 +61,7 @@ export const useLegalResponsibleUser = () => {
         setLoading(true)
         setError(null)
         try {
-            const response = await api.get<LegalResponsibleUserRequestType[]>("/users/rota")
+            const response = await api.get<LegalResponsibleUserType[]>("/users/rota")
             setLegalResponsibleUserRequests(response.data)
         } catch (err) {
             setError("Erro na busca por solicitações de usuário responsável legal")

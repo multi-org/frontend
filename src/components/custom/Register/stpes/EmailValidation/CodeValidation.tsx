@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 

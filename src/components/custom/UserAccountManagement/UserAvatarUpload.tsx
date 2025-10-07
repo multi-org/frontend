@@ -14,11 +14,12 @@ import {
 import { cn } from "@/lib/utils";
 import { getUserInitials } from "@/utils/manipulateNames";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleCheck, Pencil } from "lucide-react";
+import { CircleCheck, CircleX, Pencil } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { useUsers } from "@/hooks/users-hooks";
 
 type UserAvatarUploadProps = {
     className?: string;
@@ -45,8 +46,9 @@ export default function UserAvatarUpload({
     ...props
 }: UserAvatarUploadProps) {
 
+    const { updateUserAvatar } = useUsers()
     const [userName, setUserName] = useState("")
-    const [userAvatar, setUserAvatar] = useState("")
+    const [storedUserAvatar, setUserAvatar] = useState("")
     const [previewAvatar, setPreviewAvatar] = useState("")
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -55,10 +57,10 @@ export default function UserAvatarUpload({
     })
 
     useEffect(() => {
-        const storedName = localStorage.getItem("userName") || ""
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}")
-        setUserName(storedName)
-        setUserAvatar(storedUser.avatar || "")
+        const storedUserName = localStorage.getItem("userName") || ""
+        const storedUserAvatar = localStorage.getItem("userProfilePic") || "{}"
+        setUserName(storedUserName)
+        setUserAvatar(storedUserAvatar || "")
     }, [])
 
     const initials = getUserInitials(userName);
@@ -76,24 +78,39 @@ export default function UserAvatarUpload({
         }
     }
 
-    const handleImageSubmit = (data: z.infer<typeof avatarUploadSchema>) => {
+    const handleImageSubmit = async (data: z.infer<typeof avatarUploadSchema>) => {
         const file = data.image[0];
         console.log("Arquivo válido para envio:", file);
-        // enviar imagem para o backend
-        toast({
-            description: (
-                <div className="flex items-center gap-2">
-                    <CircleCheck className="text-white" size={20} />
-                    Avatar atualizado com sucesso
-                </div>
-            ),
-            variant: 'default',
-            style: {
-                backgroundColor: "#4E995E",
-                color: "#FFFFFF",
-            },
-        })
-        form.reset()
+        try {
+            const result = await updateUserAvatar([file])
+            console.log("Avatar atualizado com sucesso:", result)
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleCheck className="text-white" size={20} />
+                        Avatar atualizado com sucesso
+                    </div>
+                ),
+                variant: 'default',
+                style: {
+                    backgroundColor: "#4E995E",
+                    color: "#FFFFFF",
+                },
+            })
+            form.reset()
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Erro inesperado";
+            toast({
+                description: (
+                    <div className="flex items-center gap-2">
+                        <CircleX className="text-white" size={20} />
+                        {message}
+                    </div>
+                ),
+                variant: 'destructive'
+            })
+        }
+
     };
 
     return (
@@ -111,7 +128,7 @@ export default function UserAvatarUpload({
                         <form onSubmit={form.handleSubmit(handleImageSubmit)}>
                             <div className="relative w-fit mx-auto">
                                 <Avatar className="h-32 w-32 rounded-full border border-gray-300">
-                                    <AvatarImage src={previewAvatar || userAvatar} alt={userName} />
+                                    <AvatarImage src={previewAvatar || storedUserAvatar} alt={userName} />
                                     <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                                 </Avatar>
                                 <div className="absolute flex justify-center items-center bg-white bottom-[-12px] left-1/2 transform -translate-x-1/2 h-9 w-9 border border-gray-300 rounded-full hover:bg-gray-100 transition">

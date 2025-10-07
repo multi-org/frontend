@@ -10,9 +10,30 @@ import {
 import { Footer } from '@/components/custom/Footer'
 import { AskedQuestion } from '@/components/custom/AskedQuestions'
 import { Accordion } from '@/components/ui/accordion'
+import { useAskedQuestions } from '@/hooks/askedQuestions-hooks'
+import { useEffect, useState } from 'react'
 
 
 export function Home() {
+
+  const { askedQuestions, getAskedQuestions } = useAskedQuestions();
+  const [storedUserRoles, setStoredUserRoles] = useState<string[]>([])
+
+  useEffect(() => {
+    const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
+    setStoredUserRoles(storedUserRoles)
+  }, [])
+
+  useEffect(() => {
+    getAskedQuestions()
+  }, [])
+
+  useEffect(() => {
+    console.log("Dúvidas retornadas:", askedQuestions)
+  }, [askedQuestions])
+
+  const isAdmin = storedUserRoles.includes("adminSystemUser");
+
   return (
     <>
       <Header />
@@ -20,7 +41,7 @@ export function Home() {
         {/* HERO */}
         <div
           id="home"
-          className="flex h-[500px] w-full items-center justify-center bg-[url('/src/assets/home-bg-image.jpg')] bg-cover bg-center bg-no-repeat"
+          className="flex h-[500px] w-full items-center justify-center bg-[url('/assets/home-bg-image.jpg')] bg-cover bg-center bg-no-repeat"
         >
           <div className="flex flex-col items-center justify-center text-grayLight text-center">
             <h1 className="text-5xl font-bold sm:text-6xl">MULTI</h1>
@@ -45,7 +66,7 @@ export function Home() {
           </h1>
           <div className="mt-16 flex flex-col items-center gap-6 md:flex-row md:justify-between">
             <img
-              src="src/assets/multi-logo.jpg"
+              src="/assets/multi-logo.jpg"
               alt="Logo do Multi"
               className="h-[120px] w-[180px] object-contain"
             />
@@ -119,14 +140,53 @@ export function Home() {
               Perguntas frequentes
             </h1>
             <div className="m-16 p-8 bg-gray-100 rounded-lg">
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                defaultValue="item-1"
-              >
-                <AskedQuestion />
-              </Accordion>
+              {isAdmin ? (
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  defaultValue="item-1"
+                >
+                  {askedQuestions.length > 0 ? (
+                    askedQuestions.map((askedQuestion) => {
+                      return (
+                        <AskedQuestion
+                          key={askedQuestion.id}
+                          askedQuestion={askedQuestion}
+                        />
+                      )
+                    })
+                  ) : (
+                    <p>
+                      Nenhuma dúvida registrada até o momento.
+                    </p>
+                  )}
+                </Accordion>
+              ) : (
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="w-full"
+                  defaultValue="item-1"
+                >
+                  {askedQuestions.length > 0 ? (
+                    askedQuestions.map((askedQuestion) => {
+                      if (askedQuestion.answer !== null) {
+                        return (
+                          <AskedQuestion
+                            key={askedQuestion.id}
+                            askedQuestion={askedQuestion}
+                          />
+                        )
+                      }
+                    })
+                  ) : (
+                    <p>
+                      Nenhuma dúvida registrada até o momento.
+                    </p>
+                  )}
+                </Accordion>
+              )}
             </div>
           </div>
         </div>
