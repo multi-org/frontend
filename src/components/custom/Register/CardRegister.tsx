@@ -222,7 +222,7 @@ const CardRegister: React.FC = () => {
     try {
       console.log("[LOG] Verificando e-mail:", formData.email);
       const response = await api.post("/users/sendCode-email", { email: formData.email });
-      toast({ description: "E-mail verificado com sucesso!" });
+      toast({ description: "Enviamos um código para o endereço de e-mail informado! Verifique sua caixa de entrada" });
       console.log("[LOG] Sucesso:", response.data);
       setFormData(prev => ({ ...prev, isEmailVerified: true }));
       next();
