@@ -72,7 +72,15 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
 
-  const selectedDate = birthDate ? new Date(birthDate) : undefined
+  function parseDateOnly(date: string): Date {
+    const [year, month, day] = date.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  const selectedDate = birthDate
+    ? parseDateOnly(`${birthDate}T00:00:00`)
+    : undefined
+
 
   const handleFieldChange = (
     field: 'name' | 'phoneNumber' | 'cpf' | 'birthDate' | 'password' | 'confirmPassword' | 'preferences',
@@ -94,8 +102,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   const handleDateChange = (date: Date | undefined) => {
     setOpen(false)
     if (date) {
-      const iso = date.toISOString().split('T')[0]
-      handleFieldChange('birthDate', iso)
+      const formatted = format(date, 'yyyy-MM-dd')
+      handleFieldChange('birthDate', formatted)
     }
   }
 
@@ -165,14 +173,14 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
                 }`}
             >
               {birthDate ? (
-                format(new Date(birthDate), 'dd/MM/yyyy', { locale: ptBR })
+                format(parseDateOnly(birthDate), 'dd/MM/yyyy', { locale: ptBR })
               ) : (
                 <span>Selecione a data</span>
               )}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="center">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -185,8 +193,12 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
               toYear={new Date().getFullYear()}
               locale={ptBR}
               labels={{
-                labelMonthDropdown: () => 'Mês:',
-                labelYearDropdown: () => 'Ano:',
+                labelMonthDropdown: () => '',
+                labelYearDropdown: () => '',
+              }}
+              classNames={{
+                caption_dropdowns: "flex items-center gap-1",
+                caption_label: 'hidden',
               }}
             />
           </PopoverContent>

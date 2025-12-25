@@ -58,6 +58,14 @@ export default function RentalBookingCard({
 
     const config = typeConfig[product.type]
     const IconComponent = config.icon
+    
+    const normalizeDate = (date: Date) =>
+        new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            12, 0, 0 // meio-dia local
+        )
 
     console.log(product)
 
@@ -93,23 +101,27 @@ export default function RentalBookingCard({
     const handleSelectDates = async (dates: Date[] | undefined) => {
         if (!dates) return
 
+        const normalizedDates = dates.map(normalizeDate)
+
         setReservations((prev) => {
-            const existing = new Map(prev.map(r => [r.date.toDateString(), r]))
-            return dates.map((d) => existing.get(d.toDateString()) || { date: d, hours: [] })
+            const existing = new Map(
+                prev.map(r => [r.date.toDateString(), r])
+            )
+
+            return normalizedDates.map((d) =>
+                existing.get(d.toDateString()) || { date: d, hours: [] }
+            )
         })
 
-        // só busca horários se for por hora
         if (chargingType === "POR_HORA") {
-            for (const d of dates) {
+            for (const d of normalizedDates) {
                 const dateStr = format(d, "yyyy-MM-dd")
+
                 if (!availableHours[dateStr]) {
                     try {
                         setLoadingHours(true)
                         const hours = await getProductAvailableHours(product.id, dateStr)
-                        setAvailableHours((prev) => ({ ...prev, [dateStr]: hours }))
-                        console.log(availableHours) // em teste
-                    } catch (err) {
-                        console.error("Erro ao buscar horários disponíveis", err)
+                        setAvailableHours(prev => ({ ...prev, [dateStr]: hours }))
                     } finally {
                         setLoadingHours(false)
                     }
@@ -117,6 +129,7 @@ export default function RentalBookingCard({
             }
         }
     }
+
 
     const calculateTotal = () => {
         if (chargingType === "POR_DIA") {
