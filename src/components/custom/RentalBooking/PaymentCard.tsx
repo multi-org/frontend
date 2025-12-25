@@ -52,6 +52,12 @@ export default function PaymentCard({
     const pixCode =
         "00020126580014br.gov.bcb.pix013636c4c14e-4b8c-4c2a-9b5a-8f2e3d4c5b6a52040000530398654041800.005802BR5925INSTITUICAO DE ENSINO6009SAO PAULO62070503***6304A1B2"
 
+
+    const parseCalendarDate = (dateStr: string) => {
+        const [year, month, day] = dateStr.split("-").map(Number)
+        return new Date(year, month - 1, day, 12, 0, 0) // meio-dia local
+    }
+
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("pt-BR", {
             style: "currency",
@@ -225,7 +231,7 @@ export default function PaymentCard({
                                         {bookingData.reservations.map((r, index) => (
                                             <div key={index} className="flex flex-wrap gap-x-2">
                                                 <span>
-                                                    {format(r.date, "dd/MM", { locale: ptBR })}
+                                                    {format(parseCalendarDate(r.date), "dd/MM", { locale: ptBR })}
                                                 </span>
                                             </div>
                                         ))}
@@ -240,7 +246,7 @@ export default function PaymentCard({
                                         {bookingData.reservations.map((r, index) => (
                                             <div key={index} className="flex flex-wrap gap-x-2">
                                                 <span className="font-semibold">
-                                                    dia {format(r.date, "dd/MM", { locale: ptBR })}:
+                                                    dia {format(parseCalendarDate(r.date), "dd/MM", { locale: ptBR })}:
                                                 </span>
                                                 {r.hours.map((hour, i) => (
                                                     <span key={i}>{hour}</span>
