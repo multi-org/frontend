@@ -14,8 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { ArrowLeft, CircleCheck, Loader } from "lucide-react"
 import { maskCEP, maskCNPJ, maskPhone } from "@/utils/masks"
-import { MaskedInput } from "../MaskedInput.tsx"
-import { useEffect } from "react"
+import { MaskedInput } from "../MaskedInput/index.ts"
+import { useEffect, useState } from "react"
 import { toast } from "@/hooks/use-toast.ts"
 import { Textarea } from "@/components/ui/textarea.tsx"
 import { Switch } from "@/components/ui/switch.tsx"
@@ -51,6 +51,8 @@ export default function CompanyRegisterForm({
 }: companyRegisterFormProps) {
 
     const { loading, error, createCompany } = useCompanies()
+    const [cepLocked, setCepLocked] = useState(false)
+    const [cnpjLocked, setCnpjLocked] = useState(false)
 
     const form = useForm<z.infer<typeof companyRegisterFormSchema>>({
         resolver: zodResolver(companyRegisterFormSchema),
@@ -96,12 +98,17 @@ export default function CompanyRegisterForm({
                     form.reset({
                         cnpj: "",
                     })
+                    setCnpjLocked(false)
                     return
                 }
                 return res.json()
             })
             .then((data) => {
-                if (data.erro) return
+                if (data.erro) {
+                    setCnpjLocked(false)
+                    return
+                }
+                setCnpjLocked(true)
                 form.setValue("popularName", data.nome_fantasia || '')
                 form.setValue("legalName", data.razao_social || '')
                 form.setValue("description", data.cnae_fiscal_descricao || '')
@@ -128,7 +135,11 @@ export default function CompanyRegisterForm({
         fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
             .then((res) => res.json())
             .then((data) => {
-                if (data.erro) return
+                if (data.erro) {
+                    setCepLocked(false)
+                    return
+                }
+                setCepLocked(true)
                 form.setValue("street", data.logradouro || '')
                 form.setValue("complement", data.complemento || '')
                 form.setValue("neighborhood", data.bairro || '')
@@ -275,6 +286,7 @@ export default function CompanyRegisterForm({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cnpjLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Universidade Estadual da Paraíba - UEPB"
                                                                     {...field}
@@ -303,6 +315,7 @@ export default function CompanyRegisterForm({
                                                                     className="relative"
                                                                 >
                                                                     <Textarea
+                                                                        disabled={cnpjLocked}
                                                                         placeholder="Ex.: Universidade voltada para o campo das ciências exatas"
                                                                         className="resize-none text-black focus-visible:ring-blueLight"
                                                                         maxLength={300}
@@ -355,6 +368,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Rua</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Av. Getúlio Vargas"
                                                                     {...field} />
@@ -394,6 +408,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Complemento</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Prédio A, sala 101"
                                                                     {...field} />
@@ -413,6 +428,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Bairro</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Centro"
                                                                     {...field} />
@@ -430,6 +446,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Cidade</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Patos"
                                                                     {...field} />
@@ -449,6 +466,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Estado</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: PB"
                                                                     {...field} />
@@ -466,6 +484,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">País</FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Brasil"
                                                                     {...field} />
