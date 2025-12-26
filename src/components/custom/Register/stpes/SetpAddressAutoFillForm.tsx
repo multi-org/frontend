@@ -33,6 +33,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   const { zipCode, street, city, state, number, complement, neighborhood, country } = formData
   const [isLoading, setIsLoading] = useState(false)
   const [lastSearchedCep, setLastSearchedCep] = useState('')
+  const [cepLocked, setCepLocked] = useState(false)
 
   // Função debounce
   const debounce = useCallback((func: Function, delay: number) => {
@@ -43,40 +44,56 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
     }
   }, [])
 
+  // Função para limpar endereço e desbloquar campos
+  const clearAddressAndUnlock = useCallback(() => {
+    setCepLocked(false)
+    setLastSearchedCep('')
+    onChange({
+      street: '',
+      city: '',
+      state: '',
+      neighborhood: '',
+      complement: '',
+      country: '',
+    })
+  }, [onChange])
+
+
   // Função para buscar endereço
   const fetchAddress = useCallback(async (cep: string) => {
     const cleanCep = cep.replace(/\D/g, '')
-    
+
     // Verificar se o CEP tem 8 dígitos
     if (cleanCep.length !== 8) return
-    
+
     // Evitar buscar o mesmo CEP novamente
     if (cleanCep === lastSearchedCep) return
-    
+
     setIsLoading(true)
     setLastSearchedCep(cleanCep)
 
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
       const data = await response.json()
-
       if (!data.erro) {
+        setCepLocked(true)
         onChange({
           street: data.logradouro || '',
           city: data.localidade || '',
           state: data.uf || '',
           neighborhood: data.bairro || '',
-          country: 'Brasil'
+          country: 'Brasil',
         })
       } else {
-        console.log('CEP não encontrado')
+        // CEP inválido → desbloqueia e limpa
+        clearAddressAndUnlock()
       }
     } catch (error) {
       console.error('Erro ao buscar CEP:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [onChange, lastSearchedCep])
+  }, [onChange, lastSearchedCep, clearAddressAndUnlock])
 
   // Debounce da função de busca (espera 800ms após parar de digitar)
   const debouncedFetchAddress = useCallback(
@@ -85,10 +102,23 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   )
 
   useEffect(() => {
-    if (zipCode) {
-      debouncedFetchAddress(zipCode)
+    const cleanCep = zipCode?.replace(/\D/g, '') || ''
+
+    // CEP apagado
+    if (!cleanCep) {
+      clearAddressAndUnlock()
+      return
     }
-  }, [zipCode, debouncedFetchAddress])
+
+    // CEP incompleto → desbloqueia, mas não limpa o que o usuário já digitou
+    if (cleanCep.length < 8) {
+      setCepLocked(false)
+      return
+    }
+
+    // CEP completo → busca
+    debouncedFetchAddress(zipCode)
+  }, [zipCode, debouncedFetchAddress, clearAddressAndUnlock])
 
   return (
     <div className="flex w-full flex-col gap-3">
@@ -114,6 +144,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <div>
         <label className="block text-sm font-medium mb-1">Rua</label>
         <Input
+          disabled={cepLocked}
           placeholder="Rua"
           value={street || ''}
           onChange={e => onChange({ street: e.target.value })}
@@ -141,6 +172,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Complemento</label>
           <Input
+            disabled={cepLocked}
             placeholder="Apto, Bloco, etc. (opcional)"
             value={complement || ''}
             onChange={e => onChange({ complement: e.target.value })}
@@ -155,6 +187,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <div>
         <label className="block text-sm font-medium mb-1">Bairro</label>
         <Input
+          disabled={cepLocked}
           placeholder="Bairro"
           value={neighborhood || ''}
           onChange={e => onChange({ neighborhood: e.target.value })}
@@ -169,6 +202,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Cidade</label>
           <Input
+            disabled={cepLocked}
             placeholder="Cidade"
             value={city || ''}
             onChange={e => onChange({ city: e.target.value })}
@@ -182,6 +216,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Estado</label>
           <Input
+            disabled={cepLocked}
             placeholder="Estado"
             value={state || ''}
             onChange={e => onChange({ state: e.target.value })}
@@ -196,8 +231,9 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <div>
         <label className="block text-sm font-medium mb-1">País</label>
         <Input
+          disabled={cepLocked}
           placeholder="País"
-          value={country || 'Brasil'}
+          value={country || ''}
           onChange={e => onChange({ country: e.target.value })}
           className={fieldErrors.country ? 'border-red-500 focus:ring-red-500' : ''}
         />
