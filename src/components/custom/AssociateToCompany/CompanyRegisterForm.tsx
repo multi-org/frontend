@@ -51,7 +51,8 @@ export default function CompanyRegisterForm({
 }: companyRegisterFormProps) {
 
     const { loading, error, createCompany } = useCompanies()
-    const [cepLocked, setCepLocked] = useState(false) // new on test 25/12
+    const [cepLocked, setCepLocked] = useState(false)
+    const [cnpjLocked, setCnpjLocked] = useState(false)
 
     const form = useForm<z.infer<typeof companyRegisterFormSchema>>({
         resolver: zodResolver(companyRegisterFormSchema),
@@ -97,12 +98,17 @@ export default function CompanyRegisterForm({
                     form.reset({
                         cnpj: "",
                     })
+                    setCnpjLocked(false)
                     return
                 }
                 return res.json()
             })
             .then((data) => {
-                if (data.erro) return
+                if (data.erro) {
+                    setCnpjLocked(false)
+                    return
+                }
+                setCnpjLocked(true)
                 form.setValue("popularName", data.nome_fantasia || '')
                 form.setValue("legalName", data.razao_social || '')
                 form.setValue("description", data.cnae_fiscal_descricao || '')
@@ -129,11 +135,11 @@ export default function CompanyRegisterForm({
         fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
             .then((res) => res.json())
             .then((data) => {
-                if (data.erro) { // new on test 25/12
+                if (data.erro) {
                     setCepLocked(false)
                     return
                 }
-                setCepLocked(true) // new on test 25/12
+                setCepLocked(true)
                 form.setValue("street", data.logradouro || '')
                 form.setValue("complement", data.complemento || '')
                 form.setValue("neighborhood", data.bairro || '')
@@ -280,6 +286,7 @@ export default function CompanyRegisterForm({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <Input
+                                                                    disabled={cnpjLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Universidade Estadual da Paraíba - UEPB"
                                                                     {...field}
@@ -308,6 +315,7 @@ export default function CompanyRegisterForm({
                                                                     className="relative"
                                                                 >
                                                                     <Textarea
+                                                                        disabled={cnpjLocked}
                                                                         placeholder="Ex.: Universidade voltada para o campo das ciências exatas"
                                                                         className="resize-none text-black focus-visible:ring-blueLight"
                                                                         maxLength={300}
