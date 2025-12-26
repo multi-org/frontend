@@ -33,7 +33,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   const { zipCode, street, city, state, number, complement, neighborhood, country } = formData
   const [isLoading, setIsLoading] = useState(false)
   const [lastSearchedCep, setLastSearchedCep] = useState('')
-  const [cepLocked, setCepLocked] = useState(false) // new on test 25/12
+  const [cepLocked, setCepLocked] = useState(false)
 
   // Função debounce
   const debounce = useCallback((func: Function, delay: number) => {
@@ -45,7 +45,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
   }, [])
 
   // Função para limpar endereço e desbloquar campos
-  const clearAddressAndUnlock = useCallback(() => { // new on test 25/12
+  const clearAddressAndUnlock = useCallback(() => {
     setCepLocked(false)
     setLastSearchedCep('')
     onChange({
