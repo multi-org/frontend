@@ -27,8 +27,8 @@ type companyRegisterFormProps = {
 }
 
 const companyRegisterFormSchema = z.object({
-    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
-    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
+    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s!@#$%&*()\-+=;:'"<>,.?/|\\~]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
+    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s!@#$%&*()\-+=;:'"<>,.?/|\\~]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
     description: z.string().min(1, 'Descrição é obrigatória.'),
     cnpj: z.string().min(14, "CNPJ precisa ter 14 caracteres e ser válido"),
     zipCode: z.string().min(1, 'CEP é obrigatório.'),
@@ -40,7 +40,7 @@ const companyRegisterFormSchema = z.object({
     state: z.string().min(1, "Estado é obrigatório"),
     country: z.string().min(1, "País é obrigatório"),
     email: z.string().regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email inválido"),
-    phone: z.string().regex(/^\(\d{2}\) \d \d{4}-\d{4}$/, "Telefone inválido"),
+    phone: z.string().regex(/^\(\d{2}\) (?:\d \d{4}|\d{4})-\d{4}$/, "Telefone inválido"),
     isMicroenterprise: z.boolean(),
 })
 

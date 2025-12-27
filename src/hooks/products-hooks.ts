@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { GetProductsResponse, ProductType } from '@/types/Product'
 import { useProductStore } from '@/store/products-store'
 import api from '@/apis/api'
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useProducts = () => {
   const {
@@ -22,7 +23,10 @@ export const useProducts = () => {
       const response = await api.get<GetProductsResponse>('/products/all')
       setProducts(response.data.data)
     } catch (err) {
-      const message = "Erro na tentativa de buscar produtos";
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de buscar produtos"
+      )
       setError(message)
       throw new Error(message)
     } finally {
@@ -43,7 +47,10 @@ export const useProducts = () => {
 
       return available
     } catch (err) {
-      const message = "Erro na tentativa de buscar dias disponíveis"
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de buscar dias disponíveis"
+      )
       setError(message)
       throw new Error(message)
     } finally {
@@ -62,7 +69,10 @@ export const useProducts = () => {
       console.log("Resposta do available hours:", response.data)
       return response.data?.data ?? []
     } catch (err) {
-      const message = "Erro na tentativa de buscar horários disponíveis"
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de buscar horários disponíveis"
+      )
       setError(message)
       throw new Error(message)
     } finally {
@@ -174,30 +184,16 @@ export const useProducts = () => {
       create(response.data)
       return response.data
     } catch (err) {
-      const message = "Erro na tentativa de criar instituição";
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de tentativa de criar produto"
+      )
       setError(message)
       throw new Error(message)
     } finally {
       setLoading(false)
     }
   }
-
-  // const updateProduct = async (product: ProductType) => {
-  //   setLoading(true)
-  //   setError(null)
-  //   try {
-  //     const response = await api.put<ProductType>(
-  //       `/produtos/${product._id}`,
-  //       product,
-  //     )
-  //     update(response.data)
-  //     return response.data
-  //   } catch (err) {
-  //     setError('Erro ao atualizar produto')
-  //   } finally {
-  //     setLoading(false)
-  //   }
-  // }
 
   const updateProduct = async (product: ProductType) => {
     setLoading(true)
@@ -210,7 +206,12 @@ export const useProducts = () => {
       update(response.data)
       return response.data
     } catch (err) {
-      setError('Erro ao atualizar produto')
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de atualizar produto"
+      )
+      setError(message)
+      throw new Error(message)
     } finally {
       setLoading(false)
     }
@@ -223,7 +224,12 @@ export const useProducts = () => {
       await api.delete(`/produtos/${id}`)
       deleteProduct(id)
     } catch (err) {
-      setError('Erro ao deletar produto')
+      const message = getApiErrorMessage(
+        err,
+        "Erro na tentativa de deletar produto"
+      )
+      setError(message)
+      throw new Error(message)
     } finally {
       setLoading(false)
     }

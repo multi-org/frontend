@@ -2,6 +2,7 @@ import api from "@/apis/api"
 import { useLegalResponsibleUserStore } from "@/store/useLegalResponsibleUserStore"
 import { LegalResponsibleUserType } from "@/types/LegalResponsibleUserType"
 import { useState } from "react"
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useLegalResponsibleUser = () => {
     const {
@@ -50,8 +51,12 @@ export const useLegalResponsibleUser = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            setError("Erro na tentativa de solicitar usuário responsável legal")
-            throw error
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de solicitar responsável legal"
+            )
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -64,8 +69,12 @@ export const useLegalResponsibleUser = () => {
             const response = await api.get<LegalResponsibleUserType[]>("/users/rota")
             setLegalResponsibleUserRequests(response.data)
         } catch (err) {
-            setError("Erro na busca por solicitações de usuário responsável legal")
-            throw error
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de buscar solicitações de responsável legal"
+            )
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }

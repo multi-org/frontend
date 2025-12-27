@@ -2,6 +2,7 @@ import api from "@/apis/api"
 import { useCompanyStore } from "@/store/useCompanyStore"
 import { CompanyType, CompanyRegisterRequestType } from "@/types/Company"
 import { useState } from "react"
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useCompanies = () => {
     const {
@@ -31,7 +32,10 @@ export const useCompanies = () => {
             setCompanies(data)
             return data
         } catch (err) {
-            const message = "Erro na busca por instituições";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de buscar instituições"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -65,7 +69,10 @@ export const useCompanies = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de criar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de criar instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -84,7 +91,10 @@ export const useCompanies = () => {
             update(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de alterar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de atualizar instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -99,7 +109,10 @@ export const useCompanies = () => {
             await api.delete(`/companies/${id}`)
             deleteCompany(id)
         } catch (err) {
-            const message = "Erro na tentativa de deletar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -115,7 +128,10 @@ export const useCompanies = () => {
             const response = await api.get<CompanyRegisterRequestType[]>("/companies/all/requests")
             setCompanyRegisterRequests(response.data)
         } catch (err) {
-            const message = "Erro na busca por instituições";
+            const message = getApiErrorMessage(
+                err,
+                "Erro ao buscar solicitações de cadastro de instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -149,7 +165,10 @@ export const useCompanies = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de criar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro ao enviar solicitação de cadastro de instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -183,7 +202,10 @@ export const useCompanies = () => {
             create(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de criar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro ao confirmar cadastro de instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -201,7 +223,10 @@ export const useCompanies = () => {
             await api.delete(`/companies/reject/request/${encodeURIComponent(company.cnpj)}`)
             deleteCompanyRegisterRequest(company.customisedId)
         } catch (err) {
-            const message = "Erro na tentativa de deletar instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro ao tentativa de deletar solicitação de cadastro de instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
