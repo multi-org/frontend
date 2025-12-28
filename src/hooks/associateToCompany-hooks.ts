@@ -89,6 +89,7 @@ export const useAssociateToCompany = () => {
     }
 
     const confirmAssociateToCompanyRequest = async (request: {
+        customisedId: string;
         userCpf: string,
         documentUrl: string,
         companyId: {
@@ -114,6 +115,7 @@ export const useAssociateToCompany = () => {
                     ...request
                 })
             createAssociationToCompany(response.data)
+            deleteAssociateToCompanyRequestByCustomisedId(request.customisedId)
             return response.data
         } catch (err) {
             const message = getApiErrorMessage(
@@ -234,6 +236,7 @@ export const useAssociateToCompany = () => {
     }
 
     const confirmLegalResponsibleUserRequest = async (request: {
+        customisedId: string,
         userCpf: string,
         documentUrl: string,
         position: string,
@@ -261,6 +264,7 @@ export const useAssociateToCompany = () => {
                     ...request
                 })
             createLegalResponsibleUser(response.data)
+            deleteLegalResponsibleUserRequestByCustomisedId(request.customisedId)
             return response.data
         } catch (err) {
             const message = getApiErrorMessage(

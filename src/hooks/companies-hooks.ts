@@ -177,6 +177,7 @@ export const useCompanies = () => {
     }
 
     const confirmCompanyRegisterRequest = async (company: {
+        customisedId: string,
         popularName: string
         legalName: string
         description: string
@@ -200,6 +201,7 @@ export const useCompanies = () => {
                 ...company
             })
             create(response.data)
+            deleteCompanyRegisterRequest(company.customisedId)
             return response.data
         } catch (err) {
             const message = getApiErrorMessage(

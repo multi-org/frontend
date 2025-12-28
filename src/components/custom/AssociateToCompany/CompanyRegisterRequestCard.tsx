@@ -50,11 +50,14 @@ export default function CompanyRegisterRequestCard({
                 legalResponsiblePerson,
                 ...companyData
             } = company
-            const result = await confirmCompanyRegisterRequest(companyData)
+            const result = await confirmCompanyRegisterRequest({
+                ...companyData,
+                customisedId: company.customisedId,
+            })
             if (result) {
                 console.log("Solicitação de cadastro de instituição aprovada..")
                 console.log("..Instituição devidamente cadastrada no sistema")
-                console.log("Dados enviados:", companyData) // teste temporário
+                console.log("Dados enviados:", companyData)
                 toast({
                     description: (
                         <div className="flex items-center gap-2">
