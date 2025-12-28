@@ -3,6 +3,7 @@ import { useBookingStore } from "@/store/bookings-store"
 import { BookingType } from "@/types/Booking"
 import { mapBackendBookingToBookingType } from "@/utils/bookingTypeMapper"
 import { useState } from "react"
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useBookings = () => {
     const {
@@ -28,7 +29,10 @@ export const useBookings = () => {
             setBookings(mappedBookings)
             return mappedBookings
         } catch (err) {
-            const message = "Erro na tentativa de buscar reservas";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de buscar reservas"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -46,11 +50,10 @@ export const useBookings = () => {
             create(newBooking)
             return newBooking
         } catch (err: any) {
-            console.error("Erro completo:", err)
-            console.error("Erro response:", err.response)
-            console.error("Erro response.data:", err.response?.data)
-
-            const message = err.response?.data?.message || "Erro na tentativa de solicitar reserva"
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de criar reserva"
+            )
             setError(message)
             throw new Error(message)
         } finally {

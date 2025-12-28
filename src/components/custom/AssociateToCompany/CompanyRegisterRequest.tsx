@@ -28,8 +28,8 @@ type companyRegisterRequestProps = {
 }
 
 const companyRegisterRequestSchema = z.object({
-    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
-    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
+    popularName: z.string().regex(/^[a-zA-ZÀ-ÿ\s!@#$%&*()\-+=;:'"<>,.?/|\\~]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
+    legalName: z.string().regex(/^[a-zA-ZÀ-ÿ\s!@#$%&*()\-+=;:'"<>,.?/|\\~]+$/, "Nome inválido. Evite vírgulas ou pontuações"),
     description: z.string().min(1, 'Descrição é obrigatória.'),
     cnpj: z.string().min(14, "CNPJ precisa ter 14 caracteres e ser válido"),
     zipCode: z.string().min(8, 'CEP precisa ter 8 números'),
