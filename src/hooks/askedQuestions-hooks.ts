@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AskedQuestionType, GetAskedQuestionsResponse } from '@/types/AskedQuestion'
 import { useAskedQuestionStore } from '@/store/askedQuestions-store'
 import api from '@/apis/api'
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useAskedQuestions = () => {
     const {
@@ -24,7 +25,10 @@ export const useAskedQuestions = () => {
             console.log("Resposta do backend:", response.data);
             setAskedQuestions(response.data.data)
         } catch (err) {
-            const message = "Erro na tentativa de buscar perguntas frequentes";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de buscar perguntas frequentes"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -50,7 +54,10 @@ export const useAskedQuestions = () => {
             // create(response.data.data)
             // return response.data
         } catch (err) {
-            const message = "Erro na tentativa de enviar dúvida";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de criar pergunta frequente"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -69,7 +76,12 @@ export const useAskedQuestions = () => {
             update(response.data)
             return response.data
         } catch (err) {
-            setError('Erro na tentativa de responder pergunta')
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de responder pergunta frequente"
+            )
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }
@@ -82,7 +94,12 @@ export const useAskedQuestions = () => {
             await api.delete(`/faqs/delete/${id}`)
             deleteAskedQuestion(id)
         } catch (err) {
-            setError('Erro na tentativa de deletar pergunta')
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar pergunta frequente"
+            )
+            setError(message)
+            throw new Error(message)
         } finally {
             setLoading(false)
         }

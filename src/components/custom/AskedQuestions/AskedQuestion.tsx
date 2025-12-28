@@ -116,7 +116,7 @@ export default function AskedQuestion({
                 )}
             </div>
             <AccordionContent className="flex flex-col gap-4 text-balance">
-                <p>
+                <p className="text-pretty">
                     {askedQuestion?.answer || "Não respondida até o momento."}
                 </p>
             </AccordionContent>
