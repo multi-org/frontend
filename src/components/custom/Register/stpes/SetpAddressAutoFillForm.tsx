@@ -144,7 +144,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <div>
         <label className="block text-sm font-medium mb-1">Rua</label>
         <Input
-          disabled={cepLocked}
+          // disabled={cepLocked}
           placeholder="Rua"
           value={street || ''}
           onChange={e => onChange({ street: e.target.value })}
