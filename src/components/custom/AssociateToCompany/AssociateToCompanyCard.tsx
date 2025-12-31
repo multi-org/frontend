@@ -48,9 +48,12 @@ export default function AssociateToCompanyCard({
             requiredAt,
             ...associateToCompanyRequestData
         } = associateToCompanyRequest
-        console.log("Dados enviados:", associateToCompanyRequestData) //teste temporário
+        console.log("Dados enviados:", associateToCompanyRequestData)
         try {
-            const result = await confirmAssociateToCompanyRequest(associateToCompanyRequestData)
+            const result = await confirmAssociateToCompanyRequest({
+                ...associateToCompanyRequestData,
+                customisedId: associateToCompanyRequest.customisedId,
+            })
             if (result) {
                 console.log("Solicitação de associação com instituição aprovada!")
                 toast({

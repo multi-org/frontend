@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/popover'
 import { Eye, EyeOff, CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import React, { useState } from 'react'
 
 export enum AssociationType {
@@ -71,7 +72,15 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
 
-  const selectedDate = birthDate ? new Date(birthDate) : undefined
+  function parseDateOnly(date: string): Date {
+    const [year, month, day] = date.split('-').map(Number)
+    return new Date(year, month - 1, day)
+  }
+
+  const selectedDate = birthDate
+    ? parseDateOnly(`${birthDate}T00:00:00`)
+    : undefined
+
 
   const handleFieldChange = (
     field: 'name' | 'phoneNumber' | 'cpf' | 'birthDate' | 'password' | 'confirmPassword' | 'preferences',
@@ -93,8 +102,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
   const handleDateChange = (date: Date | undefined) => {
     setOpen(false)
     if (date) {
-      const iso = date.toISOString().split('T')[0]
-      handleFieldChange('birthDate', iso)
+      const formatted = format(date, 'yyyy-MM-dd')
+      handleFieldChange('birthDate', formatted)
     }
   }
 
@@ -108,8 +117,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         onChange={(e) => handleFieldChange('name', e.target.value)}
         maxLength={100}
         autoComplete="name"
-        className={fieldErrors.name ? 
-          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+        className={fieldErrors.name ?
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
           'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
         }
       />
@@ -125,8 +134,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         onChange={(e) => handleFieldChange('phoneNumber', formatPhone(e.target.value))}
         autoComplete="tel"
         maxLength={15}
-        className={fieldErrors.phoneNumber ? 
-          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+        className={fieldErrors.phoneNumber ?
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
           'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
         }
       />
@@ -142,8 +151,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
         onChange={(e) => handleFieldChange('cpf', formatCPF(e.target.value))}
         autoComplete="off"
         maxLength={14}
-        className={fieldErrors.cpf ? 
-          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+        className={fieldErrors.cpf ?
+          'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
           'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
         }
       />
@@ -158,21 +167,20 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={`w-full justify-start text-left font-normal ${
-                fieldErrors.birthDate ? 
-                  'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
-                  'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
-              }`}
+              className={`w-full justify-start text-left font-normal ${fieldErrors.birthDate ?
+                'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
+                'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
+                }`}
             >
               {birthDate ? (
-                format(new Date(birthDate), 'dd/MM/yyyy')
+                format(parseDateOnly(birthDate), 'dd/MM/yyyy', { locale: ptBR })
               ) : (
                 <span>Selecione a data</span>
               )}
               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="center">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -180,9 +188,18 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
               disabled={(date) =>
                 date > new Date() || date < new Date('1900-01-01')
               }
-              captionLayout="dropdown"
+              captionLayout="dropdown-buttons"
               fromYear={1900}
               toYear={new Date().getFullYear()}
+              locale={ptBR}
+              labels={{
+                labelMonthDropdown: () => '',
+                labelYearDropdown: () => '',
+              }}
+              classNames={{
+                caption_dropdowns: "flex items-center gap-1",
+                caption_label: 'hidden',
+              }}
             />
           </PopoverContent>
         </Popover>
@@ -243,8 +260,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           value={password}
           onChange={(e) => handleFieldChange('password', e.target.value)}
           autoComplete="new-password"
-          className={fieldErrors.password ? 
-            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+          className={fieldErrors.password ?
+            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
             'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
           }
         />
@@ -270,8 +287,8 @@ const StepPersonalData: React.FC<StepPersonalDataProps> = ({
           value={confirmPassword}
           onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
           autoComplete="new-password"
-          className={fieldErrors.confirmPassword ? 
-            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' : 
+          className={fieldErrors.confirmPassword ?
+            'border-red-500 focus-visible:ring-red-500 focus-visible:ring-2 focus-visible:ring-offset-2' :
             'focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2'
           }
         />

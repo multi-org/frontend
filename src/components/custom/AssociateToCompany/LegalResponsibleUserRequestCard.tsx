@@ -56,16 +56,19 @@ export default function LegalResponsibleUserRequestCard({
 
     legalResponsibleUserRequest.customisedId = `${legalResponsibleUserRequest?.userId?.id ?? ""}-${legalResponsibleUserRequest?.companyId?.id ?? ""}`;
 
-    console.log("Dados recebidos no LegalResponsibleUserRequestCard:", legalResponsibleUserRequest) //teste temporário
+    console.log("Dados recebidos no LegalResponsibleUserRequestCard:", legalResponsibleUserRequest)
 
     const handleProceed = async () => {
         const {
             requiredAt,
             ...legalResponsibleUserRequestData
         } = legalResponsibleUserRequest
-        console.log("Dados enviados:", legalResponsibleUserRequestData) //teste temporário
+        console.log("Dados enviados:", legalResponsibleUserRequestData)
         try {
-            const result = await confirmLegalResponsibleUserRequest(legalResponsibleUserRequestData)
+            const result = await confirmLegalResponsibleUserRequest({
+                ...legalResponsibleUserRequestData,
+                customisedId: legalResponsibleUserRequest.customisedId,
+            })
             if (result) {
                 console.log("Solicitação de usuário responsável legal por instituição aprovada!")
                 toast({

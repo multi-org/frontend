@@ -3,6 +3,7 @@ import { useAssociateToCompanyStore } from "@/store/useAssociateToCompanyStore"
 import { AssociateToCompanyType } from "@/types/AssociateToCompanyType"
 import { LegalResponsibleUserType } from "@/types/LegalResponsibleUserType"
 import { useState } from "react"
+import { getApiErrorMessage } from "@/utils/getApiErrorMessage"
 
 export const useAssociateToCompany = () => {
     const {
@@ -58,7 +59,10 @@ export const useAssociateToCompany = () => {
             createAssociateToCompanyRequest(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de solicitar associação com instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de solicitar associação com instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -73,7 +77,10 @@ export const useAssociateToCompany = () => {
             const response = await api.get<AssociateToCompanyType[]>("/users/all/associationOrLegalRepresentative/request?request=associate")
             setAssociateToCompanyRequests(response.data)
         } catch (err) {
-            const message = "Erro na busca por solicitações de associação com instiuição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de buscar solicitações de associação com instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -82,6 +89,7 @@ export const useAssociateToCompany = () => {
     }
 
     const confirmAssociateToCompanyRequest = async (request: {
+        customisedId: string;
         userCpf: string,
         documentUrl: string,
         companyId: {
@@ -107,9 +115,13 @@ export const useAssociateToCompany = () => {
                     ...request
                 })
             createAssociationToCompany(response.data)
+            deleteAssociateToCompanyRequestByCustomisedId(request.customisedId)
             return response.data
         } catch (err) {
-            const message = "Erro na confirmação de associação com instiuição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na confirmação de associação com instituições"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -134,7 +146,10 @@ export const useAssociateToCompany = () => {
             )
             deleteAssociateToCompanyRequestByCustomisedId(request.customisedId)
         } catch (err) {
-            const message = "Erro na tentativa de deletar solicitação de associação com instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar solicitação com instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -148,7 +163,10 @@ export const useAssociateToCompany = () => {
         try {
             await api.delete("/users/all/associationOrLegalRepresentative/reject/:companyId")
         } catch (err) {
-            const message = "Erro na tentativa de deletar todas as solicitações de associção com instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar todas as solicitações de associação com instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -188,7 +206,10 @@ export const useAssociateToCompany = () => {
             createLegalResponsibleUserRequest(response.data)
             return response.data
         } catch (err) {
-            const message = "Erro na tentativa de solicitar responsável legal para instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de solicitar responsável legal por instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -203,7 +224,10 @@ export const useAssociateToCompany = () => {
             const response = await api.get<LegalResponsibleUserType[]>("/users/all/associationOrLegalRepresentative/request?request=representative")
             setLegalResponsibleUserRequests(response.data)
         } catch (err) {
-            const message = "Erro na busca por solicitações de usuário reponsável legal por instiuição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na busca por solicitações de responsável legal por instituições"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -212,6 +236,7 @@ export const useAssociateToCompany = () => {
     }
 
     const confirmLegalResponsibleUserRequest = async (request: {
+        customisedId: string,
         userCpf: string,
         documentUrl: string,
         position: string,
@@ -239,9 +264,13 @@ export const useAssociateToCompany = () => {
                     ...request
                 })
             createLegalResponsibleUser(response.data)
+            deleteLegalResponsibleUserRequestByCustomisedId(request.customisedId)
             return response.data
         } catch (err) {
-            const message = "Erro na confirmação de usuário responsável legal por instiuição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na confirmação de responsável legal por instituição"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -266,7 +295,10 @@ export const useAssociateToCompany = () => {
             )
             deleteLegalResponsibleUserRequestByCustomisedId(request.customisedId)
         } catch (err) {
-            const message = "Erro na tentativa de deletar solicitação de associação com instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar solicitação de responsável legal"
+            )
             setError(message)
             throw new Error(message)
         } finally {
@@ -280,7 +312,10 @@ export const useAssociateToCompany = () => {
         try {
             await api.delete("/users/all/associationOrLegalRepresentative/reject/:companyId")
         } catch (err) {
-            const message = "Erro na tentativa de deletar todas as solicitações de associção com instituição";
+            const message = getApiErrorMessage(
+                err,
+                "Erro na tentativa de deletar todas as solicitações de responsável legal"
+            )
             setError(message)
             throw new Error(message)
         } finally {
