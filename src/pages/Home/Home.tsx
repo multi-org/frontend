@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/custom/Header'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,15 @@ export function Home() {
 
   const { askedQuestions, getAskedQuestions } = useAskedQuestions();
   const [storedUserRoles, setStoredUserRoles] = useState<string[]>([])
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const element = document.getElementById(location.state.scrollTo)
+      element?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [location])
 
   useEffect(() => {
     const storedUserRoles = JSON.parse(localStorage.getItem("userRoles") || "[]");
@@ -123,11 +133,11 @@ export function Home() {
             ENCONTRE O EQUIPAMENTO QUE PRECISA
           </h1>
           <p className="mt-2 text-sm max-w-xs">
-            Faça seu cadastro e descubra os equipamentos disponíveis
+            Faça seu cadastro e confira os espaços e equipamentos disponíveis
           </p>
           <Button
-            className="mt-6 h-10 w-44 bg-yellowDark"
-            onClick={() => (window.location.href = '/products')}
+            className="mt-6 h-10 w-44 bg-yellowNormal hover:bg-yellowDark text-gray-100"
+            onClick={() => navigate('/products')}
           >
             Comece agora
           </Button>
@@ -135,7 +145,7 @@ export function Home() {
 
         {/* FAQ */}
         <div id="faq" className="mb-28 mt-20 px-4 pb-20  flex flex-col items-center">
-          <div id="faq" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
+          <div id="faq-child" className="mb-28 mt-20 px-4 pb-20 flex flex-col items-center ">
             <h1 className="text-3xl font-bold text-center">
               Perguntas frequentes
             </h1>
