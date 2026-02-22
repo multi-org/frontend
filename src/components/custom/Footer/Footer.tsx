@@ -1,6 +1,9 @@
 import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
+
+    const thisYear: number = new Date().getFullYear();
+
     return (
         <div className="bg-blueDark flex flex-col justify-center items-center h-auto px-10 py-16 gap-6 overflow-hidden">
             <div className="flex justify-center items-center gap-4 max-[275px]:flex-col">
@@ -16,7 +19,7 @@ export function Footer() {
                 />
             </div>
             <Separator/>
-            <p className="text-grayLight">&copy; 2025 UEPB.</p>
+            <p className="text-grayLight">&copy; {thisYear} UEPB.</p>
         </div>
     )
 }

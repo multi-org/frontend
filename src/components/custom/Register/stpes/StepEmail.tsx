@@ -21,7 +21,7 @@ const StepEmail: React.FC<StepEmaildProps> = ({
     }}
     className="flex flex-col w-full items-center gap-4"
   >
-    <div className="flex flex-col w-full max-w-[360px]">
+    <div className="flex flex-col w-full">
       <label>Email:</label>
       <Input
             className="h-[50px] min-w-full border border-gray-300 rounded-md p-2 focus-visible:ring-yellowDark focus-visible:ring-2 focus-visible:ring-offset-2"
