@@ -1,17 +1,21 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const handlePageJump = (elementId: string) => {
-    const element = document.getElementById(elementId)
-    element?.scrollIntoView({
-      behavior: 'smooth',
-    })
-    // Fechar menu mobile após navegar
     setIsMenuOpen(false)
+
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollTo: elementId } })
+    } else {
+      const element = document.getElementById(elementId)
+      element?.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const toggleMenu = () => {
@@ -38,25 +42,25 @@ export function Header() {
         >
           Comece agora
         </Link>
-        <button 
+        <button
           onClick={() => handlePageJump('home')}
           className="hover:text-yellowNormal transition-colors"
         >
           Início
         </button>
-        <button 
+        <button
           onClick={() => handlePageJump('about-us')}
           className="hover:text-yellowNormal transition-colors"
         >
           Quem somos?
         </button>
-        <button 
+        <button
           onClick={() => handlePageJump('features')}
           className="hover:text-yellowNormal transition-colors"
         >
           Funcionalidades
         </button>
-        <button 
+        <button
           onClick={() => handlePageJump('faq')}
           className="hover:text-yellowNormal transition-colors"
         >
@@ -68,7 +72,7 @@ export function Header() {
         >
           Login
         </Link>
-        
+
       </div>
 
       {/* Botão Hamburger Mobile */}
@@ -91,36 +95,36 @@ export function Header() {
             >
               Comece agora
             </Link>
-            <button 
+            <button
               onClick={() => handlePageJump('home')}
               className="py-2 text-left hover:text-yellowNormal transition-colors"
             >
               Início
             </button>
-            <button 
+            <button
               onClick={() => handlePageJump('about-us')}
               className="py-2 text-left hover:text-yellowNormal transition-colors"
             >
               Quem somos?
             </button>
-            <button 
+            <button
               onClick={() => handlePageJump('features')}
               className="py-2 text-left hover:text-yellowNormal transition-colors"
             >
               Funcionalidades
             </button>
-            <button 
+            <button
               onClick={() => handlePageJump('faq')}
               className="py-2 text-left hover:text-yellowNormal transition-colors"
             >
               Perguntas
             </button>
             <Link
-          className="hover:text-yellowNormal transition-colors"
-          to={'/login'}
-        >
-          Login
-        </Link>
+              className="hover:text-yellowNormal transition-colors"
+              to={'/login'}
+            >
+              Login
+            </Link>
           </div>
         </div>
       )}
