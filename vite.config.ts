@@ -10,9 +10,18 @@ export default defineConfig({
     },
   },
   server: {
-    proxy: {
+    host: true,
+    port: 5173,
+    // proxy: {
+    //   "/api": {
+    //     target: "http://localhost:8083",
+    //     changeOrigin: true,
+    //     secure: false,
+    //   }
+    // }
+    proxy: { //under test
       "/api": {
-        target: "http://localhost:8083",
+        target:"http://backend:8083",
         changeOrigin: true,
         secure: false,
       }
