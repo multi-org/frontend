@@ -368,7 +368,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Rua</FormLabel>
                                                             <FormControl>
                                                                 <Input
-                                                                    disabled={cepLocked}
+                                                                    // disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Av. Getúlio Vargas"
                                                                     {...field} />
