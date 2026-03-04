@@ -408,7 +408,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Complemento</FormLabel>
                                                             <FormControl>
                                                                 <Input
-                                                                    disabled={cepLocked}
+                                                                    // disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Prédio A, sala 101"
                                                                     {...field} />
@@ -428,7 +428,7 @@ export default function CompanyRegisterForm({
                                                             <FormLabel className="text-black">Bairro</FormLabel>
                                                             <FormControl>
                                                                 <Input
-                                                                    disabled={cepLocked}
+                                                                    // disabled={cepLocked}
                                                                     className="text-black focus-visible:ring-blueLight"
                                                                     placeholder="Ex.: Centro"
                                                                     {...field} />

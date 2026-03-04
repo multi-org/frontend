@@ -172,7 +172,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
         <div className="flex-1">
           <label className="block text-sm font-medium mb-1">Complemento</label>
           <Input
-            disabled={cepLocked}
+            // disabled={cepLocked}
             placeholder="Apto, Bloco, etc. (opcional)"
             value={complement || ''}
             onChange={e => onChange({ complement: e.target.value })}
@@ -187,7 +187,7 @@ const AddressAutoFillForm: React.FC<AddressAutoFillFormProps> = ({
       <div>
         <label className="block text-sm font-medium mb-1">Bairro</label>
         <Input
-          disabled={cepLocked}
+          // disabled={cepLocked}
           placeholder="Bairro"
           value={neighborhood || ''}
           onChange={e => onChange({ neighborhood: e.target.value })}
